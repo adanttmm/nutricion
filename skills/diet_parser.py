@@ -182,8 +182,18 @@ RESPONDE ÚNICAMENTE con el YAML. Sin texto adicional. Sin markdown fences."""
     @staticmethod
     def _clean_yaml_response(text: str) -> str:
         text = text.strip()
+        # Strip markdown code fences
         text = re.sub(r"^```[a-z]*\n?", "", text)
         text = re.sub(r"\n?```$", "", text)
+        text = text.strip()
+        # If Claude added explanatory prose before the YAML, strip it.
+        # YAML root keys always start at column 0 with a known key name.
+        yaml_start = re.search(
+            r'^(document_type|person|persons|meal_structure|daily_targets)\s*:',
+            text, re.MULTILINE,
+        )
+        if yaml_start and yaml_start.start() > 0:
+            text = text[yaml_start.start():]
         return text.strip()
 
     def _apply_profile_overrides(self, yaml_path: Path) -> None:
@@ -298,7 +308,7 @@ RESPONDE ÚNICAMENTE con el YAML. Sin texto adicional. Sin markdown fences."""
 
         response = self.client.messages.create(
             model=self.MODEL,
-            max_tokens=4096,
+            max_tokens=8192,
             system=[{"type": "text", "text": self.PARSER_SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": content}],
         )
@@ -339,7 +349,7 @@ RESPONDE ÚNICAMENTE con el YAML. Sin texto adicional. Sin markdown fences."""
 
         response = self.client.messages.create(
             model=self.MODEL,
-            max_tokens=3000,
+            max_tokens=6000,
             system=[{"type": "text", "text": self.COMBINER_SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": plans_yaml}],
         )
