@@ -190,7 +190,7 @@ class SiteBuilderSkill(BaseSkill):
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>__PLAN_NAME__</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .prose table{width:100%;border-collapse:collapse}
@@ -321,7 +321,7 @@ function tab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'compras') shop(curShop);
+  if (name === 'compras') { shopRendered = true; shop(curShop); }
 }
 
 // ── Person cards ──────────────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ PERSONS.forEach(p => {
   </div>`;
 });
 
-marked.setOptions({ gfm: true, breaks: true });
+marked.use({ gfm: true, breaks: true });
 if (C.prep) document.getElementById('prep-content').innerHTML = marked.parse(C.prep);
 
 // ── Per-day view ──────────────────────────────────────────────────────────────
@@ -491,6 +491,7 @@ renderFavoritos();
 // ── Shopping ──────────────────────────────────────────────────────────────────
 let checks  = JSON.parse(localStorage.getItem(SHOP_KEY) || '{}');
 let curShop = 'costco';
+let shopRendered = false;
 
 function shop(which) {
   curShop = which;
@@ -532,7 +533,7 @@ function clearChecks() {
   shop(curShop);
 }
 
-shop('costco');
+try { shop('costco'); shopRendered = true; } catch(e) { console.error('shop init:', e); }
 
 // ── Tracking charts ───────────────────────────────────────────────────────────
 const tr = TRACKING;
