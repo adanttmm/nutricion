@@ -123,515 +123,526 @@
 </main>
 
 <script>
-const PERSONS  = [{"name": "ATM", "goal": "ganancia muscular", "calories": 3371.0, "protein_g": 319.6, "carbs_g": 296.4, "fat_g": 101.6, "derived": false}, {"name": "IOB", "goal": "pérdida de grasa", "calories": 1397.5, "protein_g": 109.4, "carbs_g": 147.3, "fat_g": 38.2, "derived": false}];
+const PERSONS  = [{"name": "ATM", "goal": "ganancia muscular / recomposición", "calories": 3230.0, "protein_g": 313.9, "carbs_g": 269.0, "fat_g": 99.8, "derived": false}, {"name": "IOB", "goal": "pérdida de grasa", "calories": 1272.5, "protein_g": 101.4, "carbs_g": 139.5, "fat_g": 35.8, "derived": false}];
 const TRACKING = {"weekly": [], "weight_history": [], "today": {"date": "2026-06-05", "meals": [], "totals": {"calories": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0}, "goals": null}};
 const DAYS     = [];
-const C = { costco: `# 🔵 COSTCO INTERLOMAS / SANTA FE
+const C = { costco: `## Semana 08–14 Junio 2026 · Costco + City Market Santa Fe
+
+---
+
+# 🏪 COSTCO INTERLOMAS / SANTA FE
 
 ## 1. 🥩 Carnes y Mariscos
 
-- [ ] **Pechuga de pollo** — 2.5 kg — *Sous vide (Lun comida + caldo Jue + teriyaki Dom comida + tikka Mar cena + sopa Vie cena + colaciones pavo prep)* · Paquete Costco ~3 kg, uso alto toda la semana ✅
-- [ ] **Res molida 93%** — 1 kg — *Tacos Mar comida (3 comensales); paquete mínimo Costco ~1.5 kg, sobrante se congela* ✅
-- [ ] **Camarones medianos/grandes congelados** — 800 g — *Causa limeña Vie comida (3 comensales); bolsa Costco ~1 kg, sobrante se congela* ✅
-- [ ] **Tocino / jamón cocido** — 200 g — *Opcional para colaciones / garnish; solo si el paquete es accesible* · Si paquete >500 g → **omitir, no está en el menú**
-
-> ⚠️ Tocino: no aparece en ningún platillo del menú — **no comprar**
+- [ ] **Pechuga de pollo** — 2.5 kg — confitada para toda la semana (comidas lun/mié/vie/dom cena + colaciones AM pavo); paquete Costco ~3–4 kg, usar sobrante para prep extra 🌱
+- [ ] **Pechuga de pavo entera o en láminas** — 1.5 kg — colación AM lun–sáb (200g ATM + 50g IOB × 6 días = ~1.5 kg); paquete Costco justificado
+- [ ] **Salmón filete fresco** — 1.8 kg — cenas lun/mié/jue/vie + chirashi dom (250g+120g) × 4 cenas + (150g+80g) dom = ~1.8 kg; paquete Costco ~1.5–2 kg ✅
+- [ ] **Atún en agua (latas Kirkland)** — 6 latas × 140g — desayuno dom bruschetta (200g+50g ATM/IOB), chirashi dom (80g+40g), prep semanal; sobrante no se pierde
+- [ ] **Res molida 90/10** — *no requerida esta semana — filete va a City Market*
+- [ ] **Huevos orgánicos** — 2 docenas — huevos pochados (dom desayuno: 3 piezas), huevos cocidos meal prep (6 piezas), claras colación AM (3 claras × 6 días IOB = ~18 claras = 6 huevos mínimo); total ~18–20 piezas
 
 ---
 
 ## 2. 🥦 Frutas y Verduras
 
-- [ ] **Espinacas baby (bolsa)** — 600 g — *Shakshuka Dom, bibimbap Lun, colaciones diarias, salsa tikka, cenas varias*
-- [ ] **Zanahoria** — 1 kg — *Bibimbap Lun, encurtido, colaciones jícama-zanahoria, causa, teriyaki Dom, wrap Mié*
-- [ ] **Pepino** — 6 piezas — *Bibimbap Lun, tataki Mié, wrap Mié, causa Vie, kabsa Sáb, bowl Dom*
-- [ ] **Pimiento rojo** — 4 piezas — *Menemen Sáb, shakshuka Dom, vizcaína Mié, tikka Mar, encurtido*
-- [ ] **Jitomate bola** — 2 kg — *Tacos Mar, shakshuka Dom, tlayuda Dom, bruschetta Sáb, menemen Sáb, salsa verde base, vizcaína Mié, tikka Mar*
-- [ ] **Jitomate cherry** — 500 g — *Colaciones AM (Lun/Mié/Vie/Sáb), bruschetta Sáb confitado, salsa vierge*
-- [ ] **Cebolla blanca** — 1 kg — *Tikka Mar, kabsa Sáb, vizcaína Mié, tlalpeño Jue, bases de salsas*
-- [ ] **Cebolla morada** — 6 piezas — *Encurtidos (Lun cena, Mar comida, Vie comida), lunes cena ramen, Jue cena, Mié cena*
-- [ ] **Ajo** — 2 cabezas — *Ajillo Vie, arrabiata Dom cena, tikka, vizcaína, tlalpeño*
-- [ ] **Limones verdes** — 2 kg — *Causa Vie (lima), tlalpeño Jue, marinadas, condimento general toda la semana*
-- [ ] **Limones amarillos** — 6 piezas — *Salmón confitado Jue, salsa vierge, smørrebrød Jue*
-- [ ] **Aguacate** — 10 piezas — *Colaciones AM diarias (ATM), tacos Mar, bibimbap Lun, tataki Mié, causa Vie, tlayuda Dom, kabsa Sáb* · 🌱 temporada
-- [ ] **Mango** — 1.5 kg — *Overnight oats Lun desayuno, smoothie bowl Mié, colación PM Jue, congelado para smoothies* · 🌱 temporada
-- [ ] **Plátano** — 2 racimos (~1.5 kg) — *Colaciones PM Lun/Mié, desayunos IOB diarios, smoothies varios*
-- [ ] **Manzana verde** — 12 piezas — *Colaciones AM/PM IOB todos los días*
-- [ ] **Fresas** — 600 g — *Colación PM Mar y Jue* · 🌱 temporada
-- [ ] **Arándanos frescos** — 300 g — *Parfait Mar desayuno*
-- [ ] **Kiwi** — 6 piezas — *Smoothie bowl Mié, colación PM Dom*
-- [ ] **Papaya** — 2 piezas medianas — *Colaciones AM IOB (Mar/Mié/Jue/Vie/Sáb/Dom)* · 🌱 temporada
-- [ ] **Piña** — 1 pieza — *Colación PM Vie (trozos)* · 🌱 temporada
-- [ ] **Brócoli** — 1 pieza — *Disponible como sustituto de verdura en preparaciones; verificar uso específico*
-- [ ] **Calabacita** — 4 piezas — *Doenjang jjigae Vie cena*
-- [ ] **Jalapeño** — 6 piezas — *Encurtido rápido (Mar/Vie), salsa verde, salsa roja*
+- [ ] **Espinaca baby** — 500g — colación AM diaria (30g × 7 días × 2 personas aprox), colación sáb, pesto vie cena; bolsa grande Costco OK
+- [ ] **Jitomate cherry** — 800g — lomo saltado mar, bruschetta dom, colación AM jue (60–80g × múltiples días) 🌱
+- [ ] **Cebolla morada** — 3 piezas — encurtido meal prep, lomo saltado, diversas preparaciones 🌱
+- [ ] **Aguacate** — 8 piezas maduras — comidas diarias (45g × múltiples días ambos) 🌱
+- [ ] **Manzana verde (Granny Smith)** — 2 kg — colación PM diaria (180g × ~6 días ATM + 180g × ~5 días IOB) 🌱
+- [ ] **Plátano** — 1.5 kg (~10 piezas) — boost gym + IOB smoothies diarios 🌱
+- [ ] **Pera Anjou** — 3 piezas — desayuno lun (100g); Costco vende bolsa, sobrante para snack
+- [ ] **Fresas frescas** — 800g — desayuno mié (150g ATM + 80g IOB), desayuno sáb (100g+80g), snacks 🌱
+- [ ] **Arándanos** — 300g — desayuno jue (100g ATM + 50g IOB) 🌱
+- [ ] **Mango congelado** — 1 bolsa (~1 kg) — desayunos mar y vie (80g × 2 ocasiones); bolsa Costco dura semanas ✅
+- [ ] **Limones verdes** — 1 bolsa (~1 kg) — uso diario en vinagretas, encurtidos, marinadas 🌱
+- [ ] **Ajo** — 1 cabeza grande o bolsa — confitado pollo, salsas, dashi, múltiples preparaciones
+- [ ] **Zanahoria** — 500g — gimbap vie (40g × 2), múltiples usos; bolsa Costco OK
+- [ ] **Brócoli / ejotes** — ejotes 400g — comida mié (100g ATM + 100g IOB + 100g 3er comensal) 🌱
+- [ ] **Kiwi** — 4 piezas — desayuno vie (100g ATM + 80g IOB) 🌱
+- [ ] **Papaya** — 2 piezas medianas — colación AM lun–sáb IOB (200g × 6 días) 🌱
+- [ ] **Pepino** — 4 piezas — encurtido meal prep (pepino marinado), tzatziki, uso semanal 🌱
+- [ ] **Jícama** — 3–4 jícamas medianas — colación PM diaria (130g × 7 días × 2 personas ≈ 1.8 kg) 🌱
+- [ ] **Nopales** — 6 pencas o 400g limpios — comida vie (100g × 3 comensales) 🌱
+- [ ] **Maíz en grano / elote desgranado** — 200g — tinga vie (40g ATM) + choclo/maíz sáb (60g+40g); bolsa congelada o fresco 🌱
 
 ---
 
-## 3. 🥛 Lácteos y Refrigerados
+## 3. 🧀 Lácteos y Refrigerados
 
-- [ ] **Huevos orgánicos** — 30 piezas — *Bibimbap (Lun×2), ramen Lun (marinado), colaciones AM claras diarias, menemen Sáb (3 huevos), shakshuka Dom (3+claras), pochado Vie desayuno, huevos duros prep dominical*
-- [ ] **Yogurt griego sin grasa (Fage o Kirkland)** — 2 kg — *Desayunos parfait Mar, tikka Masala base, tzatziki Jue, Vie desayuno tahdig, Sáb desayuno menemen; uso recurrente toda la semana ✅*
-- [ ] **Queso crema Philadelphia** — 200 g — *Base para colaciones y untables varios* · Solo si aparece en recetas; revisar: **no está explícito en menú → omitir si duda**
-- [ ] **Mozzarella** — 250 g — *No aparece en menú → omitir*
-- [ ] **Mantequilla** — 250 g — *Salsas y salteos generales*
-- [ ] **Crema para batir** — 500 ml — *Tikka masala, salsas cremosas; paquete Costco ~1 L, uso moderado → **valorar si comprar o en City Market cantidad exacta*** · **→ City Market si solo se usa 1–2 veces**
-
-> ⚠️ Crema para batir: ver City Market si el uso es menor a 3 recetas
+- [ ] **Yogurt griego 0% (Fage o Kirkland)** — 1 kg — parfait mié (100g × 2), cena jue gravlax (60g+40g), tzatziki meal prep (250ml base), skyr jue aprox; caja Costco 2 kg OK para uso recurrente
+- [ ] **Leche de avena (Oatly o similar)** — 2 L — desayunos overnight oat (150ml+80ml lun), shakes diarios colación PM (uso frecuente); Costco puede no tenerla → **si no hay, pasar a City Market**
+- [ ] **Mantequilla de cacahuate (Kirkland natural)** — 1 frasco 1 kg — colación PM diaria (16g × 7 días ATM = 112g + algo IOB); Costco justificado
+- [ ] **Crema para batir** — *no requerida esta semana*
+- [ ] **Queso crema Philadelphia** — *no requerida esta semana*
 
 ---
 
-## 4. 🥫 Abarrotes y Despensa
+## 4. 🛒 Abarrotes y Despensa
 
-- [ ] **Avena en hojuelas** — 1.5 kg — *Overnight oats DIARIO (ATM: 50–60g/día × 7 días + IOB ocasional), granola, smoothies; Costco OK ✅*
-- [ ] **Arroz jazmín** — 2 kg — *Bibimbap Lun, arroz base prep Dom; Costco OK ✅*
-- [ ] **Arroz integral** — 1 kg — *Doenjang jjigae Vie, bowl Dom, prep dominical*
-- [ ] **Arroz basmati** — 1 kg — *Tikka Masala Mar, tahdig Vie desayuno, kabsa Sáb, salmón Jue; uso alto ✅*
-- [ ] **Quinoa tricolor** — 500 g — *Tataki Mié, causa Vie, prep dominical*
-- [ ] **Pasta integral (penne)** — 1 kg — *Arrabiata Dom cena, bacalao Mié, salmón Jue; Costco OK ✅*
-- [ ] **Proteína en polvo sabor vainilla (Kirkland/Whey)** — 2 kg — *ATM: 60g×2 scoops×5 días gym + 30g×2 días normal + IOB 30g×7 días = ~680g total mínimo; Costco OK ✅*
-- [ ] **Semillas de chía** — 300 g — *Overnight oats Lun, diario*
-- [ ] **Linaza** — opcional / ya en despensa
-- [ ] **Almendras** — 500 g — *Snacks y colaciones generales si se necesita*
-- [ ] **Nueces de Castilla** — 200 g — *Parfait Mar desayuno, granola*
-- [ ] **Mantequilla de cacahuate natural** — 500 g — *Colaciones PM Lun/Mar/Jue/Vie/Sáb/Dom; uso diario ✅*
-- [ ] **Miel de abeja / agave** — 500 ml — *Colaciones diarias ATM (7g/día), salsa gochujang-miel; uso diario ✅*
-- [ ] **Frijoles negros en lata** — 4 latas (400g c/u) — *Torta Mar, tlayuda Dom, shakshuka Dom; también cocidos para prep*
-- [ ] **Garbanzos en lata** — 3 latas — *Tlalpeño Jue, shakshuka Dom, hummus Mié*
-- [ ] **Leche de coco** — 2 latas — *Tikka masala Mar, smoothie tropical opcional*
-- [ ] **Puré/passata de tomate** — 3 latas (400g) — *Arrabiata Dom, tikka Mar, vizcaína Mié, tlalpeño Jue, salsa daqqus Sáb*
-- [ ] **Caldo de pollo Kirkland (tetra)** — 2 L — *Tlalpeño Jue, quinoa (caldo verduras), ramen base, prep dominical*
-- [ ] **Atún en agua** — 4 latas — *No es el atún fresco del tataki; estas latas son para emergencias/colaciones* · **→ Solo comprar si están en el menú; el tataki requiere atún fresco de City Market**
-- [ ] **Salsa soya Kikkoman** — 1 botella — *Teriyaki Dom, huevo marinado tamari Lun, marinadas*
-- [ ] **Tortillas de maíz** — 1 kg — *Tacos Lun/Mar/Mié/Vie/Dom colaciones y comidas; Costco OK ✅*
-- [ ] **Pan integral (rebanadas)** — 2 bolsas — *Colaciones AM/PM diarias ATM; Costco OK ✅*
-- [ ] **Maíz en lata / congelado** — 200 g — *Ramen Lun cena*
-- [ ] **Edamame congelado** — 400 g — *Tataki Mié, bowl Dom*
-- [ ] **Noodles de arroz** — 300 g — *Ramen Lun cena*
-- [ ] **Nori (láminas)** — 1 paquete — *Ramen Lun cena (2 láminas)*
-- [ ] **Harina de almendra** — 500 g — *Solo si hay receta que lo requiera explícitamente; **omitir si no está en menú***
-- [ ] **Gelatina light** — 10 sobres / 1 caja grande — *Cenas IOB casi diarias (240–480 ml/día), prep dominical; uso muy alto ✅*
+- [ ] **Avena en hojuelas** — 1 kg — desayunos diarios ATM (50g × 6 días = 300g) + granola mié; paquete Costco OK
+- [ ] **Proteína en polvo sabor vainilla (Kirkland Whey)** — 1 bote o verificar stock — 60g ATM + 30g IOB × 7 días = 630g semanal solo vainilla; si también chocolate, revisar
+- [ ] **Proteína en polvo sabor chocolate** — verificar stock — shakes mar colPM, mié colPM (60g+30g × 2 días = 180g)
+- [ ] **Arroz jazmín** — 2 kg — meal prep (7 porciones), comidas mar/mié/vie/sáb/dom (200g cocido × 3 comensales × 5 días ≈ 3 kg cocido = ~1.2 kg crudo); bolsa Costco OK
+- [ ] **Arroz integral** — 500g — onigiri mié y gimbap vie (80g cocido × 2 personas × 2 días = ~200g cocido = ~100g crudo); si sobrante de otra semana, verificar
+- [ ] **Farro perlado** — 500g — meal prep (4 porciones), cenas lun y jue (150g+75g cocido × 2 días); buscar en Costco, si no hay → City Market
+- [ ] **Pasta integral penne** — 1 paquete 500g — meal prep (4 porciones), cena vie (150g+75g cocido = ~225g cocido = ~120g crudo); paquete Costco ~1.5 kg, sobrante no se pierde
+- [ ] **Fideos soba** — 300g — cena mié ramen (150g+75g cocido); Costco puede no tenerlos → **si no hay, pasar a City Market**
+- [ ] **Lentejas negras** — 500g — meal prep (3 porciones), cena mar tajín (150g+100g cocidos); Costco puede tener lentejas, verificar negras específicamente
+- [ ] **Garbanzos en lata o secos** — 2 latas o 500g seco — meal prep sazonado (2 porciones), desayuno dom msabbaha (150g ATM cocidos); latas Costco OK
+- [ ] **Frijoles negros en lata o secos** — 3 latas o 500g seco — tostadas lun (80g+40g), cena dom ghormeh sabzi (80g+50g), meal prep; latas Costco OK
+- [ ] **Atún en agua Kirkland** — ya listado arriba en Carnes
+- [ ] **Leche de coco light** — 4 latas — desayuno vie smoothie bowl, desayuno sáb açaí; Costco OK
+- [ ] **Semillas de chía** — 200g — desayuno mar (10g); bolsa Costco OK
+- [ ] **Almendras enteras / laminadas** — 300g — parfait mié (20g laminadas), flatbread sáb (15g), snacks; bolsa Costco OK
+- [ ] **Nueces de Castilla** — 300g — desayunos lun/mar/vie/sáb (15–20g × 4 días), colación PM boost (15g × 2 días); bolsa Costco OK
+- [ ] **Semillas de girasol** — 150g — desayuno jue (15g); bolsa Costco OK
+- [ ] **Harina de almendra** — *no requerida esta semana*
+- [ ] **Cacao en polvo sin azúcar** — 100g — shakes mar/mié colPM (10g+8g × 2 días); lata Costco OK
+- [ ] **Pan integral (barra o molde)** — 2 barras — colación AM IOB diaria (30g × 7 días = 210g), colación PM ATM (30g × 7 días = 210g); total ~420g = 2 barras Costco
+- [ ] **Chapata integral** — 6 piezas o 2 barras — colación AM ATM lun–sáb (80g × 6 días = 480g); verificar panadería Costco, si no hay → City Market
 
 ---
 
 ## 5. 🫙 Aceites, Salsas y Condimentos
 
-- [ ] **Aceite de oliva extra virgen** — 1 lata (3–4 L) — *Salmón confitado Jue (requiere bastante volumen), arrabiata Dom, salsas, colaciones, vizcaína; uso alto toda la semana ✅*
-- [ ] **Aceite de aguacate** — 500 ml — *Salteos varios, bibimbap, causa*
-- [ ] **Vinagre balsámico** — 500 ml — *Encurtidos, salsas*
-- [ ] **Mostaza Dijon** — 1 frasco — *Tartine Lun colación AM*
-- [ ] **Mayonesa** — 1 frasco — *Causa limeña, varios*
-- [ ] **Sal de mar** — ya en despensa / reponer si necesario
-- [ ] **Pimienta negra entera** — 1 bolsa — *Moler fresco toda la semana*
-- [ ] **Comino molido** — 1 bolsa — *Tacos Mar, tikka Masala, tlalpeño Jue, menemen Sáb*
-- [ ] **Paprika ahumada** — 1 bolsa — *Vizcaína Mié, tikka Masala*
-- [ ] **Orégano** — 1 bolsa — *Arrabiata Dom, vizcaína Mié*
-- [ ] **Canela en polvo** — 1 bolsa — *Smoothie Jue desayuno, kabsa Sáb*
-- [ ] **Chile en polvo / pimentón** — 1 bolsa — *Tacos Mar, tlalpeño Jue*
-- [ ] **Cúrcuma molida** — 1 bolsa — *Tikka Masala Mar, kabsa Sáb*
-- [ ] **Hierbas de Provenza** — 1 bolsa — *Salmón confitado Jue, varias*
+- [ ] **Aceite de oliva extra virgen** — verificar stock (lata Costco ~3–4 L) — uso diario: confitado, vinagretas, cenas, meal prep
+- [ ] **Aceite de sésamo tostado** — 200ml — cenas lun (8ml+4ml), mié (8ml+4ml) y otros; si no hay en Costco o calidad dudosa → City Market ⚠️
+- [ ] **Salsa de soya bajo en sodio / Tamari** — 1 botella 500ml — cena lun tamari (10ml+10ml), lomo saltado mar (15ml+10ml), pepino encurtido, múltiples usos; Costco tiene Kikkoman, pero **tamari sin gluten** puede no estar → verificar
+- [ ] **Vinagre balsámico** — verificar stock — vinagretas
+- [ ] **Mostaza Dijon (Maille o similar)** — 1 frasco — ensalada jue (10g+10g), gravlax jue (10g+8g); Costco OK
+- [ ] **Mostaza de grano** — 1 frasco pequeño — cena jue gravlax (10g+8g); si no hay en Costco → City Market
+- [ ] **Mayonesa** — no requerida esta semana
+- [ ] **Miel de agave** — 1 frasco 500ml — uso diario en desayunos y colaciones (7g × múltiples días); Costco OK
+- [ ] **Aceite de coco** — *no requerido esta semana*
+- [ ] **Sal de mar** — verificar stock
+- [ ] **Pimienta negra entera** — verificar stock
+- [ ] **Comino molido** — verificar stock — chermoula, lentejas, garbanzos
+- [ ] **Paprika ahumada** — verificar stock — garbanzos sazonados, múltiples usos
+- [ ] **Orégano seco** — verificar stock — bruschetta dom
+- [ ] **Cúrcuma molida** — verificar stock — desayuno mar smoothie, ghormeh sabzi dom
+- [ ] **Canela molida** — verificar stock — shakes colación PM
+- [ ] **Chile en polvo / Tajín** — verificar stock — jícama, manzana, varios
+- [ ] **Caldo de pollo Kirkland (tetra)** — 2 L — salsa de pimienta verde jue, ghormeh sabzi dom, múltiples salsas
 
 ---
 
 ## 6. ❄️ Congelados
 
-- [ ] **Salmón filetes (congelado)** — 2 kg — *Ramen Lun cena (250g ATM + 120g IOB), salmón confitado Jue (250g ATM + 120g IOB), arrabiata Dom cena (estimado ~300g), smørrebrød Jue (salmón ahumado → **ver nota**); uso en 3+ recetas ✅*
-
-> ⚠️ **Salmón ahumado** del smørrebrød Jue colación AM → es salmón curado/ahumado, **no es el mismo que los filetes frescos/congelados**. El salmón ahumado va en **City Market**.
-
-- [ ] **Mango congelado** — 500 g — *Smoothie bowl Mié desayuno*
-- [ ] **Pavo molido / pechuga de pavo cocida** — *Ver nota abajo*
-
-> ⚠️ **Pavo cocido (pechuga de pavo para colaciones AM)**: Costco vende pechuga de pavo en presentaciones grandes. Si se puede encontrar pechuga entera para cocer en casa → Costco OK. Si solo hay pavo en presentación deli/rebanado fino → **City Market**. La demanda semanal es alta (~200g ATM + 50–100g IOB × 6 días colación AM ≈ 1.5–2 kg cocido), por lo que **comprar pechuga entera de pavo cruda en Costco y cocer en prep dominical** es la mejor opción.
-
-- [ ] **Pechuga de pavo (entera, cruda)** — 2 kg — *Cocer domingo, rebanar/desebrar para colaciones AM toda la semana; Costco OK ✅*
+- [ ] **Mango congelado** — ya listado en frutas (1 bolsa ~1 kg)
+- [ ] **Edamame congelado sin vaina** — 500g — chirashi dom (60g ATM + 40g IOB); bolsa Costco OK
+- [ ] **Camarones** — *mencionados en meal prep pero usados solo ~2 porciones; si solo 1–2 usos, considerar City Market para cantidad exacta* → **pasar a City Market**
 
 ---
 
-## 7. 🥖 Panadería y Tortillería
+## 7. 🍞 Panadería y Tortillería
 
-- [ ] **Chapata integral** — 2 piezas — *Tartine Lun AM, bruschetta Sáb, torta Mar, wrap Mié*
-- [ ] **Pan pita integral** — 1 paquete (8–10 piezas) — *Shakshuka Dom, wrap Mié colación AM*
+- [ ] **Tostadas de maíz azul** — 1 paquete — comida lun (2 piezas ATM + 1 IOB = 3 piezas); bolsa Costco, sobrante no se pierde
+- [ ] **Tortillas integrales pequeñas** — 1 paquete — colación AM IOB diaria (30g × ~6 días) y comidas IOB (30g × múltiples); Costco OK
+- [ ] **Pan pita integral** — 4 piezas — desayuno dom (60g ATM); verificar si Costco tiene, si no → City Market
 
 ---
 ---
-`, city: `# 🟢 CITY MARKET SANTA FE
-*(Solo ingredientes que Costco no tiene con certeza, o donde el volumen de Costco sería desproporcionado)*
+`, city: `# 🏪 CITY MARKET SANTA FE
 
 ## 1. 🐟 Pescadería Premium
 
-- [ ] **Atún fresco aleta amarilla (sashimi grade)** — 800 g — *Tataki Mié comida (3 comensales): 200g ATM + 120g IOB + 200g 3er = 520g + margen* · **Cantidad exacta, no hay en Costco**
-- [ ] **Bacalao desalado / fresco** — 500 g — *Bacalao vizcaína Mié cena: 250g ATM + 120g IOB + margen* · **No está en Costco**
-- [ ] **Salmón ahumado noruego** — 200 g — *Smørrebrød Jue colación AM: 120g ATM + 60g IOB* · **Curado/ahumado ≠ filetes congelados de Costco**
+- [ ] **Camarones medianos pelados y limpios** — 400g — meal prep (2 porciones caldo ajo-limón); cantidad exacta, no justifica bolsa 1.5 kg Costco
+- [ ] **Kombu (alga seca)** — 50g — dashi ligero meal prep (1 L); ingrediente asiático especializado
 
 ---
 
 ## 2. 🥩 Carnicería y Charcutería
 
-- [ ] **Filete de res magro (sirloin o similar)** — 700 g — *Kabsa Sáb comida: 200g ATM + 120g IOB; corte específico magro, no res molida* · **Cantidad exacta**
-- [ ] **Tofu firme** — 400 g — *Doenjang jjigae Vie cena: 200g ATM + 100g IOB* · **City Market (cantidad exacta); Costco no siempre tiene tofu firme de calidad**
+- [ ] **Filete de res magro (medallones o bistec grueso)** — 1.8 kg — sous vide 8 porciones meal prep; comidas mar/jue/sáb (200g+120g ATM/IOB + 200g 3er comensal mar = ~520g mar, 320g jue, 320g sáb) + cenas mar/jue (250g+120g × 2); total ~1.7 kg; corte específico, calidad superior, City Market es más confiable para corte exacto ⚠️
 
 ---
 
 ## 3. 🌿 Frutas, Verduras e Hierbas
 
-- [ ] **Nopal fresco** — 4 piezas medianas — *Overnight oats Lun desayuno (cocido en cubos), tlayuda Dom, colaciones* · **Verdura muy específica; Costco no tiene**
-- [ ] **Bok choy** — 4 piezas — *Ramen Lun cena: 100g ATM + 100g IOB* · **No está en Costco**
-- [ ] **Espárragos** 🌱 — 1 kg — *Tikka Masala Mar (100+134g), bacalao Mié (100+134g), salmón Jue (100+134g), doenjang Vie (80+134g); uso alto toda la semana* · **Costco a veces tiene, pero poca certeza → City Market por seguridad**
-- [ ] **Ejotes tiernos** 🌱 — 200 g — *Tlalpeño Jue comida: 60g×2* · **Cantidad exacta**
-- [ ] **Jícama** 🌱 — 3 kg — *Colaciones diarias ATM y IOB: 130g+130g×7 días ≈ 1.8 kg; jícama en bastones toda la semana* · **Costco no tiene con certeza**
-- [ ] **Daikon** — 1 pieza mediana — *Tataki Mié (encurtido): 40g ATM + 40g IOB + 3er ≈ 150g total* · **No está en Costco**
-- [ ] **Hongos shiitake frescos** — 200 g — *Doenjang jjigae Vie cena: 80g ATM + 80g IOB* · **No está en Costco**
-- [ ] **Poro (puerro)** — 2 piezas — *Salmón confitado Jue (poro caramelizado): 60g ATM + 40g IOB* · **Costco no tiene con certeza**
-- [ ] **Berros frescos** — 1 manojo — *Tahdig Vie desayuno: 40g ATM + 40g IOB* · **No está en Costco**
-- [ ] **Tomatillos** — 500 g — *Salsa verde prep (Mar tacos, Vie colación, Dom tlayuda)* · **Costco no tiene**
-- [ ] **Papa amarilla** — 600 g — *Causa limeña Vie: 150g ATM + 80g IOB + 3er ≈ 430g + margen* · **Papa amarilla específica, Costco no tiene**
-- [ ] **Albahaca fresca** — 2 manojos — *Salsa vierge Jue, arrabiata Dom cena, bruschetta Sáb* · **Costco solo tiene seco**
-- [ ] **Cilantro fresco** — 2 manojos — *Tlalpeño Jue, causa Vie, tacos Mar, tlayuda Dom*
-- [ ] **Epazote fresco** — 1 manojo — *Tlalpeño Jue, quesadilla Vie, tlayuda Dom* · **No está en Costco**
-- [ ] **Eneldo fresco** — 1 manojo — *Smørrebrød Jue colación AM* · **No está en Costco**
-- [ ] **Cebollín fresco** — 1 manojo — *Doenjang jjigae Vie cena* · **No está en Costco**
-- [ ] **Hierbas de la colación AM varias** — *Tomillo fresco, romero fresco* — 1 manojo c/u — *Salmón confitado Jue, marinadas* · **Costco solo tiene seco**
+- [ ] **Eneldo fresco** — 1 manojo — cena jue gravlax (al gusto), tzatziki meal prep
+- [ ] **Cebollín fresco** — 2 manojos — cena lun (al gusto), cena mié ramen (al gusto), meal prep
+- [ ] **Albahaca fresca** — 1 maceta o manojo grande — salsa San Marzano meal prep (500ml), pesto espinacas vie cena
+- [ ] **Perejil fresco** — 2 manojos — chermoula verde (200ml) meal prep, ghormeh sabzi dom, arroz sáb
+- [ ] **Cilantro fresco** — 2 manojos — chermoula, ghormeh sabzi, salsa verde, múltiples usos 🌱
+- [ ] **Tomillo fresco** — 1 manojo — confitado pechugas de pollo meal prep (Costco solo tiene seco)
+- [ ] **Romero fresco** — 1 ramita — confitado pollo (Costco solo tiene seco)
+- [ ] **Jengibre fresco** — 150g — vinagreta miso-jengibre (200ml), arroz jazmín kaffir (cook con jengibre), dashi, múltiples usos; City Market para raíz fresca
+- [ ] **Espárragos frescos** — 400g — cena lun (134g × 2 personas) 🌱
+- [ ] **Bok choy** — 4 cabezas pequeñas (~400g) — cena mié ramen (100g × 2)
+- [ ] **Rúcula baby** — 200g — colación AM jue (30g × 2), sáb flatbread (30g × 2), cena jue berros/rúcula (50g × 2); bolsita City Market
+- [ ] **Berros frescos** — 150g — cena jue au poivre ensalada (50g × 2); si hay rúcula de sobra, combinar
+- [ ] **Maracuyá** — 4 piezas — desayuno mar smoothie (50g × 2 personas) 🌱
+- [ ] **Betabel dorado o rojo** — 6 piezas medianas — betabel asado meal prep (3 porciones), cenas mar/jue (60g+60g y 80g+60g) 🌱
+- [ ] **Hinojo o jícama extra** — *jícama ya en Costco; hinojo no requerido esta semana*
+- [ ] **Hojas de kaffir lime** — 6–8 hojas — arroz jazmín meal prep con kaffir; ingrediente asiático, City Market
+- [ ] **Lemongrass** — 2 tallos — *revisar si el menú lo usa; el arroz usa kaffir y jengibre; incluir por si la receta de dashi lo requiere* — opcional
+- [ ] **Hierbas frescas para ghormeh sabzi** — comprar extra de: perejil, cilantro ya listados; también **fenogreco fresco** si se consigue — 1 manojo pequeño (City Market es la mejor opción)
+- [ ] **Camote naranja** — 2 kg — meal prep (6 porciones asadas), comidas mar/jue (80g+80g y 120g+60g), cena mar (100g+80g), sáb (60g+60g); abundante uso, City Market cantidad exacta y frescura 🌱
+
+> ⚠️ **Nota camote:** Costco a veces tiene camote pero en bolsas grandes; si hay disponible en Costco en buenas condiciones, mover allá. De lo contrario, City Market da cantidad exacta.
 
 ---
 
 ## 4. 🧀 Quesos y Lácteos
 
-- [ ] **Queso brie** — 150 g — *Tartine Lun colación AM: 30g ATM* · **Artesanal, Costco no tiene**
-- [ ] **Queso feta light** — 200 g — *Shakshuka Dom: 30g ATM + 10g IOB; colaciones varios* · **Costco no tiene feta de calidad**
-- [ ] **Queso cottage** — 400 g — *Smørrebrød Jue (80g ATM + 40g IOB), bruschetta Sáb (80g+40g); uso 2 recetas ✅*
-- [ ] **Queso panela light** — 300 g — *Quesadilla Vie (40g+20g), tlayuda Dom (40g+20g)*
-- [ ] **Leche de almendra sin azúcar** — 3 L — *Overnight oats Lun (200+100ml), smoothie Jue (200+150ml), varias; Costco no siempre tiene leche de almendra → City Market por seguridad*
-- [ ] **Leche de avena** — 1 L — *Smoothie bowl Mié desayuno (150+100ml)* · **Costco no tiene con certeza**
-- [ ] **Crema para batir** — 250 ml — *Si se usa en tikka masala o salmón confitado (cantidad pequeña)* · **Cantidad exacta**
+- [ ] **Queso cotija** — 150g — tostadas lun (15g ATM + 10g IOB × 1 día); cantidad exacta City Market
+- [ ] **Queso panela fresco** — 200g — comida vie tinga (30g ATM + 20g IOB + 30g 3er comensal); cantidad exacta City Market
+- [ ] **Leche de avena Oatly o equivalente** — 2 L — *si Costco no tiene (probable), comprar aquí*; shakes diarios (150–200ml × múltiples usos)
+- [ ] **Skyr / yogurt islandés** — 300g — desayuno jue (120g ATM + 100g IOB); producto especializado, City Market confiable
+- [ ] **Açaí congelado en paquete** — 200g — desayuno sáb (100g ATM + 50g IOB); City Market o tienda especializada
 
 ---
 
 ## 5. 🌶️ Especias y Condimentos Gourmet
 
-- [ ] **Pasta miso blanco** — 200 g — *Ramen Lun cena (caldo dashi-miso), glaseado miso-jengibre Mié* · **No está en Costco**
-- [ ] **Doenjang (pasta de soya coreana fermentada)** — 200 g — *Doenjang jjigae Vie cena: 15g ATM + 10g IOB; pequeño frasco* · **No está en Costco**
-- [ ] **Gochujang** — 200 g — *Salsa gochujang-miel prep dominical (bibimbap Lun), marinada pollo sous vide* · **No está en Costco**
-- [ ] **Pasta de ají amarillo** — 100 g — *Causa limeña Vie: 15g ATM + 10g IOB + 3er* · **No está en Costco**
-- [ ] **Salsa rocoto (pasta o en frasco)** — 100 g — *Causa limeña Vie: 30g+20g* · **No está en Costco**
-- [ ] **Harissa** — 100 g — *Shakshuka Dom desayuno* · **No está en Costco**
-- [ ] **Sumac** — 50 g — *Wrap de pavo Mié colación AM* · **No está en Costco**
-- [ ] **Baharat (mezcla árabe: canela-clavo-cardamomo-pimienta)** — 50 g — *Kabsa Sáb comida; se puede hacer en casa con especias Costco o comprar mezclado* · **City Market si quieres mezcla lista**
-- [ ] **Garam masala** — 50 g — *Tikka masala Mar cena* · **City Market cantidad exacta; Costco no siempre tiene**
-- [ ] **Comino negro (nigella seeds)** — 30 g — *Menemen Sáb desayuno* · **No está en Costco**
-- [ ] **Cardamomo molido** — 30 g — *Arroz basmati tikka, kabsa Sáb* · **Costco no tiene con certeza**
-- [ ] **Azafrán** — 1 gramo (sobre pequeño) — *Tahdig Vie desayuno, kabsa Sáb* · **No está en Costco**
-- [ ] **Matcha en polvo (ceremonial o culinario)** — 30 g — *Smoothie bowl Mié desayuno* · **No está en Costco**
-- [ ] **Lúcuma en polvo** — 100 g — *Smoothie Jue desayuno* · **No está en Costco**
-- [ ] **Maca en polvo** — 100 g — *Smoothie Jue desayuno* · **No está en Costco**
-- [ ] **Espirulina en polvo** — 50 g — *Smoothie bowl Mié desayuno* · **No está en Costco**
-- [ ] **Semillas de cáñamo** — 100 g — *Smoothie bowl Mié desayuno: 15g ATM* · **No está en Costco**
-- [ ] **Semillas de girasol** — 100 g — *Smoothie Jue desayuno: 15g ATM* · **No está en Costco**
-- [ ] **Semillas de sésamo (negro y blanco)** — 150 g — *Tataki Mié (sésamo negro coating), bibimbap Lun, bowl Dom, ramen* · **Costco no tiene sésamo negro con certeza**
-- [ ] **Aceite de sésamo tostado** — 150 ml — *Ramen Lun (5ml), doenjang Vie (5ml)* · **Premium, no está en Costco**
-- [ ] **Piñones** — 50 g — *Kabsa Sáb: 10g ATM* · **No está en Costco**
+- [ ] **Miso blanco (shiro miso)** — 1 frasco 200g — desayuno lun overnight oat (5g toque), vinagreta miso-jengibre meal prep (200ml); ingrediente asiático, City Market confiable
+- [ ] **Vinagre de arroz** — 1 botella 200–300ml — encurtido pepino (1 frasco), cebolla hibisco, onigiri mié, gimbap vie; City Market para calidad
+- [ ] **Aceite de sésamo tostado premium** — 1 botella 150ml — cenas lun (8ml+4ml) + mié (8ml+4ml) + ramen mié + pepino marinado; si Costco no lo tiene con certeza, City Market ✅
+- [ ] **Za'atar** — 1 frasco 50g — desayuno dom msabbaha (5g); especia levantina, City Market
+- [ ] **Sumac** — 1 frasco 50g — cena mar tajín (3g × 2), colación AM jue tartine; especia levantina, City Market
+- [ ] **Ras el Hanout** — 1 frasco 30g — cena mar tajín de res; mezcla árabe, City Market
+- [ ] **Pasta de ají amarillo** — 1 frasco — lomo saltado mar (10g × 3 comensales ≈ 30g); ingrediente peruano, City Market
+- [ ] **Pasta de ají panca** — 1 frasco pequeño — anticuchos sáb; ingrediente peruano, City Market
+- [ ] **Bonito en escamas (katsuobushi)** — 30g — dashi ligero meal prep (1 L); ingrediente japonés, City Market
+- [ ] **Pimienta verde en grano (conserva)** — 1 frasco pequeño — salsa pimienta verde jue; City Market
+- [ ] **Semillas de sésamo negro** — 50g — chirashi dom (5g × 2); City Market para negro (Costco tiene blanco)
+- [ ] **Semillas de sésamo blanco / dorado** — 50g — desayuno vie (10g), pepino marinado, varios; verificar si Costco tiene, si no → aquí
+- [ ] **Matcha ceremonial en polvo** — 30g — desayuno lun (4g ATM + 2g IOB); matcha ceremonial calidad, City Market
+- [ ] **Nori tostado (hojas)** — 1 paquete 10 hojas — onigiri mié (4g), gimbap vie (4g); City Market para calidad
+- [ ] **Pasta miso rojo (opcional)** — *revisar si alguna receta lo requiere; el menú usa miso blanco*; omitir por ahora
+- [ ] **Hibisco seco (flor)** — 30g — cebolla encurtida en hibisco meal prep; City Market o mercado
 
 ---
 
-## 6. 🥫 Conservas y Productos Importados
+## 6. 🫙 Conservas y Productos Importados
 
-- [ ] **Alcaparras (frasco)** — 100 g — *Smørrebrød Jue (15g×2), salsa vierge Jue, arrabiata Dom* · **Alcaparras de calidad, City Market**
-- [ ] **Aceitunas kalamata (frasco)** — 150 g — *Bacalao vizcaína Mié: 20g ATM* · **City Market**
-- [ ] **Pasta de tamarindo** — 100 g — *No aparece en menú explícitamente → **solo si se usa en marinada; verificar antes de comprar***
-- [ ] **Dashi (caldo japonés en sobre o líquido)** — 4 sobres / 500 ml — *Ramen Lun cena (caldo dashi-miso); o usar caldo pollo + miso como alternativa* · **City Market si se quiere auténtico**
-- [ ] **Tamari (salsa soya sin gluten)** — 150 ml — *Huevo marinado Lun, teriyaki Dom; Kikkoman de Costco es soya regular; tamari es diferente* · **City Market cantidad exacta**
-- [ ] **Mirin** — 150 ml — *Teriyaki Dom, glaseado miso* · **No está en Costco**
-- [ ] **Sake de cocina** — 150 ml — *Teriyaki Dom* · **No está en Costco**
-- [ ] **Vinagre de arroz** — 200 ml — *Encurtido daikon Mié, encurtido cebolla/zanahoria prep* · **City Market**
-- [ ] **Rye crispbread / galletas de centeno** — 1 paquete (200g) — *Smørrebrød Jue: 80g ATM + 30g IOB* · **City Market o tienda especializada; Costco no tiene**
-- [ ] **Farro perlado** — 300 g — *Salmón confitado Jue: 150g ATM + 75g IOB* · **No está en Costco**
-- [ ] **Hummus de garbanzo** — 300 g — *Wrap Mié colación AM: 50g ATM + 30g IOB; o hacer casero con garbanzos Costco + tahini* · **City Market si se compra listo; o preparar casero**
-- [ ] **Tahini (pasta de ajonjolí)** — 150 g — *Para hummus casero si se prepara en meal prep* · **City Market**
-- [ ] **Pasta de curry (tikka masala base)** — 100 g — *Tikka masala Mar; o hacer casero con especias* · **City Market si se compra listo**
+- [ ] **Alcaparras (frasco)** — 1 frasco 100g — cena vie pasta pesto (15g × 2), bruschetta dom (15g+10g); City Market para calidad
+- [ ] **Aceitunas verdes en rodajas** — 1 frasco 150g — cena vie pasta (20g+15g), bruschetta dom (20g); City Market
+- [ ] **Fideos soba (buckwheat 100%)** — 200g — cena mié ramen (150g+75g cocidos = ~125g crudos); City Market si Costco no los tiene
+- [ ] **Pasta italiana de calidad (penne integral De Cecco)** — 500g — si se prefiere calidad italiana sobre Costco; *opcional, Costco penne es aceptable*
+- [ ] **Tahini artesanal** — 1 frasco 200g — desayuno dom msabbaha (15g ATM); City Market para artesanal
+- [ ] **Limón seco / Limu Omani** — 3–4 piezas — cena dom ghormeh sabzi (1 pieza × 2); City Market o tienda árabe
+- [ ] **Pasta de tamarindo** — *no requerida esta semana*
+- [ ] **Coco rallado sin azúcar** — 100g — desayuno sáb açaí bowl (15g ATM); City Market en pequeña cantidad
+- [ ] **Piñones** — 50g — cena vie pesto (10g+5g); City Market para cantidad exacta (caro en grandes volúmenes)
 
 ---
 
 ## 7. 🫒 Aceites y Vinagres
 
-- [ ] **Vinagre de jerez o manzana artesanal** — 250 ml — *Encurtidos rápidos (zanahoria-jalapeño-cebolla), salsa vierge* · **City Market; Costco solo tiene balsámico`, prep: `# 🏪 Plan de Meal Prep
+- [ ] **Vinagre de arroz premium** — ya listado en especias; si se consigue mejor calidad aquí, comprar
+- [ ] **Aceite de oliva virgen extra premium** — *Costco tiene buena opción; solo comprar aquí si Costco agotado*
+
+---
+---
+
+# 📋 INGREDIENTES PARA SALSAS Y PREPARACIONES MEAL PREP
+*(verificar que todos estén en la lista — confirmación cruzada)*
+
+| Preparación Meal Prep | Ingredientes clave | Tienda |
+|---|---|---|
+| Salsa verde tomatillo (500ml) | Tomatillo 🌱, chile serrano, ajo, cilantro | City Market (tomatillo fresco) |
+| Caldo dashi (1 L) | Kombu, katsuobushi | City Market |
+| Vinagreta miso-jengibre (200ml) | Miso blanco, vinagre arroz, aceite sésamo, jengibre | City Market |
+| Salsa San Marzano-albahaca (500ml) | Jitomate bola/lata San Marzano, albahaca fresca | City Market (albahaca y jitomate San Marzano) |
+| Chermoula verde (200ml) | Cilantro, perejil, ajo, comino, limón, aceite oliva | City Market (hierbas) |
+| Tzatziki ligero (250ml) | Yogurt griego, pepino, eneldo fresco, ajo | Costco (yogurt) + City Market (eneldo) |
+| Encurtido cebolla-hibisco | Cebolla morada, vinagre arroz, hibisco | Costco (cebolla) + City Market (hibisco, vinagre) |
+| Pepino marinado | Pepino, vinagre arroz, sésamo, soya | Costco (pepino, soya) + City Market (vinagre) |
+| Mole negro ligero | Chile mulato seco, ajo, especias, caldo pollo | City Market (chile mulato) |
+| Baba ganoush | Berenjena asada, ajo, limón, tahini | City Market (todo) |
+| Muhammara | Pimiento asado, nuez, ajo, chile | Costco (nuez, pimiento) + City Market (pasta chile) |
+| Salsa huancaína ligera | Queso cottage, ají amarillo, leche, galleta | City Market (pasta ají amarillo) |
+| Pesto de espinacas-piñones | Espinaca, ajo, piñones, aceite oliva | City Market (piñones) |
+| Guiso ghormeh sabzi | Perejil, cilantro, fenogreco, frijoles negros, limu omani | City Market (limu omani, fenogreco) |
+| Salsa tinga chipotle | Chile chipotle en adobo, jitomate, cebolla | **Agregar: lata chipotle en adobo** → Costco o City Market |
+
+---
+
+### ➕ INGREDIENTES ADICIONALES DETECTADOS EN REVISIÓN CRUZADA
+
+*(faltantes implícitos del menú que no aparecen explícitamente en las tablas nutricionales pero son necesarios para ejecutar los platillos)*
+
+**COSTCO — Agregar:**
+- [ ] **Chile chipotle en adobo (lata)** — 2 latas — salsa tinga vie comida, también para sazonar
+- [ ] **Passata / puré de tomate (tetra o lata)** — 2 tetras — salsa San Marzano meal prep (500ml), tinga; Costco OK
+- [ ] **Vinagre blanco o de manzana** — 1 botella — encurtidos generales; Costco OK
+- [ ] **Laurel seco** — verificar stock — lentejas con laurel meal prep
+- [ ] **Parmesano rallado Kraft** — 1 bote — cena vie pasta pesto (15g+8g); Costco OK, sobrante no se pierde
+- [ ] **Fideos soba** — si Costco los tiene, agregar aquí; si no, City Market ya listado
+
+**CITY MARKET — Agregar:**
+- [ ] **Tomatillos frescos** — 500g — salsa verde tomatillo asada meal prep (500ml) 🌱
+- [ ] **Chile serrano fresco** — 6 piezas — salsa verde, salsas varias 🌱
+- [ ] **Chile mulato seco** — 4–6 piezas — mole negro ligero mié comida
+- [ ] **Berenjena** — 2 piezas grandes — baba ganoush jue colación AM 🌱
+- [ ] **Pimiento rojo asado** — 3 piezas — muhammara sáb colación AM 🌱 *(puede asar en casa; Costco tiene pimiento rojo fresco)*
+- [ ] **Queso cottage bajo grasa** — 200g — salsa huancaína sáb comida
+- [ ] **Leche de coco light tetras adicionales** — 2 unidades — *si las del Costco no alcan`, prep: `# 🏪 Plan de Meal Prep
 ## Semana del 05 de June de 2026
 
-# 🗓️ PLAN DE MEAL PREP — SEMANA 8–14 DE JUNIO 2026
+# 🥘 PLAN DE MEAL PREP — Semana 08–14 Junio 2026
 
 ---
 
-## SÁBADO 7 DE JUNIO — Por la tarde (45–60 min)
+## ANÁLISIS PREVIO: Bases Compartidas y Consolidación
 
-> Todo lo que necesita 24h+ para funcionar correctamente
+Antes de comenzar, identificar qué se repite entre días para cocinar en un solo batch:
 
-### 🥩 Marinados (hacer en el orden indicado)
+| Ingrediente | Días de uso | Cantidad total a preparar |
+|---|---|---|
+| Pollo confitado | Lun comida, Mié comida, Vie comida, Dom cena | ATM: 200+200+200+250=**850g** · IOB: 120+120+120+120=**480g** · 3er: 200+200+200=**600g** → **Total: ~1,930g crudo aprox.** |
+| Filete de res sous vide | Mar comida, Mar cena, Jue comida, Jue cena, Sáb comida | ATM: 200+250+200+250+200=**1,100g** · IOB: 120+120+120+120+120=**600g** · 3er: 200=**200g** → **Total: ~1,900g** |
+| Salmón | Lun cena, Mié cena, Jue cena, Vie cena, Dom comida | ATM: 250+250+250+250+150=**1,150g** · IOB: 120+120+120+120+80=**560g** → **Total: ~1,710g** |
+| Pavo confitado (colación AM diaria) | Lun–Sáb × 6 días | ATM: 200g×6=**1,200g** · IOB: 50g×6=**300g** → **Total: ~1,500g crudo** |
+| Arroz jazmín cocido | Lun cena (farro), Mar comida, Mié comida, Vie comida, Sáb comida, Dom comida, Dom cena | ATM: 200+200+200+200+150=**950g cocido** → **~320g crudo** |
+| Farro perlado | Lun cena, Jue cena | ATM: 150+150=**300g cocido** · IOB: 75+75=**150g cocido** |
+| Camote asado | Mar comida+cena, Jue comida, Sáb comida | ATM: 80+100+120+60=**360g** · IOB: 80+80+60+60=**280g** → **~6–7 camotes medianos** |
+| Lentejas negras | Mar cena | ATM: 150g · IOB: 100g cocidas |
+| Pasta integral | Vie cena | ATM: 150g · IOB: 75g cocida |
+| Frijoles negros | Lun comida, Dom cena | ATM: 80+80=**160g cocidos** · IOB: 40+50=**90g cocidos** |
+| Salsa verde tomatillo | Lun comida | 500ml total |
+| Dashi ligero | Lun cena, Mié cena | 1.2L total |
+| Vinagreta miso-jengibre | Dom comida | 200ml |
+| Chermoula verde | Mar cena, Mar colAM, Jue cena | 250ml |
+| Tzatziki | Lun–Sáb colAM | 400ml |
+| Betabel asado | Mar cena, Jue cena | ATM: 60+80=**140g** · IOB: 60+60=**120g** |
+| Cebolla encurtida | Toda la semana | 1 frasco grande |
+| Pepino marinado | Lun comida, Mié colAM, Jue cena, Dom comida | 1 frasco grande |
+| Huevos cocidos | Mié cena, más colaciones | 8 piezas |
+| Garbanzos cocidos | Dom desayuno | 200g cocidos |
 
-**1. Pollo sous vide coreano (para lunes comida)**
-- Pesar **600g de pechuga de pollo** (300g ATM + 200g IOB + 100g extra para caldo tlalpeño jueves)
-- Mezclar marinada: 40g gochujang · 20ml salsa de soya baja sodio · 15ml aceite de sésamo · 10g miel · 3 dientes de ajo rallado · 10g jengibre rallado · 5g azúcar morena
-- Bolsa al vacío o bolsa zip con toda la mezcla; masajear, sellar, refrigerar
-
-**2. Camarones al ajillo (para viernes comida — cocinar CRUDO el domingo)**
-- Pelar y desvenar **600g de camarón mediano** (200g ATM + 120g IOB + 200g 3er comensal + 80g extra)
-- Marinada: 6 dientes de ajo laminado · 30ml aceite de oliva · ralladura de 1 limón · 5g chile de árbol seco · sal · pimienta
-- Bolsa hermética, refrigerar. **Nota:** estos NO se cocinan el domingo — la cocción de 4 min ocurre el viernes al calentar.
-
-**3. Salmón para confitar (jueves cena + lunes cena)**
-- Porcionar **800g de filete de salmón** sin piel: 4 porciones de 200g
-  - Lunes cena: ATM 250g + IOB 120g = **370g** (congelar en crudo marinado)
-  - Jueves cena: ATM 250g + IOB 120g = **370g** (confitar el domingo)
-- Marinada común: 60ml aceite de oliva · ralladura + jugo de 1 limón · 3 ramas de tomillo · 2 dientes de ajo aplastados · sal kosher
-- Separar en dos bolsas; la porción del lunes al **congelador** hoy mismo; la porción del jueves al **refrigerador**
-
-**4. Remojo de leguminosas**
-- **Garbanzos secos 300g** → enjuagar y cubrir con agua fría 3× el volumen, refrigerar (para caldo tlalpeño jueves + shakshuka domingo)
-- **Frijoles negros secos 150g** → remojar igual (para torta martes + tlayuda domingo)
-
-**5. Bacalao desalado (para miércoles cena)**
-- Si usas bacalao salado: poner **500g** en tazón con agua fría, cambiar el agua cada 8h (sábado tarde + noche + domingo mañana)
-- Si usas bacalao fresco: omitir este paso
-
-**6. Huevos marinados en tamari (para lunes cena)**
-- Hervir **8 huevos** exactamente 7 minutos desde agua hirviendo; enfriar en baño de hielo 5 min; pelar
-- Marinada: 120ml tamari · 60ml mirin · 60ml agua · 1 cdita de azúcar
-- Calentar la marinada a fuego medio hasta disolver el azúcar; enfriar completamente antes de agregar los huevos
-- Sumergir los huevos en frasco hermético, refrigerar mínimo 8h (idealmente 24h)
+> **NOTA CRÍTICA sobre salmón:** Por seguridad alimentaria, el salmón cocido dura máximo 3–4 días refrigerado. Lunes y Miércoles = cocinar el domingo ✅. Jueves y Viernes = cocinar el miércoles en la noche (5 min) o congelar crudo marinado y descongelar 24h antes. Ver instrucciones en Turno 4.
 
 ---
 
-## DOMINGO 8 DE JUNIO — Sesión Principal de Meal Prep
+## 🗓️ SÁBADO 07 DE JUNIO — Tarde (30–45 min)
+
+**Objetivo:** Todo lo que necesita 24h+ de anticipación.
+
+### 📌 Marinados y Encurtidos (hacerlos en este orden)
+
+**[15:00] Cebolla morada encurtida en hibisco**
+- 2 cebollas moradas grandes → cortar en juliana fina con mandolina (2mm)
+- Brine: 200ml vinagre de arroz + 100ml agua + 15g sal + 10g azúcar + 2 flores de hibisco secas → calentar hasta disolver sal/azúcar, NO hervir
+- Verter caliente sobre la cebolla en frasco de vidrio de 500ml
+- Tapar y dejar enfriar 30 min a temperatura ambiente → refrigerar
+- ✅ Lista en 2h, óptima a las 24h
+
+**[15:05] Pepino marinado**
+- 2 pepinos medianos → cortar en rodajas diagonales de 3mm
+- Mezcla: 150ml vinagre de arroz + 10ml salsa de soya + 5ml aceite de sésamo + 5g azúcar + 5g sal + 1 cucharadita semillas de sésamo tostado
+- Mezclar pepino con sal y dejar sudar 10 min → exprimir suavemente → sumergir en mezcla de vinagre
+- Frasco hermético 400ml → refrigerar
+- ✅ Listo en 4h, óptimo a las 24h
+
+**[15:10] Marinado de filete de res para sous vide**
+- 1,900g filete de res (todos los cortes de la semana) → porcionar en medallones de 150–200g según uso ATM/IOB
+- Salpimentar generosamente con sal de mar gruesa y pimienta negra recién molida
+- Embolsar en bolsas zip o al vacío: separar bolsas por día/persona (ver Tabla de Contenedores)
+- Añadir a cada bolsa: 2 dientes ajo aplastado, 1 ramita tomillo, 5ml aceite de oliva
+- Refrigerar inmediatamente
+- ✅ El marinado seco en frío durante 12–24h mejora la corteza al dorar post sous vide
+
+**[15:20] Overnight oats ATM (para lunes)**
+- Frasco ATM-OAT-LUN: 50g avena + 150ml leche de avena + 60g proteína vainilla + 4g matcha ceremonial
+- Batir bien con tenedor hasta sin grumos de proteína → tapar → refrigerar
+- ✅ Listo para lunes AM
+
+**[15:25] Remojo lentejas negras**
+- 120g lentejas negras secas → enjuagar → cubrir con agua fría abundante en bowl con tapa → refrigerar
+- ✅ Se drenan y cocinan el domingo
+
+**[15:30] Remojo farro perlado**
+- 200g farro perlado seco → enjuagar → cubrir con agua fría → refrigerar
+- ✅ El remojo reduce el tiempo de cocción de 40 min a 20–25 min
+
+**[15:35] Preparar miso glaze para overnight oats**
+- 5g miso blanco + 8ml miel de agave + 3ml agua caliente → emulsionar en bowl pequeño hasta consistencia de jarabe → frasco de 30ml → refrigerar
+- ✅ Dura 7 días
+
+---
+
+## 🗓️ DOMINGO 07 DE JUNIO — Sesión Principal
 
 **Duración objetivo: 4.5–5 horas**
-**Cronograma sugerido: 9:00am – 2:00pm**
+**Recomendación:** Empezar a las 09:00, terminar a las 14:00–14:30
+
+### Pre-sesión: Mise en Place General (15 min antes de arrancar)
+
+Antes de encender cualquier quemador u horno:
+
+1. Sacar filete de res del refrigerador → atemperar a temperatura ambiente (mínimo 30 min antes del sous vide)
+2. Drenar y enjuagar lentejas negras del remojo
+3. Drenar y enjuagar farro perlado del remojo
+4. Poner a calentar el water bath del sous vide (o olla grande con termómetro) a **57°C** — este proceso tarda 20–30 min
+5. Organizar todos los contenedores etiquetados vacíos sobre la barra
+6. Imprimir o tener visible la lista de contenedores
 
 ---
 
-### TURNO 1 — 9:00am | Arrancar todo lo de largo tiempo
+### TURNO 1 — 09:00 · Arrancar Todo lo de Largo Tiempo
 
-**→ HORNO a 180°C (precalentar)**
+> **Objetivo:** Encender horno, arrancar sous vide, poner caldos y fermentados. Estos no requieren atención constante.
 
-| Quemador / Equipo | Tarea |
-|---|---|
-| **Olla grande (10L)** | Garbanzos + frijoles: escurrir remojo, poner a cocer por separado |
-| **Olla mediana** | Caldo base para doenjang jjigae (viernes cena) |
-| **Horno** | Pimientos rojos para asar (sábado desayuno + salsa vizcaína) |
-| **Sous vide / Olla baja** | Llenar con agua, subir a 65°C |
+**[09:00] HORNO → 200°C convección**
 
-**DETALLE POR ESTACIÓN:**
+**[09:02] Camotes al horno**
+- 6–7 camotes medianos (aprox. 1.5kg total) → lavar, secar, pinchar 8 veces con tenedor cada uno
+- Colocar directamente sobre la rejilla del horno (sin charola, para piel crujiente) con papel aluminio en el fondo del horno para goteos
+- Hornear **55–65 minutos** hasta que inserten un palillo sin resistencia y la piel esté arrugada
+- NO sacar aún — estarán listos al final del Turno 2
 
-**🫕 Olla 1 — Garbanzos** (quemador 1)
-- Escurrir garbanzos, cubrir con agua limpia fría, añadir 1 hoja de laurel y ½ cebolla
-- Llevar a hervor, reducir a fuego medio-bajo
-- **Tiempo estimado:** 60–75 min hasta que estén tiernos pero enteros
-- No salar hasta los últimos 10 min
+**[09:05] Betabel al horno**
+- 3–4 betabeles medianos → lavar, no pelar, envolver individualmente en papel aluminio con 3ml aceite de oliva y pizca de sal
+- Colocar en charola en la rejilla inferior del horno
+- Hornear **60–75 minutos** a 200°C hasta que un palillo entre sin resistencia
 
-**🫕 Olla 2 — Frijoles negros** (quemador 2)
-- Igual que garbanzos; añadir epazote si tienes
-- **Tiempo estimado:** 60–70 min
-- Reservar el caldo de cocción (sirve para el refrito)
+**[09:07] QUEMADOR 1 → Water bath sous vide**
+- Olla de 8L llena a 2/3 con agua → mantener a **57°C exactos** con termómetro digital (o usar circulador si se tiene)
+- Sumergir todas las bolsas de filete de res marinadas → asegurar que estén completamente sumergidas con un peso (plato pequeño)
+- Tiempo de sous vide: **mínimo 90 minutos, máximo 3 horas** — a 57°C no hay sobrecocción en ese rango
+- ⚠️ Verificar temperatura cada 20 min y ajustar quemador
 
-**🌡️ Sous vide** (quemador 3 o circulador eléctrico)
-- Agua a 65°C
-- Introducir la bolsa del pollo coreano marinado desde ayer
-- **Tiempo:** 1h 30min a exactamente 65°C
+**[09:10] QUEMADOR 2 → Caldo Dashi**
+- Olla mediana 3L: 1.2L agua fría + 30g kombu en trozo → llevar a **60°C** a fuego bajo-medio (NO hervir el kombu)
+- Mantener a 60°C por **30 minutos** → retirar kombu
+- Subir a fuego medio hasta casi hervir (90°C) → apagar → añadir 20g katsuobushi (bonito) → infusionar **5 minutos** sin hervir
+- Colar con malla fina → reservar en olla pequeña
+- Total tiempo: ~40 min → listo a las 09:50
 
-**🔥 Horno — Pimientos rojos**
-- Colocar 4 pimientos rojos enteros + 2 tomates enteros en charola con papel encerado
-- 180°C por 35–40 min hasta que la piel ampolla y se carbonice ligeramente
-- Sacar, cubrir con papel film 15 min para que suden → pelar fácil
+**[09:10 PARALELO] QUEMADOR 3 → Salsa verde tomatillo**
+- 600g tomatillos sin cáscara + 2 chiles serranos + 4 dientes ajo + 1/2 cebolla blanca → asar en comal o sartén de hierro a fuego alto
+- Voltear cuando estén negros en partes (5–7 min por lado) → los tomatillos deben reventar
+- Licuar con 1 manojo cilantro, sal, 100ml agua → velocidad alta 30 seg
+- Probar sal → reservar en contenedor
+- Total: ~20 min → listo a las 09:30
 
-**⏱️ MIENTRAS TODO ESTO ARRANCA (9:00–9:30am):**
-- Cocer los **8 huevos duros** para la semana: 8 min desde agua hirviendo, agua fría, pelar, refrigerar en recipiente con tapa
-- Poner a hervir **1.5L de agua** para blanquear verduras después
-- Sacar el salmón del refrigerador (el de jueves) para atemperar 20 min antes de confitar
-
----
-
-### TURNO 2 — 9:30am | Proteínas principales (batch completo)
-
-> El sous vide del pollo coreano sigue corriendo. Garbanzos y frijoles siguen.
-
-**HORNO: bajar a 60°C cuando terminen los pimientos (≈9:40am) → entrar el salmón**
-
-**🐟 Salmón confitado — HORNO 60°C** (solo para jueves; el de lunes va congelado crudo)
-- Sacar el salmón (370g: ATM 250g + IOB 120g) de su marinada
-- Porcionar en fuente de vidrio o cerámica; cubrir completamente con el aceite de oliva de la marinada + añadir más hasta sumergir
-- Introducir al horno a **60°C por 25–30 min**
-- El salmón estará listo cuando cambia de translúcido a opaco rosado pero aún se desmorona suave al tacto
-- Sacar, enfriar a temperatura ambiente 20 min, refrigerar en su aceite
-
-**🍗 Pollo para tikka masala (martes cena) + caldo tlalpeño (jueves) + teriyaki (domingo) + doenjang (viernes)**
-
-*Esta es la proteína que más trabaja la semana — batch grande*
-
-Necesitas en total:
-- Martes cena: ATM 250g + IOB 120g cocido = **~500g crudo**
-- Jueves comida (deshebrado): ATM 200g + IOB 120g cocido = **~400g crudo**
-- Viernes cena (en sopa): ATM 100g + IOB 50g = **~200g crudo**
-- Domingo comida (teriyaki): ATM 200g + IOB 120g = **~400g crudo**
-- **Total crudo necesario: ≈1,500g de pechuga**
-
-**División técnica:**
-1. **Tikka masala + tlalpeño + doenjang** → hervir/pochear en caldo aromático:
-   - Olla con 2L agua · ½ cebolla · 2 dientes ajo · sal · pimienta negra en grano · 1 zanahoria
-   - Llevar a 85°C (no a hervor pleno — técnica de pochado)
-   - Introducir **1,100g de pechuga** (para martes, jueves y viernes)
-   - Cocer 20–22 min a 85°C hasta temperatura interna 74°C
-   - Reservar el caldo (base del caldo tlalpeño y del doenjang jjigae)
-   - Enfriar y desmenuzar/rebanar según uso (ver Turno 4)
-
-2. **Teriyaki (domingo)** → saltear al final en sartén con salsa (Turno 3)
-
-**🥩 Res molida para tacos (martes comida)**
-- Quemador libre: sartén de hierro a fuego alto
-- Dorar **600g de res molida 93%** (ATM 200g × 2 porciones martes + ATM 200g + IOB 120g = total: ATM necesita 200g, IOB 120g, 3er comensal 200g = **520g mínimo, hacer 600g**)
-- Dorar sin mover 3 min, romper, salpimentar
-- Añadir: 1 cdita comino tostado · ½ cdita chile guajillo en polvo · ½ cdita achiote · ½ cdita ajo en polvo · ½ cdita orégano
-- Mezclar 2 min; escurrir grasa sobre colador; probar y ajustar sal
-- Enfriar completamente antes de refrigerar
-
-**🥩 Res para kabsa (sábado comida)**
-- Mismo sartén de hierro: sellar **440g de filete de res magro** (ATM 200g + IOB 120g = 320g mínimo; hacer 440g)
-- Sellar a fuego muy alto: 3 min/lado para sellar; no debe cocer completamente
-- Transferir a olla pequeña; añadir: ½ cdita canela · ¼ cdita clavo molido · ¼ cdita cardamomo · ½ cdita pimienta negra · ½ cdita comino (mezcla baharat) · 200ml caldo de res o agua
-- Cocinar tapado a fuego bajo 25–30 min hasta tierno; el jugo reducirá en salsa daqqus (ver Turno 3)
-
-**🐟 Atún sellado (miércoles comida)**
-- Sartén de hierro muy caliente a fuego máximo
-- Secar perfectamente el atún con papel (ATM 200g + IOB 120g + 3er comensal 200g = **520g de atún**, idealmente en 2–3 bloques)
-- Cubrir los bloques con sésamo negro presionando
-- Sellar **exactamente 30 segundos por lado** (incluye los 4 lados)
-- El interior debe quedar completamente crudo — rosado oscuro brillante
-- Enfriar sobre rejilla; NO sobre papel que crea vapor y continúa la cocción
-- Refrigerar descubierto 15 min, luego envolver en film apretado
-
-> ⚠️ **NOTA CRÍTICA:** El atún sellado pierde calidad después de 2 días. Cocinar el domingo, consumir el miércoles = día 3. Aceptable. Si prefieres máxima calidad, puedes sellar el martes por la noche (2 min de trabajo activo).
-
-**🦐 Camarones** — NO cocinar hoy. Ya están marinados en crudo desde ayer. Dejar en refrigerador hasta el viernes.
+**[09:12 PARALELO] QUEMADOR 4 → Lentejas negras**
+- Olla mediana: lentejas drenadas + agua fría al doble de volumen + 1 hoja laurel + 1/2 cebolla + 3 dientes ajo + 5g sal
+- Hervir, reducir a fuego bajo → cocinar **25–30 minutos** hasta tiernas pero enteras
+- Drenar, retirar laurel y cebolla → reservar
+- Total: ~35 min → listas a las 09:45
 
 ---
 
-### TURNO 3 — 11:00am | Granos, salsas, verduras y preparaciones de apoyo
+**[09:30] REVISIÓN RÁPIDA:**
+- ✅ Salsa verde lista → enfriar, contenedor, refrigerador
+- ✅ Dashi: verificar temperatura (debería estar en fase kombu)
+- ✅ Sous vide: verificar temperatura
+- ✅ Camotes y betabel: en horno, no tocar
 
-> El salmón ya salió del horno. El sous vide del pollo termina ≈10:30am (sacarlo, enfriar, no abrir la bolsa hasta que baje a temperatura ambiente). Los garbanzos y frijoles deberían estar listos o casi.
+**[09:35] Arroz jazmín — primera tanda (QUEMADOR 3 libre)**
+- 320g arroz jazmín → enjuagar 3 veces hasta agua clara → drenar
+- Olla de 2L: arroz + 500ml agua + 2 hojas kaffir lime + 1 trozo jengibre fresco (3cm) + 5g sal
+- Hervir → reducir al mínimo → tapar hermético → **18 minutos sin abrir**
+- Apagar → reposar tapado **10 minutos**
+- Retirar kaffir y jengibre → esponjar con tenedor → enfriar extendido en charola
+- Total: ~30 min → listo a las 10:05
 
-**ORGANIZACIÓN DE ESTE BLOQUE: 4 estaciones simultáneas**
-
----
-
-**ESTACIÓN A — Horno a 200°C | Hornear tandas**
-
-**Tanda 1 — Entrar al horno:**
-- **Camote / papa amarilla** para la causa del viernes: 300g papa amarilla + camotes opcionales, en charola a 200°C por 35–40 min hasta suaves al pinchar
-- **Jitomates cherry confitados** (sábado colación AM): 160g jitomate cherry + 20ml AOVE + tomillo + sal; charola pequeña a 160°C (bajar temperatura) 45 min → sacar cuando estén arrugados y concentrados
-
-**Tanda 2** (cuando salen los anteriores, ≈11:40am):
-- **Nopales asados**: limpiar y cortar en tiras 240g (80g ATM dom + 80g IOB dom + extra para desayunos); asar a 200°C 20 min con sal y aceite mínimo
-
----
-
-**ESTACIÓN B — Quemadores | Granos (todos de una vez)**
-
-*Usar todas las ollas disponibles en paralelo:*
-
-| Olla | Grano | Agua | Tiempo | Total a cocer |
-|---|---|---|---|---|
-| **Olla A** | Arroz jazmín | 1:1.5 agua | 18 min | 600g crudo → ~1,200g cocido |
-| **Olla B** | Arroz basmati | 1:1.5 agua | 15 min con 3 vainas cardamomo | 400g crudo → ~800g cocido |
-| **Olla C** | Arroz integral | 1:2 agua | 40 min | 400g crudo → ~800g cocido |
-| **Olla D** | Quinoa tricolor | 1:1.75 caldo verduras | 15 min | 300g crudo → ~600g cocido |
-| **Olla E (pequeña)** | Farro perlado | 1:3 agua con laurel | 25 min | 200g crudo → ~450g cocido |
-
-> 💡 Estrategia: Arrancar arroz integral primero (40 min), luego el resto. Jazmín y basmati en los últimos 20 min.
-
-**Pasta integral:** cocer **400g** al dente en agua con sal abundante (10L agua, 10g sal por litro); escurrir al 80% cocción, pasar por agua fría, mezclar con 15ml AOVE para que no pegue. Porcionar.
-
-**Noodles de arroz (lunes cena):** hidratar **225g** en agua caliente 8 min, escurrir, mezclar con gotitas de aceite de sésamo.
+**[09:40] Farro perlado (QUEMADOR 4 libre)**
+- Farro drenado del remojo → olla mediana con 600ml agua + 5g sal + 5ml aceite de oliva
+- Hervir → reducir a fuego medio-bajo → **20–25 minutos** hasta al dente (debe tener ligero bite)
+- Drenar → extender en charola para enfriar
+- Total: ~30 min → listo a las 10:10
 
 ---
 
-**ESTACIÓN C — Licuadora / Procesador | Salsas (todas de una vez)**
+### TURNO 2 — 10:00 · Proteínas Principales
 
-Hacer en este orden (de más delicada a más robusta para no limpiar entre cada una):
+> **Objetivo:** Confitar pollo y pavo (el mayor volumen), limpiar y porcionar salmón.
 
-**1. Glaseado miso-jengibre** (miércoles comida) — sin cocción
-- Mezclar: 40g miso blanco · 20ml mirin · 15ml salsa de soya baja sodio · 10g jengibre rallado · 5g azúcar · 15ml agua caliente para soltar
-- Batir con tenedor hasta homogéneo. Frasco pequeño.
+**[10:00] HORNO: Verificar camotes y betabel**
+- Pinchar con palillo → si sale limpio y sin resistencia, retirar betabel (puede estar listo)
+- Camotes: posiblemente necesiten 10–15 min más
 
-**2. Salsa gochujang-miel** (lunes comida) — sin cocción
-- 40g gochujang · 20ml vinagre de arroz · 15g miel · 10ml aceite de sésamo · 5g ajo rallado · 5g jengibre rallado · 20ml agua
-- Batir hasta integrado. Frasco pequeño.
+**[10:00] QUEMADOR 1 → Sous vide: verificar temperatura**
+- Debe seguir a 57°C → ajustar si necesario
+- Los filetes llevan 50 min → necesitan 40 min más mínimo
 
-**3. Chermoula** (viernes comida) — sin cocción
-- Procesar: 1 manojo cilantro · 1 manojo perejil · 4 dientes ajo · 1 cdita comino tostado · 1 cdita pimentón · ½ cdita cúrcuma · jugo de 1 limón · 80ml AOVE · sal
-- Procesar hasta pasta gruesa. No licuar fino — textura rústica.
+**[10:05] HORNO: Incorporar charola de confitado**
+- Reducir temperatura del horno a **130°C** (después de sacar o desplazar los camotes si ya están)
+- **Cacerola/roaster grande para pollo confitado:**
+  - 1,930g pechuga de pollo (ATM + IOB + 3er semana completa) → cubrir completamente con aceite de oliva (aprox. 400–500ml — se recupera después)
+  - Añadir: 8 dientes ajo aplastado, 6 ramitas tomillo fresco, 2 ramitas romero, 1 cucharadita pimienta negra entera, 2 hojas laurel, ralladura de 1 limón, 15g sal fina
+  - El aceite debe cubrir el pollo completamente — si no alcanza, completar con aceite de girasol
+  - Cubrir herméticamente con tapa o papel aluminio doble
+  - Hornear a **130°C por 90 minutos** → temperatura interna objetivo: **68–70°C**
 
-**4. Salsa verde de tomatillo** (martes comida + domingo colación AM)
-- Asar 400g tomatillo + 2 chiles serranos + ½ cebolla en comal seco hasta carbonizar
-- Licuar con 1 diente ajo · sal · cilantro al gusto
-- Hervir la salsa 5 min en olla pequeña; enfriar
+- **Cacerola mediana para pavo confitado:**
+  - 1,500g pechuga de pavo → mismo proceso: cubrir con aceite, ajo, tomillo, sal
+  - Cubrir herméticamente
+  - Hornear a **130°C por 75–80 minutos** → temperatura interna: **68°C**
 
-**5. Tzatziki** (jueves cena) — sin cocción
-- Rallar ½ pepino, exprimir exceso de agua con paño
-- Mezclar: 200g yogurt griego · pepino rallado · 1 diente ajo rallado · 10ml AOVE · hojas de menta picada · sal · pimienta
-- Refrigerar inmediatamente
+> ⚠️ NOTA: Si el horno no tiene capacidad para ambas cacerolas simultáneamente, el pavo entra primero (75 min) y el pollo después, o usar la rejilla superior/inferior con cacerolas de perfil bajo.
 
-**6. Salsa vizcaína** (miércoles cena) — cocción corta
-- Usar los pimientos asados y pelados del Turno 1
-- Sofreír ½ cebolla + 3 dientes ajo en AOVE; añadir 400g jitomate san marzano machacado + pimientos en tiras + 1 cdita pimentón ahumado + 20g aceitunas kalamata picadas
-- Cocinar 20 min a fuego medio; salpimentar; enfriar
+**[10:10] QUEMADOR 2 → Frijoles negros (Quemador 4 liberado)**
+- 200g frijoles negros secos previamente remojados (si no, usar enlatados y omitir este paso) → cocinar en olla con agua + ajo + laurel + sal **35–45 min**
+- Si son enlatados: drenar, enjuagar, calentar con ajo y laurel 10 min → reservar
 
-**7. Salsa tikka masala** (martes cena)
-- En la misma olla donde estaba la vizcaína (o una nueva): sofreír ½ cebolla + 4 dientes ajo + 20g jengibre en AOVE
-- Añadir: 1 cdita garam masala · 1 cdita cúrcuma · 1 cdita comino · ½ cdita coriandro
-- Tostar especias 1 min; añadir 400g jitomate triturado + 150g yogurt griego batido (añadir fuera del fuego para evitar corte) + 100ml agua
-- Cocinar 15 min; licuar parcialmente (textura semidensa); regresar al fuego 5 min; enfriar
+> Si se usan enlatados (recomendado para ahorrar tiempo): 2 latas de 400g → proceder directamente en el Turno 3
 
-**8. Salsa daqqus** (sábado comida)
-- Con los jugos de la cocción de la res + 200g jitomate bola asado + 1 chile de árbol + sal + comino
-- Licuar todo junto; colar si se desea más fina; reducir 5 min
+**[10:15] PARALELO: Preparar salmón para las diferentes cenas**
 
-**9. Salsa teriyaki** (domingo comida)
-- 60ml tamari · 40ml mirin · 20ml sake (o vino blanco) · 10g azúcar · 5g jengibre rallado
-- Reducir en sartén pequeña 8 min hasta que nape la cuchara; reservar
+División estratégica del salmón (1,710g total):
+- **Lunes y Miércoles** (cocinar hoy): ATM 250g+250g=500g / IOB 120g+120g=240g → **740g al vapor hoy**
+- **Jueves y Viernes** (cocinar miércoles noche): marinar crudo y refrigerar → **ATM 250g+250g=500g / IOB 120g+120g=240g → 740g → marinar en bolsa, refrigerar hasta miércoles**
+- **Domingo** (cocinar hoy, es el mismo día): ATM 150g / IOB 80g → **230g al vapor hoy**
 
-**10. Salsa vierge** (jueves cena) — sin cocción
-- 150g jitomate bola en brunoise · 20 hojas albahaca en chiffonade · 15g alcaparras · 60ml AOVE · jugo de ½ limón · sal · pimienta
-- Mezclar en frío. No cocinar.
+**Porcionado y marinado del salmón:**
+1. Porcionar los 1,710g en los grupos anteriores
+2. **740g para Jue/Vie:** colocar en bolsa zip con 20ml limón, 5ml aceite de oliva, eneldo, pizca sal → refrigerar (se cocinarán el miércoles en la noche en 8 min)
+3. **970g para hoy (Lun + Mié + Dom):** preparar para vapor
 
----
+**[10:25] QUEMADOR 3 → Vaporera para salmón**
+- Vaporera de 2 niveles: llenar base con 500ml agua + 1 limón partido + 1 tallo lemongrass aplastado
+- Nivel 1 (porciones más gruesas — Lun ATM 250g): sazonar con sal, pimienta, rodajas de limón encima
+- Nivel 2 (porciones más delgadas — Lun IOB 120g, Dom ATM 150g, Dom IOB 80g): misma sazón
+- Mié ATM 250g y Mié IOB 120g: en segunda tanda
+- Vapor a fuego alto hasta hervir → reducir a medio → **8–10 minutos** para porciones de 2.5cm de grosor, **6–7 min** para delgadas
+- Temperatura interna objetivo: **52°C** (rosado en el centro, confitado suave)
+- Retirar → enfriar en plato limpio → refrigerar sin apilar
 
-**ESTACIÓN D — Quemador libre | Verduras y guarniciones**
-
-**Blanquear en el mismo agua (de menor a mayor tiempo):**
-1. **Edamame pelado** 240g → 3 min agua hirviendo, agua fría
-2. **Ejotes** 120g → 4 min agua hirviendo, agua fría
-3. **Bok choy** 200g → 2 min agua hirviendo, agua fría
-4. **Espárragos** 600g (para toda la semana: lunes cena 214g + martes cena 234g + miércoles cena 234g + jueves cena 234g + viernes cena 214g) → 3 min agua hirviendo, agua fría; cortar puntas
-
-**Saltear en sartén antiadherente:**
-- **Espinacas** 360g con ajo laminado y aceite de oliva → 2 min hasta marchitar; escurrir bien
-- **Champiñones shiitake** 160g con soya y gotitas de sésamo → 4 min a fuego alto
-- **Zanahoria juliana/bastones** para bibimbap (lunes): 120g + gotitas aceite sésamo + sal · 2 min en sartén
-- **Poro caramelizado** (jueves): 2 poros limpios en rodajas → sartén a fuego bajo con 10ml AOVE + sal + 5g azúcar → 20–25 min removiendo hasta dorado
-
-**Encurtidos rápidos:**
-- **Cebolla morada**: 200g en juliana fina · cubrir con 100ml vinagre de manzana + 100ml agua + 10g sal + 10g azúcar + 5g orégano · dejar reposar 30 min mínimo; refrigerar
-- **Daikon encurtido** (para miércoles): 100g daikon en juliana + 50ml vinagre de arroz + 5g azúcar + 5g sal · mismo procedimiento
-- **Pepino marinado** (para jueves smørrebrød): 80g pepino en láminas + 40ml vinagre blanco + 5g sal + 3g eneldo seco
-
-**Gelatina light:**
-- Preparar 6 moldes de 480ml (lunes, martes, miércoles, jueves, viernes, sábado — cada uno ATM + IOB)
-- Usar sabores distintos o neutro con fruta natural; seguir instrucciones del paquete
-- Refrigerar mínimo 3h antes del primer uso (lunes cena)
+**[10:35] Salmón primera tanda lista → enfriar**
+**[10:40] Segunda tanda de salmón (Mié) → vaporera 8 min**
 
 ---
 
-**ESTACIÓN E — Preparaciones finales puntuales**
+**[10:45] REVISIÓN:**
+- ✅ Pollo en horno (lleva 45 min, necesita 45 más)
+- ✅ Pavo en horno (lleva 35 min, necesita 40 más)
+- ✅ Sous vide: llevan 95 min → ya están listos técnicamente, pueden seguir hasta las 12:00
+- ✅ Arroz: listo, enfriar en charola
+- ✅ Farro: listo, enfriar en charola
+- ✅ Camotes: revisar → si listos, sacar y enfriar
+- ✅ Betabel: si listo, sacar, enfriar, pelar
 
-**Pechuga de pavo para toda la semana:**
-- El pavo recorre toda la semana en colaciones AM: lunes, martes, miércoles, jueves, viernes, sábado, domingo
-- ATM: 200g × 7 días = **1,400g de pechuga de pavo**
-- IOB: 50–55g ×` };
+---
+
+### TURNO 3 — 11:00 · Salsas, Verduras y Componentes Finales
+
+**[11:00] QUEMADOR 2 → Chermoula verde**
+- Procesador: 1 manojo cilantro + 1 manojo perejil (solo hojas) + 4 dientes ajo + 1 cucharadita comino tostado + 1 cucharadita pimentón dulce + 1/2 cucharadita comino molido + jugo 2 limones + 80ml aceite de oliva + 1/2 cucharadita sal
+- Procesar en pulsos hasta textura de salsa espesa pero con trozos (NO licuar a pasta lisa)
+- Probar y ajustar sal/limón → frasco hermético 250ml → refrigerar
+
+**[11:05] QUEMADOR 3 → Tzatziki ligero (no requiere fuego — preparar en fría)**
+- 500g yogurt griego 0% → colar en malla fina sobre bowl 20 min para espesar
+- 2 pepinos medianos → rallar grueso, salar, escurrir en malla 10 min, exprimir con manos
+- Mezclar: yogurt espeso + pepino exprimido + 3 dientes ajo rallado fino + 20g eneldo fresco picado + jugo 1/2 limón + 10ml aceite de oliva + sal y pimienta
+- Frasco hermético 400ml → refrigerar
+- ✅ Dura 5 días refrigerado
+
+**[11:10] QUEMADOR 1 → Salsa jitomate San Marzano**
+- Sartén profunda: 15ml aceite de oliva → sofreír 4 dientes ajo laminados a fuego medio hasta dorados (2 min)
+- Añadir 800g tomates San Marzano (1 lata) aplastados con la mano → 5 ramas albahaca fresca
+- Reducir 25 min a fuego medio-bajo removiendo ocasionalmente hasta espesa
+- Triturar con batidora de mano → colar → salpimentar
+- Esta base servirá para **tinga (Vie)** y **salsa de jitomate general**
+
+**[11:10] PARALELO — QUEMADOR 4 → Camarones**
+- 300g camarones limpios (sin cáscara, desvenados) → caldo ajo-limón: 300ml agua + 4 dientes ajo + jugo 1 lim` };
 const SHOP_KEY   = 'ns_20260605';
 const RATING_KEY = 'nr_20260605';
 
