@@ -89,7 +89,7 @@ Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)""
         # Match only top-level day section headers (single # at start of line,
         # followed by the day name as a standalone word — not inside a table cell)
         day_re = re.compile(
-            r'^## (?:📅\s*)?(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)',
+            r'^#{1,2} [^a-zA-Z\n]{0,10}(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)',
             re.MULTILINE | re.IGNORECASE,
         )
         matches = list(day_re.finditer(menu_content))

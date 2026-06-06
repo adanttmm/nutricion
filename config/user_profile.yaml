@@ -1,0 +1,52 @@
+# Perfil del usuario - Actualiza según sea necesario
+name: "Adan"
+
+persons:
+  ATM:
+    full_name: "Adán"
+    age: 40
+    sex: "male"
+    height_cm: 187
+    weight_kg: 96
+    goal: "pérdida de grasa"
+    notes: "Plan de nutriólogo del 2016 (ganancia muscular) ya no aplica. Usar metas calculadas."
+  IOB:
+    goal: "pérdida de grasa"
+
+household:
+  primary_adults: 2
+  extra_lunch_person: true
+  extra_lunch_days: ["martes", "miércoles", "viernes"]
+
+cooking:
+  skill_level: "avanzado"
+  style: "gourmet"
+  cuisines: "todas"  # mediterránea, asiática, mexicana contemporánea, francesa, japonesa, peruana, árabe, etc.
+  meal_prep: true
+  meal_prep_day: "domingo"
+
+activity:
+  wake_time: "06:00"
+  sleep_time: "23:00"
+  gym:
+    days_per_week: 3
+    days: ["lunes", "miércoles", "viernes"]
+  trekking_minutes_daily: 45
+  salsa_dancing:
+    days_per_week: 2
+    days: ["martes", "jueves"]
+
+cheat_meal:
+  per_week: 1
+  preferred_day: "sábado"
+  preferred_time: "cena"
+
+shopping:
+  primary_store: "Costco"
+  primary_locations:
+    - "Costco Interlomas"
+    - "Costco Santa Fe"
+  secondary_store: "City Market"
+  secondary_locations:
+    - "City Market Santa Fe"
+  city: "Ciudad de México"
