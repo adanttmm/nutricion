@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plan de Composición Corporal - Fase 1</title>
+  <title>Plan Nutricional — 05/06/2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -46,8 +46,8 @@
 <header class="bg-white shadow-sm sticky top-0 z-20">
   <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
     <div>
-      <div class="font-bold text-green-700 text-base">🥗 Plan de Composición Corporal - Fase 1</div>
-      <p class="text-xs text-gray-400">Dr./Lic. [Nombre del Nutriólogo]</p>
+      <div class="font-bold text-green-700 text-base">🥗 Plan Nutricional — 05/06/2026</div>
+      
     </div>
     <span class="text-xs text-gray-400 shrink-0 ml-3">05 de June de 2026</span>
   </div>
@@ -123,618 +123,515 @@
 </main>
 
 <script>
-const PERSONS  = [{"name": "", "goal": "Pérdida de grasa corporal manteniendo masa muscular", "calories": 2200, "protein_g": 165, "carbs_g": 220, "fat_g": 73, "derived": false}];
+const PERSONS  = [{"name": "ATM", "goal": "ganancia muscular", "calories": 3371.0, "protein_g": 319.6, "carbs_g": 296.4, "fat_g": 101.6, "derived": false}, {"name": "IOB", "goal": "pérdida de grasa", "calories": 1397.5, "protein_g": 109.4, "carbs_g": 147.3, "fat_g": 38.2, "derived": false}];
 const TRACKING = {"weekly": [], "weight_history": [], "today": {"date": "2026-06-05", "meals": [], "totals": {"calories": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0}, "goals": null}};
-const DAYS     = [{"key": "lunes", "short": "Lun", "name": "# 🗓️ LUNES 08 DE JUNIO", "menu": "# 🗓️ LUNES 08 DE JUNIO\n### *Gym day ATM +150 kcal · Gastronomía: Japonesa / Nórdica / Mediterránea*\n\n---\n\n### 🌅 Desayuno 🏪 🇯🇵\n**Tamagoyaki de Claras con Salmón Curado en Casa, Arroz Integral Gohan, Semillas de Sésamo Negro y Salsa Miso-Jengibre**\n*Tortilla enrollada japonesa de clara de huevo rellena de salmón curado al eneldo, servida sobre arroz integral aderezado con vinagre de arroz, germinados y emulsión miso-jengibre prep'd en el meal prep*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **452 · 36g · 44g · 14g** | **448 · 34g · 45g · 14g** |\n| Salmón curado 🏪 | 80g | 75g |\n| Claras de huevo | 200g (≈6 claras) | 180g (≈5.5 claras) |\n| Arroz basmati integral cocido 🏪 | 130g | 135g |\n| Emulsión miso-jengibre 🏪 | 20g | 20g |\n| Semillas de sésamo negro | 5g | 5g |\n| Aceite de oliva EVOO (para enrollar) | 5g | 5g |\n\n---\n\n### 🍎 Colación AM\n**Tazón de Melón Cantaloupe con Yogurt Griego, Almendras Laminadas y Ralladura de Lima**\n*Frescura melonera equilibrada con proteína láctea y grasa saludable*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **202 · 16g · 21g · 6g** | **200 · 15g · 21g · 6g** |\n| Yogurt griego natural (0% o 2%) | 150g | 140g |\n| Melón cantaloupe | 200g | 200g |\n| Almendras laminadas | 10g | 10g |\n\n---\n\n### 🍽️ Comida 🇲🇽\n**Tostada Gourmet de Pollo Confitado en Harissa, Frijoles Bayos Cremosos, Aguacate Oaxaqueño y Salsa de Chile Morita Ahumada**\n*Tortilla de maíz nixtamalizado tostada al horno, base de frijoles bayos triturados al momento, pollo confitado en harissa desmenuzado, aguacate laminado, chile morita ahumado*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **648 · 51g · 63g · 20g** | **651 · 50g · 65g · 20g** |\n| Pollo confitado harissa 🏪 | 160g | 150g |\n| Frijoles bayos cocidos 🏪 | 120g | 125g |\n| Tortilla de maíz nixtamalizado (2 pzas) | 50g | 50g |\n| Aguacate fresco | 60g | 60g |\n| Salsa chile morita 🏪 | 30g | 30g |\n| Queso cottage (aporta cremosidad) | 40g | 40g |\n\n---\n\n### 🌿 Colación PM *(pre-entreno ATM — gym day +150 kcal)*\n**Plátano Macho Asado con Yogurt Griego y Mantequilla de Almendra Natural**\n*Carbohidratos de carga rápida con proteína moderada ideal pre-workout*\n\n| | 🧔 ATM (+150) | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **348 · 21g · 47g · 8g** | **200 · 20g · 15g · 6g** |\n| Plátano maduro | 120g | 80g |\n| Yogurt griego natural | 150g | 120g |\n| Mantequilla de almendra natural | 15g | 8g |\n\n> *ATM consume porción ampliada para cubrir +150 kcal gym*\n\n---\n\n### 🌙 Cena 🏪 🇲🇪\n**Cuenco Nórdico de Camote Asado, Pollo Harissa Desmenuzado, Espinaca Baby, Pepitas Tostadas y Vinagreta de Limón-Cúrcuma**\n*Base de camote asado en el meal prep, proteína reutilizada del confitado, verdura fresca de ensamblaje inmediato*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **500 · 40g · 40g · 16g** | **501 · 40g · 41g · 16g** |\n| Camote asado 🏪 | 160g | 160g |\n| Pollo confitado harissa 🏪 | 140g | 140g |\n| Espinaca baby fresca | 60g | 60g |\n| Semillas de calabaza tostadas 🏪 | 15g | 15g |\n| Vinagreta limón-cúrcuma 🏪 | 20g | 20g |\n| Aceite de oliva EVOO | 5g | 5g |\n\n---\n**🧔 ATM TOTAL LUNES: 2 350 kcal · P 164g · C 215g · G 64g** ✅ *(gym +150)*\n**👤 IOB TOTAL LUNES: 2 200 kcal · P 159g · C 187g · G 62g** ✅\n\n---\n---", "recipes": "# 🗓️ LUNES 08 DE JUNIO\n\n---\n\n### Tamagoyaki de Claras con Salmón Curado, Arroz Integral Gohan y Emulsión Miso-Jengibre\n\n**Tiempo:** prep 5 min · cocción 8 min | **Porciones:** 2 (ATM 80g salmón / IOB 75g salmón)\n**Macros por porción — ATM:** 452 kcal · P 36g · C 44g · G 14g\n**Macros por porción — IOB:** 448 kcal · P 34g · C 45g · G 14g\n\n**Ingredientes**\n- Claras de huevo — ATM 200g / IOB 180g\n- Salmón curado (gravlax) 🏪 — ATM 80g / IOB 75g\n- Arroz basmati integral cocido 🏪 — ATM 130g / IOB 135g\n- Emulsión miso-jengibre 🏪 — 20g c/u\n- Semillas de sésamo negro — 5g c/u\n- Aceite de oliva EVOO — 5g c/u\n- Germinados frescos (opcional, para servir)\n\n**Mise en place** *(preparado el domingo)*\n- Salmón curado listo → ver → [Base: Salmón Curado (Gravlax)](#base-salmón)\n- Arroz basmati integral cocido y refrigerado\n- Emulsión miso-jengibre en frasco hermético → ver → [Base: Emulsión Miso-Tahini-Jengibre](#base-miso)\n\n**Elaboración**\n1. Templar el arroz del refrigerador: rociar unas gotas de agua, cubrir con film, microondas 90 seg a 70% potencia. Aflojar con tenedor, reservar caliente.\n2. Calentar tamagoyaki pan (o sartén antiadherente rectangular) a fuego medio. Pincelar con aceite de oliva — cantidad mínima, solo para lubricar.\n3. Verter ¼ de las claras formando capa delgada uniforme. En cuanto los bordes pierdan traslucidez (≈45 seg), colocar tiras de salmón curado laminado sobre el primer tercio.\n4. Enrollar firmemente con espátula o palillos, empujando hacia el extremo. Pincelar sartén, verter otro ¼ de claras bajo el rollo ya formado. Repetir enrollado. Mínimo 3 capas para obtener la sección circular característica.\n5. Transferir a esterilla de bambú o papel encerado, presionar suavemente para fijar forma cilíndrica. Reposar 1 min antes de cortar en medallones de 2 cm.\n6. Servir sobre el arroz aderezado con unas gotas de vinagre de arroz (si disponible) y semillas de sésamo negro. Disponer medallones en abanico. Salsa miso-jengibre en recipiente lateral o trazada con cuchara.\n\n**Emplatado**\nMedallones de tamagoyaki en abanico sobre cama de arroz; sésamo negro esparcido; germinados al centro como altura; emulsión miso en puntos o quenelle lateral.\n\n**Tip del chef**\nLas claras puras no ligan igual que el huevo entero. Para evitar que el rollo se rasgue, añade ½ cucharadita de katakuriko (fécula de papa) o maicena disuelta en las claras antes de cocinar — mejora la elasticidad sin alterar el macro de forma significativa.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=tamagoyaki+de+claras+con+salmon+curado) · [English version](https://www.youtube.com/results?search_query=how+to+make+tamagoyaki+egg+roll+smoked+salmon)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+gourmet+tamagoyaki+claras+salmon+curado+miso)\n\n---\n\n### Tazón de Melón Cantaloupe con Yogurt Griego, Almendras Laminadas y Ralladura de Lima\n\n**Tiempo:** prep 5 min · cocción 0 min | **Porciones:** 2\n**Macros por porción — ATM:** 202 kcal · P 16g · C 21g · G 6g\n**Macros por porción — IOB:** 200 kcal · P 15g · C 21g · G 6g\n\n**Ingredientes**\n- Yogurt griego natural — ATM 150g / IOB 140g\n- Melón cantaloupe en cubos medianos — 200g c/u\n- Almendras laminadas — 10g c/u\n- Ralladura de lima fresca — al gusto\n- Menta fresca opcional\n\n**Elaboración**\n1. Tostar almendras laminadas en sartén seca a fuego medio-bajo, moviendo constantemente hasta dorado uniforme (≈2 min). Enfriar sobre papel absorbente.\n2. Rallar lima directamente sobre el yogurt frío para capturar aceites esenciales de la cáscara.\n3. Ensamblar: yogurt como base, melón encima, almendras tostadas al momento de servir para mantener el crujiente.\n\n**Tip del chef**\nEl melón cantaloupe de temporada no necesita azúcar adicional, pero si el yogurt resulta demasiado ácido, una gota de miel de agave (≈3g) añade solo 10 kcal y equilibra la percepción sensorial sin alterar los macros significativamente.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=bowl+melon+yogurt+griego+almendras) · [English version](https://www.youtube.com/results?search_query=cantaloupe+greek+yogurt+bowl+healthy)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+tazon+melon+cantaloupe+yogurt+griego+almendras+lima)\n\n---\n\n### Tostada Gourmet de Pollo Confitado en Harissa, Frijoles Bayos Cremosos, Aguacate Oaxaqueño y Salsa de Chile Morita Ahumada\n\n**Tiempo:** prep 8 min · cocción 5 min | **Porciones:** 2 (ATM 160g pollo / IOB 150g pollo)\n**Macros por porción — ATM:** 648 kcal · P 51g · C 63g · G 20g\n**Macros por porción — IOB:** 651 kcal · P 50g · C 65g · G 20g\n\n**Ingredientes**\n- Pollo confitado harissa 🏪 — ATM 160g / IOB 150g\n- Frijoles bayos cocidos 🏪 — ATM 120g / IOB 125g\n- Tortilla de maíz nixtamalizado (2 pzas) — 50g c/u\n- Aguacate fresco — 60g c/u\n- Salsa chile morita 🏪 — 30g c/u\n- Queso cottage — 40g c/u\n\n**Mise en place** *(preparado el domingo)*\n- Pollo confitado en harissa desmenuzado y refrigerado → ver → [Base: Pollo Confitado en Harissa](#base-pollo-harissa)\n- Frijoles bayos cocidos, triturados grueso o enteros → ver → [Base: Frijoles Bayos](#base-frijoles)\n- Salsa chile morita → ver → [Base: Salsa Chile Morita](#base-morita)\n\n**Elaboración**\n1. Tostar tortillas directamente sobre flama de gas o en comal muy caliente (sin aceite) hasta obtener rigidez y manchas carbonizadas uniformes. Deben quedar crujientes al centro, no solo en los bordes.\n2. Calentar frijoles bayos en sartén a fuego medio; si están enteros, triturar parcialmente con aplastador dejando textura rústica. Incorporar queso cottage y mezclar fuera del fuego — la proteína del cottage emulsiona la crema sin grasa adicional.\n3. Calentar pollo confitado en sartén seca 2 min, no más — ya está confitado, solo se busca temperatura y ligera caramelización superficial del harissa.\n4. Montar en orden: frijoles → aguacate laminado en abanico → pollo → salsa morita en hilo. Servir de inmediato para preservar crujiente de la tostada.\n\n**Emplatado**\nDos tostadas por persona en ángulo sobre plato plano; aguacate laminado en abanico simétrico; pollo centrado; línea de salsa morita desde el centro hacia el borde; microgreens o cilantro como toque de altura.\n\n**Tip del chef**\nEl queso cottage como sustituto de crema en frijoles es técnicamente una emulsión proteica en frío. Si los frijoles están muy secos, agrega 2 cucharadas del caldo de cocción (no agua) para mantener la untuosidad sin perder el sabor mineral de la legumbre.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=tostada+pollo+confitado+harissa+frijoles+bayos) · [English version](https://www.youtube.com/results?search_query=harissa+chicken+tostada+black+beans+avocado)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+gourmet+tostada+pollo+confitado+harissa+frijoles+chile+morita)\n\n---\n\n### Plátano Macho Asado con Yogurt Griego y Mantequilla de Almendra Natural *(Colación PM — ATM pre-entreno)*\n\n**Tiempo:** prep 2 min · cocción 6 min | **Porciones:** 2 (porción ATM ampliada / IOB reducida)\n**Macros por porción — ATM:** 348 kcal · P 21g · C 47g · G 8g\n**Macros por porción — IOB:** 200 kcal · P 20g · C 15g · G 6g\n\n**Ingredientes**\n- Plátano maduro — ATM 120g / IOB 80g\n- Yogurt griego natural — ATM 150g / IOB 120g\n- Mantequilla de almendra natural — ATM 15g / IOB 8g\n\n**Elaboración**\n1. Comal o sartén antiadherente a fuego alto sin grasa. Plátano en rodajas de 1.5 cm de sesgo. Dorar 2–3 min por lado hasta Maillard visible y centro blando al presionar.\n2. Servir caliente sobre yogurt frío — el contraste de temperatura es parte de la experiencia sensorial pre-entreno.\n3. Mantequilla de almendra en hilo justo antes de consumir.\n\n> *ATM consume porción ampliada para cubrir +150 kcal gym day*\n\n**Tip del chef**\nPara Maillard óptimo en plátano sin grasa, el plátano debe estar maduro (piel con manchas negras) — el azúcar propio es el agente caramelizante. Si el plátano está verde, el resultado será harinoso y sin dulzor.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=platano+asado+yogurt+griego+mantequilla+almendra) · [English version](https://www.youtube.com/results?search_query=caramelized+banana+greek+yogurt+almond+butter+snack)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+platano+maduro+asado+yogurt+griego+pre+entreno)\n\n---\n\n### Cuenco Nórdico de Camote Asado, Pollo Harissa Desmenuzado, Espinaca Baby, Pepitas Tostadas y Vinagreta de Limón-Cúrcuma\n\n**Tiempo:** prep 5 min · cocción 3 min (solo recalentado) | **Porciones:** 2\n**Macros por porción — ATM:** 500 kcal · P 40g · C 40g · G 16g\n**Macros por porción — IOB:** 501 kcal · P 40g · C 41g · G 16g\n\n**Ingredientes**\n- Camote asado 🏪 — 160g c/u\n- Pollo confitado harissa 🏪 — 140g c/u\n- Espinaca baby fresca — 60g c/u\n- Semillas de calabaza tostadas 🏪 — 15g c/u\n- Vinagreta limón-cúrcuma 🏪 — 20g c/u\n- Aceite de oliva EVOO — 5g c/u\n\n**Mise en place** *(preparado el domingo)*\n- Camote asado en gajos con cáscara → ver → [Base: Camote Naranja Asado](#base-camote)\n- Pollo confitado harissa desmenuzado → ver → [Base: Pollo Confitado en Harissa](#base-pollo-harissa)\n- Vinagreta limón-cúrcuma emulsionada en frasco → ver → [Base: Vinagreta Limón-Cúrcuma](#base-vinagreta)\n\n**Elaboración**\n1. Recalentar camote y pollo juntos en sartén con el aceite de oliva a fuego medio-alto, 2–3 min. Objetivo: temperatura de servicio (≥65°C) y reactivación del harissa caramelizado en la superficie del pollo.\n2. En bowl frío, colocar espinaca baby como base — absorberá el calor residual del camote sin cocerse.\n3. Disponer camote y pollo calientes sobre la espinaca. Verter vinagreta en hilo mientras aún está caliente el cuenco para que emulsione ligeramente con los jugos.\n4. Pepitas al final, nunca antes de servir — el vapor las ablanda.\n\n**Emplatado**\nBowl profundo: espinaca como lecho, camote y pollo en volumen central, pepitas en cascada desde la cima, hilo de vinagreta en espiral. Limón rallado sobre todo al final.\n\n**Conservación**\nCamote y pollo en recipiente hermético separado de la espinaca. Refrigerado hasta 4 días. Ensamblar siempre en frío/caliente al momento.\n\n**Tip del chef**\nLa vinagreta de cúrcuma mancha permanentemente recipientes plásticos. Usar siempre vidrio o acero para almacenar. Para una emulsión estable, batir la cúrcuma con el ácido (limón) antes de añadir el aceite — invierte el orden habitual.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=bowl+nordico+camote+asado+pollo+harissa+pepitas) · [English version](https://www.youtube.com/results?search_query=nordic+sweet+potato+bowl+harissa+chicken+pepitas)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+cuenco+nordico+camote+pollo+harissa+vinagreta+curcuma)\n\n---\n---"}, {"key": "martes", "short": "Mar", "name": "# 🗓️ MARTES 09 DE JUNIO", "menu": "# 🗓️ MARTES 09 DE JUNIO\n### *Salsa day ambos +100 kcal · 3er comensal en comida · Gastronomía: Árabe / Persa / Mediterránea*\n\n---\n\n### 🌅 Desayuno 🏪 🇮🇷\n**Ash-e-Reshteh Ligero: Caldo de Lentejas Beluga con Pavo Desmenuzado, Espinaca, Cúrcuma Fresca y Yogurt Griego Ácido**\n*Sopa persa reconfortante en versión ligera, lista en 3 min de calentado; yogurt se añade frío al servir*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **451 · 36g · 46g · 14g** | **450 · 35g · 46g · 14g** |\n| Lentejas beluga cocidas 🏪 | 120g | 120g |\n| Pavo braseado desmenuzado 🏪 | 100g | 95g |\n| Espinaca baby fresca | 50g | 50g |\n| Yogurt griego (terminar al servir) | 60g | 60g |\n| Pan integral tostado (acompañamiento) | 40g (1 rebanada) | 40g |\n| Aceite de oliva EVOO + cúrcuma | 8g | 8g |\n\n---\n\n### 🍎 Colación AM\n**Durazno Fresco con Queso Cottage, Semillas de Linaza Dorada y Canela de Ceilán**\n*Colación verano con fruta de temporada, proteína láctea y omega-3 de linaza*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **199 · 16g · 19g · 6g** | **200 · 15g · 20g · 6g** |\n| Durazno fresco | 150g | 150g |\n| Queso cottage | 120g | 110g |\n| Semillas de linaza dorada | 8g | 8g |\n\n---\n\n### 🍽️ Comida *(3er comensal — misma porción ATM)* 🇱🇧\n**Kofta Mesahat: Albóndigas de Res Magra en Salsa Matbucha con Garbanzos, Arroz Basmati Integral con Hierbas y Tahini Dorado**\n*Koftas precocidas del meal prep en salsa de jitomate-pimiento-especias árabes, servido sobre arroz con perejil; tahini dorado al calentado*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **652 · 51g · 64g · 20g** | **648 · 49g · 65g · 20g** |\n| Koftas de res magra 🏪 | 180g | 165g |\n| Salsa matbucha 🏪 | 80g | 80g |\n| Garbanzos cocidos 🏪 | 60g | 60g |\n| Arroz basmati integral cocido 🏪 | 140g | 145g |\n| Tahini natural | 15g | 15g |\n| Perejil fresco picado | 10g | 10g |\n\n> *3er comensal: misma porción que ATM (180g kofta, 140g arroz, etc.)*\n\n---\n\n### 🌿 Colación PM *(salsa day +100 kcal ambos)*\n**Tostada Integral con Mantequilla de Cacahuate Natural, Miel de Agave y Rodajas de Plátano**\n*Snack energético pre-salsa: carbohidratos de carga + grasa saludable*\n\n| | 🧔 ATM (+100) | 👤 IOB (+100) |\n|---|---|---|\n| **kcal · P · C · G** | **300 · 20g · 36g · 8g** | **300 · 20g · 36g · 8g** |\n| Pan integral 100% (1.5 rebanadas) | 52g | 52g |\n| Mantequilla de cacahuate natural | 20g | 20g |\n| Plátano | 80g | 80g |\n| Yogurt griego (complemento proteico) | 60g | 60g |\n\n---\n\n### 🌙 Cena 🏪 🇲🇦\n**Brocheta Fría de Pavo con Quinoa al Limón, Pepino Persa, Menta Fresca y Aderezo de Yogurt-Harissa**\n*Cena fresca y ligera; componentes del meal prep ensamblados en frío*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **498 · 40g · 39g · 16g** | **500 · 40g · 40g · 16g** |\n| Pavo braseado laminado 🏪 | 140g | 140g |\n| Quinoa tri-color cocida 🏪 | 120g | 125g |\n| Pepino persa fresco | 100g | 100g |\n| Yogurt griego | 60g | 60g |\n| Aceite de oliva EVOO | 8g | 8g |\n| Menta fresca | 5g | 5g |\n\n---\n**🧔 ATM TOTAL MARTES: 2 300 kcal · P 163g · C 204g · G 64g** ✅ *(salsa +100)*\n**👤 IOB TOTAL MARTES: 2 298 kcal · P 159g · C 207g · G 64g** ✅\n\n---\n---", "recipes": "# 🗓️ MARTES 09 DE JUNIO\n\n---\n\n### Ash-e-Reshteh Ligero: Caldo de Lentejas Beluga con Pavo Desmenuzado, Espinaca, Cúrcuma Fresca y Yogurt Griego Ácido\n\n**Tiempo:** prep 3 min · cocción 5 min (calentado) | **Porciones:** 2\n**Macros por porción — ATM:** 451 kcal · P 36g · C 46g · G 14g\n**Macros por porción — IOB:** 450 kcal · P 35g · C 46g · G 14g\n\n**Ingredientes**\n- Lentejas beluga cocidas 🏪 — 120g c/u\n- Pavo braseado desmenuzado 🏪 — ATM 100g / IOB 95g\n- Espinaca baby fresca — 50g c/u\n- Yogurt griego natural — 60g c/u\n- Pan integral tostado — 40g c/u\n- Aceite de oliva EVOO + cúrcuma fresca rallada — 8g c/u\n- Caldo de verduras 🏪 — 200 ml por porción\n\n**Mise en place** *(preparado el domingo)*\n- Lentejas beluga cocidas con laurel + cúrcuma → ver → [Base: Lentejas Beluga](#base-lentejas)\n- Pavo braseado desmenuzado → ver → [Base: Pavo Braseado](#base-pavo)\n- Caldo de verduras → ver → [Base: Caldo de Verduras](#base-caldo)\n\n**Elaboración**\n1. Calentar caldo de verduras en cacerola a fuego medio hasta 85°C (primer hervor suave, no burbujeo agresivo).\n2. Incorporar lentejas y pavo desmenuzado. Mantener 3 min sin hervir fuerte — se busca temperatura, no sobre-cocción de la proteína ya braseada.\n3. Fuera del fuego: añadir espinaca baby. El calor residual del caldo la marchita en 30 seg sin perder color verde brillante.\n4. Rectificar con aceite de oliva y cúrcuma fresca rallada directo al plato — la cúrcuma fresca tiene perfil más floral y menos amargo que la molida.\n5. Yogurt griego frío en quenelle lateral o cucharada al centro. Nunca integrar al caldo caliente — se corta y pierde la textura ácida contrastante que define el ash-e-reshteh.\n6. Pan integral tostado aparte para no ablandarse en la sopa.\n\n**Emplatado**\nBowl hondo; sopa con espinaca visible; quenelle de yogurt al centro ligeramente hundido; hilo de aceite verde sobre el yogurt; ralladura de cúrcuma fresca en cantidad generosa.\n\n**Tip del chef**\nEl ash-e-reshteh persa original lleva kashk (suero de leche curado, muy ácido). El yogurt griego es el sustituto más cercano disponible. Para aproximar el perfil ácido del kashk, añade ½ cucharadita de jugo de limón directamente al yogurt antes de servir.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=ash+reshteh+sopa+persa+lentejas+version+ligera) · [English version](https://www.youtube.com/results?search_query=ash+reshteh+persian+lentil+soup+light+version)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+ash+e+reshteh+persa+lentejas+beluga+pavo+yogurt)\n\n---\n\n### Durazno Fresco con Queso Cottage, Semillas de Linaza Dorada y Canela de Ceilán\n\n**Tiempo:** prep 5 min · cocción 0 min | **Porciones:** 2\n**Macros por porción — ATM:** 199 kcal · P 16g · C 19g · G 6g\n**Macros por porción — IOB:** 200 kcal · P 15g · C 20g · G 6g\n\n**Ingredientes**\n- Durazno fresco maduro — 150g c/u\n- Queso cottage — ATM 120g / IOB 110g\n- Semillas de linaza dorada — 8g c/u\n- Canela de Ceilán molida — al gusto (≈1g)\n\n**Elaboración**\n1. Durazno en gajos de 8 partes, sin pelar si la piel está en buen estado — aporta fibra y el contraste de textura aterciopelada/ácida con el cottage.\n2. Linaza dorada: moler al momento en molinillo de especias si se tiene — la linaza entera pasa sin digestión. Si ya está molida, usar de inmediato antes de que oxide.\n3. Montar cottage frío, gajos de durazno encima, linaza y canela espolvoreadas al momento.\n\n**Tip del chef**\nLa canela de Ceilán (true cinnamon) tiene perfil suave y floral. La canela cassia (la más común en México) es más intensa y con notas de clavo — si usas cassia, reducir a la mitad de la cantidad para no enmascarar el durazno.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=colacion+durazno+queso+cottage+linaza) · [English version](https://www.youtube.com/results?search_query=peach+cottage+cheese+flaxseed+snack)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+durazno+fresco+queso+cottage+linaza+canela+ceilan)\n\n---\n\n### Kofta Mesahat: Albóndigas de Res Magra en Salsa Matbucha con Garbanzos, Arroz Basmati Integral con Hierbas y Tahini Dorado\n\n**Tiempo:** prep 8 min · cocción 12 min | **Porciones:** 3 (3er comensal = porción ATM)\n**Macros por porción — ATM/3er comensal:** 652 kcal · P 51g · C 64g · G 20g\n**Macros por porción — IOB:** 648 kcal · P 49g · C 65g · G 20g\n\n**Ingredientes** *(para 3 porciones — 2 ATM + 1 IOB)*\n- Koftas de res magra preformadas 🏪 — ATM/3er 180g c/u · IOB 165g\n- Salsa matbucha 🏪 — 80g por porción\n- Garbanzos cocidos 🏪 — 60g por porción\n- Arroz basmati integral cocido 🏪 — ATM/3er 140g · IOB 145g\n- Tahini natural — 15g por porción\n- Perejil fresco picado — 10g por porción\n\n**Mise en place** *(preparado el domingo)*\n- Koftas preformadas refrigeradas → ver → [Base: Koftas de Res Magra](#base-kofta)\n- Salsa matbucha (romesco árabe) → ver → [Base: Salsa Matbucha](#base-matbucha)\n- Garbanzos cocidos en caldo especiado → ver → [Base: Garbanzos](#base-garbanzos)\n\n**Elaboración**\n1. Sartén o plancha de hierro a fuego alto. Sin aceite — la res 90/10 libera suficiente grasa. Sellar koftas 2 min por lado (4 lados si son cilíndricas) hasta costra oscura. Temperatura interna objetivo: 70°C.\n2. Bajar a fuego medio, agregar salsa matbucha y garbanzos directamente en la sartén. Cubrir y dejar reducir 4–5 min. La salsa debe burbujear suavemente y adherirse a las koftas (no quedar líquida).\n3. Mientras tanto, calentar arroz con unas gotas de agua cubierto. Incorporar perejil picado fuera del fuego — el calor residual del arroz lo marchita ligeramente sin oxidarlo.\n4. Tahini dorado: calentar una cucharada de tahini en microondas 20 seg o en sartén pequeña a fuego bajo 1 min hasta que burbujee levemente y tome color ámbar — este paso cambia radicalmente el perfil de nuez.\n\n**Emplatado**\nArroz en base con forma de media luna usando molde o cuchara. Koftas (3–4 pzas) apoyadas contra el arroz. Salsa matbucha cubriendo parcialmente las koftas. Tahini dorado en hilo sobre todo. Perejil fresco encima.\n\n**Conservación**\nKoftas sin sellar, crudas refrigeradas hasta 3 días. Ya selladas + salsa, hasta 4 días. Recalentar en sartén tapada con 2 cucharadas de agua.\n\n**Tip del chef**\nPara koftas que no se desbaraten en la sartén, la mezcla de res molida debe trabajarse en frío (directo del refrigerador) y no más de 2 min — el calor de las manos derrite la grasa intramuscular que actúa como aglutinante. Formar cilindros tensos y refrigerar 30 min antes de cocinar.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=kofta+res+salsa+matbucha+garbanzos+arroz+integral) · [English version](https://www.youtube.com/results?search_query=kofta+meatballs+matbucha+sauce+chickpeas+tahini)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+kofta+mesahat+res+salsa+matbucha+garbanzos+tahini+dorado)\n\n---\n\n### Tostada Integral con Mantequilla de Cacahuate, Miel de Agave y Rodajas de Plátano *(Colación PM — Salsa day ambos)*\n\n**Tiempo:** prep 5 min · cocción 2 min | **Porciones:** 2 (misma porción ATM e IOB)\n**Macros por porción:** 300 kcal · P 20g · C 36g · G 8g\n\n**Ingredientes**\n- Pan integral 100% — 52g c/u (≈1.5 rebanadas)\n- Mantequilla de cacahuate natural — 20g c/u\n- Plátano maduro en rodajas — 80g c/u\n- Yogurt griego (complemento proteico) — 60g c/u\n- Miel de agave — opcional, 3g\n\n**Elaboración**\n1. Tostar pan hasta Maillard pronunciado — el crujiente es funcional: retrasa la absorción de la mantequilla de cacahuate en el pan.\n2. Mantequilla de cacahuate directamente del frasco frío — no calentar, mantener la textura densa que contrasta con el plátano blando.\n3. Plátano en rodajas de sesgo (45°) — mayor superficie de sabor por bocado.\n4. Yogurt en recipiente aparte o como dip lateral.\n\n**Tip del chef**\nLa mantequilla de cacahuate natural (solo cacahuate + sal) tiende a separarse. Almacenar invertida en el refrigerador — el aceite queda abajo y no es necesario revolver cada vez.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=tostada+integral+mantequilla+cacahuate+platano+pre+salsa) · [English version](https://www.youtube.com/results?search_query=peanut+butter+banana+toast+pre+workout+snack)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+tostada+integral+mantequilla+cacahuate+platano+miel+agave)\n\n---\n\n### Brocheta Fría de Pavo con Quinoa al Limón, Pepino Persa, Menta Fresca y Aderezo de Yogurt-Harissa\n\n**Tiempo:** prep 8 min · cocción 0 min (ensamblaje frío) | **Porciones:** 2\n**Macros por porción — ATM:** 498 kcal · P 40g · C 39g · G 16g\n**Macros por porción — IOB:** 500 kcal · P 40g · C 40g · G 16g\n\n**Ingredientes**\n- Pavo braseado laminado 🏪 — 140g c/u\n- Quinoa tri-color cocida 🏪 — ATM 120g / IOB 125g\n- Pepino persa fresco — 100g c/u\n- Yogurt griego — 60g c/u\n- Aceite de oliva EVOO — 8g c/u\n- Menta fresca — 5g c/u\n- Harissa (integrar al yogurt) — 5g c/u\n- Limón (jugo) — ½ pza\n\n**Mise en place** *(preparado el domingo)*\n- Pavo braseado laminado → ver → [Base: Pavo Braseado](#base-pavo)\n- Quinoa tri-color cocida en caldo de verduras → ver → [Base: Quinoa Tri-Color](#base-quinoa)\n\n**Elaboración**\n1. Aderezo yogurt-harissa: mezclar yogurt + harissa + jugo de limón + aceite de oliva. Emulsionar con tenedor hasta homogéneo. La harissa no debe \"flotar\" — debe integrarse completamente. Ajustar picante.\n2. Quinoa fría: añadir unas gotas de limón y sal antes de servir para \"despertar\" el sabor tras la refrigeración. Los granos fríos absorben líquido — si está compacta, aflojar con tenedor y una cucharadita de agua fría.\n3. Pepino en medias lunas de 3mm — corte fino favorece la textura delicada junto al pavo suave.\n4. Pavo laminado frío, directamente del refrigerador — la temperatura fría es intencional en este ensamblaje.\n5. En el palillo/brocheta: intercalar láminas de pavo dobladas + pepino. Usar como elemento visual, no estructural.\n\n**Emplatado**\nBase de quinoa al limón extendida en plato hondo. Brochetas de pavo-pepino cruzadas en el centro. Aderezo yogurt-harissa en manchas irregulares. Menta fresca rasgada (no picada) encima — el rasgado libera más aceites esenciales.\n\n**Tip del chef**\nEl pavo braseado frío tiene tendencia a ressecarse en los bordes al laminar. Para contrarrestarlo, rociar las láminas con una pizca de aceite de oliva y cubrirlas inmediatamente tras laminar — forman una barrera lípida que retiene humedad sin añadir sabor invasivo.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=ensalada+pavo+quinoa+limon+menta+aderezo+yogurt+harissa) · [English version](https://www.youtube.com/results?search_query=cold+turkey+quinoa+bowl+harissa+yogurt+dressing)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+brocheta+fria+pavo+quinoa+limon+pepino+menta+harissa)\n\n---\n---"}, {"key": "miercoles", "short": "Mié", "name": "# 🗓️ MIÉRCOLES 10 DE JUNIO", "menu": "# 🗓️ MIÉRCOLES 10 DE JUNIO\n### *Gym day ATM +150 kcal · 3er comensal en comida · Gastronomía: Japonesa / Mediterránea / Francesa*\n\n---\n\n### 🌅 Desayuno 🏪 🇯🇵\n**Chawan-Mushi Ligero: Flan Salado de Huevo al Vapor con Dashi, Champiñones Shiitake, Edamame y Tiras de Pavo**\n*Flan japonés al vapor preparado el domingo en moldes individuales; recalentado en baño María 3 min o microondas tapado*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **450 · 37g · 44g · 14g** | **449 · 36g · 44g · 14g** |\n| Huevo entero | 2 pzas (100g) | 2 pzas (100g) |\n| Clara de huevo adicional | 60g (2 claras) | 50g |\n| Dashi base 🏪 | 120 ml | 120 ml |\n| Pavo desmenuzado 🏪 | 80g | 75g |\n| Shiitake hidratado 🏪 | 40g | 40g |\n| Arroz basmati integral 🏪 (gohan lateral) | 110g | 115g |\n| Edamame cocido 🏪 | 40g | 40g |\n\n---\n\n### 🍎 Colación AM\n**Bowl de Papaya con Yogurt Griego, Semillas de Chía Hidratadas y Jugo de Limón Verde**\n*Colación tropical con enzimas digestivas de papaya y omega-3 de chía*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **201 · 15g · 22g · 6g** | **199 · 15g · 21g · 6g** |\n| Papaya fresca | 200g | 200g |\n| Yogurt griego natural | 130g | 125g |\n| Semillas de chía hidratadas | 10g | 10g |\n\n---\n\n### 🍽️ Comida *(3er comensal — misma porción ATM)* 🇫🇷🌿\n**Salade Niçoise Contemporánea: Pollo Confitado en Harissa, Quinoa Tri-Color, Ejotes Blanqueados, Jitomate Heirloom, Huevo Duro y Vinagreta Dijon-Estragón**\n*Reinterpretación de la clásica niçoise con pollo como proteína, quinoa como base de grano y vinagreta dijon preparada el domingo*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **650 · 52g · 63g · 21g** | **647 · 50g · 64g · 21g** |\n| Pollo confitado harissa 🏪 | 160g | 150g |\n| Quinoa tri-color 🏪 | 130g | 135g |\n| Huevo duro 🏪 | 1 pza (50g) | 1 pza (50g) |\n| Ejotes blanqueados 🏪 | 80g | 80g |\n| Jitomate heirloom fresco | 100g | 100g |\n| Vinagreta dijon-estragón 🏪 | 20g | 20g |\n| Aceitunas kalamata (4-5 pzas) | 20g | 20g |\n\n> *3er comensal: misma porción ATM*\n\n---\n\n### 🌿 Colación PM *(pre-entreno ATM — gym day +150 kcal)*\n**Batido Express: Avena Integral, Frutos Rojos Congelados, Yogurt Griego y Mantequilla de Almendra**\n*Licuado sin cocción: avena cruda fina + proteína láctea + fructosa natural pre-workout*\n\n| | 🧔 ATM (+150) | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **349 · 22g · 46g · 8g** | **201 · 20g · 16g · 6g** |\n| Avena integral (cruda fina) | 60g | 30g |\n| Frutos rojos congelados | 120g | 80g |\n| Yogurt griego natural | 150g | 100g |\n| Mantequilla de almendra natural | 10g | 8g |\n\n---\n\n### 🌙 Cena 🏪 🇪🇸\n**Pisto Manchego con Huevo Escalfado al Momento, Garbanzos Especiados y Pan Integral Tostado**\n*Ratatouille española con pimiento, calabaza y jitomate reducidos el domingo; huevo es el único elemento al momento*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **500 · 41g · 40g · 16g** | **504 · 40g · 41g · 16g** |\n| Pisto manchego 🏪 | 200g | 200g |\n| Garbanzos especiados 🏪 | 80g | 80g |\n| Huevo entero (escalfado al momento) | 2 pzas | 2 pzas |\n| Pan integral 100% | 40g (1 rebana) | 40g |\n| Aceite de oliva EVOO | 8g | 8g |\n\n---\n**🧔 ATM TOTAL MIÉRCOLES: 2 350 kcal · P 167g · C 215g · G 65g** ✅ *(gym +150)*\n**👤 IOB TOTAL MIÉRCOLES: 2 200 kcal · P 161g · C 186g · G 63g** ✅\n\n---\n---", "recipes": "# 🗓️ MIÉRCOLES 10 DE JUNIO\n\n---\n\n### Chawan-Mushi Ligero: Flan Salado de Huevo al Vapor con Dashi, Shiitake, Edamame y Tiras de Pavo\n\n**Tiempo:** prep 3 min · cocción 3 min (recalentado) | **Porciones:** 2\n**Macros por porción — ATM:** 450 kcal · P 37g · C 44g · G 14g\n**Macros por porción — IOB:** 449 kcal · P 36g · C 44g · G 14g\n\n> *Este platillo se prepara completamente el domingo y se recalienta el miércoles.*\n\n**Ingredientes** *(preparación del domingo)*\n- Huevo entero — 2 pzas c/u (100g)\n- Clara adicional — ATM 60g / IOB 50g\n- Dashi base 🏪 — 120 ml c/u\n- Pavo desmenuzado 🏪 — ATM 80g / IOB 75g\n- Shiitake hidratado 🏪 — 40g c/u\n- Arroz basmati integral 🏪 (gohan lateral) — ATM 110g / IOB 115g\n- Edamame cocido 🏪 — 40g c/u\n- Mirin — 5 ml · Tamari — 5 ml · Sal — pizca\n\n**Mise en place** *(preparado el domingo — instrucciones de producción)*\n- Dashi casero → ver → [Base: Dashi Casero](#base-dashi)\n\n**Elaboración del domingo (producción del chawan-mushi)**\n1. Preparar custard base: batir huevos + claras suavemente con chopsticks o tenedor — NO con batidora. El objetivo es romper la estructura del huevo sin incorporar aire (las burbujas crean textura porosa, no sedosa). Colar la mezcla por tamiz fino.\n2. Incorporar dashi tibio (40°C), mirin y tamari a la mezcla de huevo colada. Proporción clave: **1 parte huevo : 2.5 partes dashi** para textura sedosa. Mezclar con movimientos lentos y circulares.\n3. Distribuir pavo desmenuzado, shiitake y edamame en los moldes individuales (tazas de porcelana o ramekins). Verter el custard por encima con colador para eliminar cualquier burbuja residual. Cubrir con film o tapa de aluminio.\n4. Vapor a 85°C — temperatura crítica. A 100°C el flan se esponja y pierde la textura espejo característica. Si no tienes termómetro de vapor: flama media-baja con tapa ligeramente abierta (insertar un palillo en la junta) para que escape vapor y regule temperatura. Cocinar 12–15 min hasta que el centro tiemble ligeramente como gelatina al mover.\n5. Enfriar completamente, refrigerar en molde hasta 3 días.\n\n**Recalentado del miércoles**\nBaño María 3 min a fuego bajo, o microondas tapado a 50% potencia 2.5 min. Verificar que el centro haya alcanzado temperatura (no debe estar frío al centro).\n\n**Emplatado**\nServir en el molde propio (es parte de la presentación japonesa). Arroz gohan en cuenco lateral. Unas gotas de tamari sobre el chawan-mushi al momento de servir. Cebollín o mitsuba si disponible.\n\n**Tip del chef**\nLa prueba de punto perfecto del chawan-mushi: insertar un palillo en el centro — debe salir limpio pero el flan debe oscilar como un flan de postre. Si el palillo sale con líquido, faltan 2 min. Si no oscila nada, está sobre-cocido (pero aún comestible si no burbujea).\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=chawan+mushi+flan+japones+vapor+dashi) · [English version](https://www.youtube.com/results?search_query=chawanmushi+japanese+steamed+egg+custard+dashi)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+chawan+mushi+flan+salado+japones+dashi+shiitake+pavo)\n\n---\n\n### Bowl de Papaya con Yogurt Griego, Semillas de Chía Hidratadas y Jugo de Limón Verde\n\n**Tiempo:** prep 5 min + 15 min hidratación chía | **Porciones:** 2\n**Macros por porción — ATM:** 201 kcal · P 15g · C 22g · G 6g\n**Macros por porción — IOB:** 199 kcal · P 15g · C 21g · G 6g\n\n**Ingredientes**\n- Papaya fresca madura — 200g c/u\n- Yogurt griego natural — ATM 130g / IOB 125g\n- Semillas de chía hidratadas — 10g c/u (hidratar desde la noche anterior en 50 ml agua)\n- Jugo de limón verde — ½ pza\n\n**Elaboración**\n1. Chía hidratada desde la noche anterior: 10g chía + 50 ml agua. Refrigerar en frasco. Al servir tendrá consistencia de gel suave.\n2. Papaya sin semillas, en cubos medianos. Rociar con limón verde inmediatamente para prevenir oxidación.\n3. Ensamblar: yogurt → chía gel → papaya → más jugo de limón encima.\n\n**Tip del chef**\nLas semillas de papaya son comestibles y tienen perfil picante similar a la pimienta negra. Guardar 5–6 semillas, secar y usar como condimento molido — curiosidad gastronómica de costo cero.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=bowl+papaya+yogurt+griego+chia+limon) · [English version](https://www.youtube.com/results?search_query=papaya+greek+yogurt+chia+seeds+bowl)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+bowl+papaya+yogurt+griego+chia+hidratada+limon+verde)\n\n---\n\n### Salade Niçoise Contemporánea: Pollo Confitado en Harissa, Quinoa Tri-Color, Ejotes Blanqueados, Jitomate Heirloom, Huevo Duro y Vinagreta Dijon-Estragón\n\n**Tiempo:** prep 8 min · cocción 0 min (ensamblaje) | **Porciones:** 3 (3er comensal = porción ATM)\n**Macros por porción — ATM/3er comensal:** 650 kcal · P 52g · C 63g · G 21g\n**Macros por porción — IOB:** 647 kcal · P 50g · C 64g · G 21g\n\n**Ingredientes** *(para 3 porciones)*\n- Pollo confitado harissa 🏪 — ATM/3er 160g · IOB 150g\n- Quinoa tri-color 🏪 — ATM/3er 130g · IOB 135g\n- Huevo duro 🏪 — 1 pza por porción\n- Ejotes blanqueados 🏪 — 80g por porción\n- Jitomate heirloom fresco — 100g por porción\n- Vinagreta dijon-estragón 🏪 — 20g por porción\n- Aceitunas kalamata — 20g por porción (4–5 pzas)\n\n**Mise en place** *(preparado el domingo)*\n- Pollo confitado harissa → ver → [Base: Pollo Confitado en Harissa](#base-pollo-harissa)\n- Quinoa tri-color → ver → [Base: Quinoa Tri-Color](#base-quinoa)\n- Ejotes blanqueados: agua hirviendo salada, 3 min exactos, shock en agua helada, secar completamente. Refrigerar hasta 4 días.\n- Huevo duro: agua desde frío, llevar a ebullición, bajar a hervor suave, exactamente 10 min para yema cocida pero no verde. Shock en agua helada, pelar en frío.\n- Vinagreta dijon-estragón → ver → [Base: Vinagreta Dijon-Estragón](#base-vinagreta-dijon)\n\n**Elaboración**\n1. La niçoise es una ensalada compuesta — cada elemento tiene su espacio en el plato, no se mezclan. Esto es técnicamente importante: los sabores se descubren bite por bite.\n2. Quinoa como base extendida (no en montículo).\n3. Distribuir en \"zonas\" sobre la quinoa: pollo desmenuzado tibio (recalentar 2 min), ejotes en manojo, jitomate en cuartos irregulares (no cuadros — la irregularidad retiene más vinagreta), aceitunas agrupadas, huevo en cuartos.\n4. Vinagreta al momento de servir, en hilo sobre todos los elementos. Nunca antes — los ejotes y el jitomate sueltan agua al contacto con ácido.\n\n**Emplatado**\nPlato llano amplio. Quinoa extendida como lienzo. Elementos en zonas definidas pero sin rigidez geométrica — la niçoise tiene carácter provenzal relajado. Estragón fresco picado fino encima si disponible.\n\n**Tip del chef**\nEl estragón fresco es volátil — su perfil anisado se pierde rápido al calor. Siempre añadir a la vinagreta en frío y al final, nunca al inicio del proceso. Si solo tienes estragón seco, usar ¼ de la cantidad del fresco.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=salade+nicoise+contemporanea+pollo+harissa+quinoa) · [English version](https://www.youtube.com/results?search_query=contemporary+nicoise+salad+chicken+quinoa+dijon+tarragon)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+salade+nicoise+contemporanea+pollo+confitado+harissa+quinoa+vinagreta+dijon+estragón)\n\n---\n\n### Batido Express: Avena Integral, Frutos Rojos Congelados, Yogurt Griego y Mantequilla de Almendra *(Colación PM — ATM pre-entreno)*\n\n**Tiempo:** prep 5 min · cocción 0 min | **Porciones:** 2 (porción ATM ampliada / IOB reducida)\n**Macros por porción — ATM:** 349 kcal · P 22g · C 46g · G 8g\n**Macros por porción — IOB:** 201 kcal · P 20g · C 16g · G 6g\n\n**Ingredientes**\n- Avena integral cruda fina — ATM 60g / IOB 30g\n- Frutos rojos congelados — ATM 120g / IOB 80g\n- Yogurt griego natural — ATM 150g / IOB 100g\n- Mantequilla de almendra natural — ATM 10g / IOB 8g\n\n**Elaboración**\n1. Licuar todos los ingredientes en frío, sin agua adicional — el yogurt aporta líquido suficiente. Si la consistencia es demasiado espesa, agregar 30 ml de agua fría (no leche — no está en el plan de macros).\n2. Frutos rojos congelados directamente del congelador — no descongelar. Mantienen el batido frío y crean textura cremosa al licuar.\n3. Avena cruda fina se licúa completamente en 30 segundos de alta potencia. No es necesario hidratarla antes.\n4. Consumir inmediatamente — la avena licuada absorbe el líquido y espesa en ≈10 min.\n\n**Tip del chef**\nPara batidos con avena cruda, el orden de licuado importa: avena sola 15 seg primero, luego agregar resto de ingredientes. Esto evita que trozos de avena queden enteros al fondo.\n\n---\n🎥 **Video tutorial:** [Buscar en YouTube ES](https://www.youtube.com/results?search_query=batido+avena+frutos+rojos+yogurt+almendra+pre+entreno) · [English version](https://www.youtube.com/results?search_query=oat+berry+greek+yogurt+almond+butter+smoothie+pre+workout)\n📖 **Receta de referencia:** [Buscar en Google](https://www.google.com/search?q=receta+batido+avena+integral+frutos+rojos+yogurt+griego+mantequilla+almendra)\n\n---\n\n### Pisto Manchego con Huevo Escalfado, Garbanzos Especiados"}, {"key": "jueves", "short": "Jue", "name": "# 🗓️ JUEVES 11 DE JUNIO", "menu": "# 🗓️ JUEVES 11 DE JUNIO\n### *Salsa day ambos +100 kcal · Gastronomía: Nórdica / Peruana / Árabe*\n\n---\n\n### 🌅 Desayuno 🏪 🇸🇪\n**Smørrebrød Nórdico de Pavo: Pan Integral de Centeno, Pavo Braseado Laminado, Pepino Encurtido Rápido, Mostaza Antigua y Rúcula**\n*Tostada abierta escandinava de pavo; encurtido de pepino preparado el domingo en brine de vinagre de arroz*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **450 · 37g · 44g · 14g** | **448 · 36g · 44g · 14g** |\n| Pavo braseado laminado 🏪 | 130g | 120g |\n| Pan integral 100% (2 rebanadas) | 80g | 80g |\n| Pepino encurtido 🏪 | 60g | 60g |\n| Yogurt griego (base tipo queso) | 60g | 60g |\n| Rúcula fresca | 30g | 30g |\n| Mostaza antigua (dijon) | 8g | 8g |\n| Aceite de oliva EVOO | 5g | 5g |\n\n---\n\n### 🍎 Colación AM\n**Fresas con Queso Cottage, Nueces de Castilla y Semillas de Chía**\n*Antioxidantes de fresa, proteína láctea y omega-3 para media mañana*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **200 · 16g · 18g · 6g** | **198 · 15g · 18g · 6g** |\n| Fresas frescas | 200g | 200g |\n| Queso cottage | 120g | 110g |\n| Nueces de castilla troceadas | 10g | 10g |\n| Semillas de chía | 5g | 5g |\n\n---\n\n### 🍽️ Comida 🇵🇪\n**Tiradito Limeño de Camarones: Camarones en Leche de Tigre Amarilla, Camote Glaseado, Choclo Peruano, Aguacate y Microgreens de Cilantro**\n*Camarones marinados en leche de tigre ají amarillo preparada el domingo; camote glaseado del meal prep; aguacate fresco al ensamblaje*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **651 · 51g · 65g · 20g** | **648 · 50g · 64g · 20g** |\n| Camarones cocidos marinados 🏪 | 200g | 190g |\n| Leche de tigre amarilla 🏪 | 60 ml | 60 ml |\n| Camote glaseado 🏪 | 150g | 155g |\n| Choclo cocido 🏪 | 60g | 60g |\n| Aguacate fresco | 50g | 50g |\n| Arroz basmati integral 🏪 | 100g | 105g |\n\n---\n\n### 🌿 Colación PM *(salsa day +100 kcal ambos)*\n**Camote con Mantequilla de Cacahuate Natural, Yogurt Griego y Canela**\n*Snack dulce-salado con carbohidratos complejos de camote + proteína del yogurt*\n\n| | 🧔 ATM (+100) | 👤 IOB (+100) |\n|---|---|---|\n| **kcal · P · C · G** | **299 · 20g · 36g · 8g** | **300 · 20g · 36g · 8g** |\n| Camote asado 🏪 | 150g | 150g |\n| Yogurt griego natural | 100g | 100g |\n| Mantequilla de cacahuate natural | 15g | 15g |\n\n---\n\n### 🌙 Cena 🏪 🇱🇧\n**Freekeh Levantino con Camarones Especiados, Pimientos Asados, Cilantro y Aderezo de Limón-Ajo Negro**\n*Trigo verde ahumado sustituido por quinoa + arroz al 50/50 con especias levantinas; camarones del meal prep recalentados*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **500 · 40g · 40g · 16g** | **502 · 40g · 41g · 16g** |\n| Camarones especiados 🏪 | 150g | 150g |\n| Quinoa-arroz 50/50 🏪 | 130g | 135g |\n| Pimientos asados 🏪 | 80g | 80g |\n| Aceite de oliva EVOO | 10g | 10g |\n| Cilantro fresco | 10g | 10g |\n| Limón fresco + ajo negro | 5g | 5g |\n\n---\n**🧔 ATM TOTAL JUEVES: 2 300 kcal · P 164g · C 203g · G 64g** ✅ *(salsa +100)*\n**👤 IOB TOTAL JUEVES: 2 296 kcal · P 161g · C 203g · G 64g** ✅\n\n---\n---", "recipes": ""}, {"key": "viernes", "short": "Vie", "name": "# 🗓️ VIERNES 12 DE JUNIO", "menu": "# 🗓️ VIERNES 12 DE JUNIO\n### *Gym day ATM +150 kcal · 3er comensal en comida · Gastronomía: Nórdica / Mexicana Contemporánea / Mediterránea*\n\n---\n\n### 🌅 Desayuno 🏪 🇸🇪🇩🇰\n**Gravlax Express: Salmón Curado en Casa con Rye Crispbread Integral, Queso Cottage tipo Fraîche, Eneldo Fresco y Encurtido de Cebolla Morada**\n*Salmón curado en sal-azúcar de coco-eneldo desde el domingo; ensamblaje en frío total; cebolla encurtida en vinagre de arroz*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **451 · 37g · 43g · 15g** | **449 · 36g · 43g · 14g** |\n| Salmón curado (gravlax) 🏪 | 100g | 90g |\n| Pan integral 100% (2 rebanadas) | 70g | 70g |\n| Queso cottage (tipo crème fraîche) | 80g | 80g |\n| Encurtido cebolla morada 🏪 | 30g | 30g |\n| Eneldo fresco | 5g | 5g |\n| Aceite de oliva EVOO | 8g | 8g |\n\n---\n\n### 🍎 Colación AM\n**Mango Ataulfo con Yogurt Griego, Almendras Crudas y Ralladura de Lima**\n*Tropical y refrescante; mango de temporada con proteína y grasa de almendra*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **200 · 15g · 22g · 6g** | **201 · 15g · 22g · 6g** |\n| Mango ataulfo fresco | 150g | 150g |\n| Yogurt griego natural | 120g | 120g |\n| Almendras crudas | 12g | 12g |\n\n---\n\n### 🍽️ Comida *(3er comensal — misma porción ATM)* 🇲🇽\n**Taco de Salmón al Pastor: Salmón Marinado en Achiote, Piña Asada, Salsa Verde de Tomatillo, Tortilla Nixtamalizada y Aguacate**\n*Salmón marinado en achiote-chipotle desde el domingo; calentado en comal 2 min; salsa verde del meal prep; aguacate fresco*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **652 · 52g · 63g · 21g** | **648 · 50g · 63g · 21g** |\n| Salmón al pastor 🏪 | 160g | 150g |\n| Tortilla de maíz nixtamalizado (3 pzas) | 75g | 75g |\n| Salsa verde tomatillo 🏪 | 60g | 60g |\n| Piña asada 🏪 | 50g | 50g |\n| Aguacate fresco | 50g | 50g |\n| Cebolla morada encurtida 🏪 | 20g | 20g |\n| Cilantro fresco | 8g | 8g |\n\n> *3er comensal: misma porción ATM*\n\n---\n\n### 🌿 Colación PM *(pre-entreno ATM — gym day +150 kcal)*\n**Avena Integral con Plátano, Mantequilla de Almendra y Proteína de Yogurt Griego**\n*Clásico pre-workout: carbohidratos rápidos + proteína + grasa saludable*\n\n| | 🧔 ATM (+150) | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **347 · 22g · 45g · 8g** | **201 · 20g · 15g · 6g** |\n| Avena integral cocida | 70g cruda equiv. | 35g cruda equiv. |\n| Plátano | 100g | 60g |\n| Yogurt griego | 120g | 80g |\n| Mantequilla de almendra | 12g | 8g |\n\n---\n\n### 🌙 Cena 🏪 🇮🇹\n**Zuppa di Lenticchie Nera: Lentejas Beluga en Caldo Aromático con Pechuga de Pavo, Poro Confitado, Jitomate San Marzano y Aceite de Oliva al Romero**\n*Sopa italiana de lentejas negras del meal prep; poro confitado y caldo aromático rehidratados en 4 min*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **500 · 40g · 41g · 16g** | **501 · 40g · 42g · 15g** |\n| Lentejas beluga cocidas 🏪 | 150g | 150g |\n| Pavo braseado desmenuzado 🏪 | 100g | 100g |\n| Poro confitado 🏪 | 80g | 80g |\n| Jitomate san marzano 🏪 | 80g | 80g |\n| Caldo de verduras 🏪 | 200 ml | 200 ml |\n| Aceite de oliva al romero 🏪 | 10g | 10g |\n\n---\n**🧔 ATM TOTAL VIERNES: 2 350 kcal · P 166g · C 214g · G 66g** ✅ *(gym +150)*\n**👤 IOB TOTAL VIERNES: 2 200 kcal · P 161g · C 185g · G 62g** ✅\n\n---\n---", "recipes": ""}, {"key": "sabado", "short": "Sáb", "name": "# 🗓️ SÁBADO 13 DE JUNIO", "menu": "# 🗓️ SÁBADO 13 DE JUNIO\n### *Día normal · Comida trampa en la cena · Gastronomía: Persa / Nórdica + 🎉*\n\n---\n\n### 🌅 Desayuno 🏪 🇮🇷\n**Menemen Persa: Revuelto Especiado de Huevo con Jitomate-Pimiento-Cúrcuma, Pavo Deshebrado, Chapati de Pan Integral y Yogurt Ácido**\n*Versión persa del menemen turco; base de jitomate-pimiento especiada del meal prep; huevo revuelto al momento en 3 min*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **450 · 36g · 44g · 15g** | **451 · 35g · 45g · 15g** |\n| Huevo entero | 2 pzas | 2 pzas |\n| Clara adicional | 60g | 50g |\n| Pavo deshebrado 🏪 | 80g | 75g |\n| Base jitomate-pimiento 🏪 | 120g | 120g |\n| Pan integral 100% (1.5 rebanadas) | 60g | 60g |\n| Yogurt griego (acompañamiento) | 60g | 60g |\n| Aceite de oliva EVOO | 8g | 8g |\n\n---\n\n### 🍎 Colación AM\n**Kiwi con Yogurt Griego, Semillas de Linaza y Nueces Pecanas**\n*Colación rica en vitamina C, calcio y ácidos grasos esenciales*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **199 · 15g · 20g · 6g** | **200 · 15g · 20g · 6g** |\n| Kiwi fresco | 150g (2 pzas) | 150g |\n| Yogurt griego natural | 130g | 130g |\n| Semillas de linaza dorada | 8g | 8g |\n| Nueces pecanas | 8g | 8g |\n\n---\n\n### 🍽️ Comida 🇲🇦\n**Chermoula de Tempeh: Tempeh Marinado en Chermoula Marroquí, Quinoa al Limón Preservado, Remolacha Asada, Zanahoria Glaseada y Gremolata de Almendras**\n*Proteína vegetal elevada con marroquí chermoula del meal prep; remolacha y zanahoria asadas el domingo*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **648 · 50g · 64g · 21g** | **651 · 50g · 65g · 21g** |\n| Tempeh marinado en chermoula 🏪 | 180g | 180g |\n| Quinoa tri-color 🏪 | 130g | 135g |\n| Remolacha asada 🏪 | 80g | 80g |\n| Zanahoria glaseada 🏪 | 60g | 60g |\n| Gremolata almendras-limón 🏪 | 20g | 20g |\n| Aceite de oliva EVOO | 8g | 8g |\n\n---\n\n### 🌿 Colación PM\n**Rodajas de Pepino con Hummus de Edamame y Semillas de Calabaza**\n*Colación fresca y ligera antes de la comida trampa nocturna*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **200 · 20g · 14g · 6g** | **199 · 20g · 14g · 6g** |\n| Pepino fresco | 150g | 150g |\n| Hummus de edamame 🏪 | 80g | 80g |\n| Semillas de calabaza | 10g | 10g |\n\n---\n\n### 🌙 Cena 🎉\n**🎉 COMIDA TRAMPA — Sábado por la Noche**\n*Sin restricciones. Disfrutar plenamente. Restaurante o platillo especial a elección.*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal estimadas** | ~700 | ~700 |\n| Macros | — disfrutar — | — disfrutar — |\n\n> 🍷 *Si se desea, este es el momento ideal para la copa de vino tinto permitida (máx 1-2 copas semanales)*\n\n---\n**🧔 ATM TOTAL SÁBADO: ~2 197 kcal (sin trampa) + trampa ≈ 2 900 kcal** ✅\n**👤 IOB TOTAL SÁBADO: ~2 201 kcal (sin trampa) + trampa ≈ 2 900 kcal** ✅\n\n---\n---", "recipes": ""}, {"key": "domingo", "short": "Dom", "name": "# 🗓️ DOMINGO 14 DE JUNIO", "menu": "# 🗓️ DOMINGO 14 DE JUNIO\n### *Día normal · Meal prep day · Gastronomía: Japonesa / Mediterránea*\n\n> *El domingo es el gran día de cocina. El desayuno y la cena son los únicos tiempos donde comen con calma; el resto del día es producción.*\n\n---\n\n### 🌅 Desayuno 🍳 🇯🇵\n**Okonomiyaki Ligero: Tortita Japonesa de Repollo, Edamame, Huevo y Pavo con Salsa Okonomiyaki Light y Katsuobushi**\n*Pancake salado japonés cocinado fresco al domingo; la única cocción activa del domingo en la mañana antes del meal prep masivo*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **451 · 36g · 44g · 15g** | **450 · 35g · 44g · 15g** |\n| Huevo entero | 2 pzas | 2 pzas |\n| Pechuga de pavo picada | 100g | 90g |\n| Repollo rallado fino | 150g | 150g |\n| Avena integral molida (harina) | 40g | 40g |\n| Edamame | 50g | 50g |\n| Salsa okonomiyaki (tamari + sriracha + yogurt) | 20g | 20g |\n| Aceite de oliva EVOO | 8g | 8g |\n\n---\n\n### 🍎 Colación AM\n**Pera Bartlett con Queso Cottage, Almendras y Ralladura de Naranja**\n*Fruta de pulpa firme con lácteo y grasa; colación sencilla mientras arranca el meal prep*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **200 · 15g · 21g · 6g** | **199 · 15g · 20g · 6g** |\n| Pera Bartlett fresca | 180g | 180g |\n| Queso cottage | 110g | 100g |\n| Almendras crudas | 12g | 12g |\n\n---\n\n### 🍽️ Comida 🇬🇷\n**Bowl Griego de Pollo Souvlaki: Pechuga de Pollo Marinada en Limón-Orégano-Ajo, Arroz Integral Pilaf, Tzatziki de Yogurt-Pepino, Tomate Cherry y Aceitunas Kalamata**\n*Pollo marinado y cocinado fresco al domingo (excepción: es meal prep day, se puede cocinar); tzatziki fresco al momento*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **651 · 52g · 63g · 21g** | **648 · 50g · 64g · 20g** |\n| Pechuga de pollo souvlaki | 180g | 170g |\n| Arroz basmati integral pilaf 🏪 | 140g | 145g |\n| Tzatziki (yogurt+pepino+eneldo) | 80g | 80g |\n| Tomate cherry fresco | 80g | 80g |\n| Aceitunas kalamata | 20g | 20g |\n| Aceite de oliva EVOO | 8g | 8g |\n\n---\n\n### 🌿 Colación PM\n**Batido de Tofu Sedoso: Tofu Sedoso, Frutos Rojos, Plátano y Semillas de Linaza**\n*Batido vegetal nutritivo mientras concluye el meal prep*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **200 · 20g · 16g · 6g** | **199 · 20g · 15g · 6g** |\n| Tofu sedoso | 150g | 150g |\n| Frutos rojos congelados | 100g | 100g |\n| Plátano | 50g | 50g |\n| Semillas de linaza | 8g | 8g |\n\n---\n\n### 🌙 Cena 🏪 🇯🇵\n**Tofu Yakitori Glaseado: Cubos de Tofu Firme en Glaseado Tare (Tamari-Mirin-Jengibre), Arroz Integral Gohan, Edamame, Espárragos y Salsa Ponzu**\n*Tofu marinado en tare desde el sunday meal prep; rehogado o recalentado en sartén 3 min; arroz y edamame del prep*\n\n| | 🧔 ATM | 👤 IOB |\n|---|---|---|\n| **kcal · P · C · G** | **500 · 40g · 42g · 16g** | **504 · 40g · 43g · 16g** |\n| Tofu firme marinado tare 🏪 | 200g | 200g |\n| Arroz basmati integral 🏪 | 130g | 135g |\n| Edamame cocido 🏪 | 60g | 60g |\n| Espárragos frescos (salteados 2 min) | 80g | 80g |\n| Salsa ponzu 🏪 | 20g | 20g |\n| Aceite de oliva / sésamo | 8g | 8g |\n\n---\n**🧔 ATM TOTAL DOMINGO: 2 202 kcal · P 163g · C 186g · G 64g** ✅\n**👤 IOB TOTAL DOMINGO: 2 200 kcal · P 160g · C 186g · G 63g** ✅\n\n---\n---\n\n## 📊 TABLA RESUMEN SEMANAL\n\n### 🧔 ATM — Totales Diarios\n\n| Día | kcal | Proteína | Carbos | Grasas | Meta kcal |\n|---|---|---|---|---|---|\n| Lunes (gym +150) | 2 350 | 164g | 215g | 64g | 2 350 ✅ |\n| Martes (salsa +100) | 2 300 | 163g | 204g | 64g | 2 300 ✅ |\n| Miércoles (gym +150) | 2 350 | 167g | 215g | 65g | 2 350 ✅ |\n| Jueves (salsa +100) | 2 300 | 164g | 203g | 64g | 2 300 ✅ |\n| Viernes (gym +150) | 2 350 | 166g | 214g | 66g | 2 350 ✅ |\n| Sábado (trampa noche) | ~2 900 | 141g+ | — | — | libre ✅ |\n| Domingo | 2 202 | 163g | 186g | 64g | 2 200 ✅ |\n| **Promedio (sin sábado)** | **2 310** | **164g** | **206g** | **65g** | **~2 300** ✅ |\n\n### 👤 IOB — Totales Diarios\n\n| Día | kcal | Proteína | Carbos | Grasas | Meta kcal |\n|---|---|---|---|---|---|\n| Lunes | 2 200 | 159g | 187g | 62g | 2 200 ✅ |\n| Martes (salsa +100) | 2 298 | 159g | 207g | 64g | 2 300 ✅ |\n| Miércoles | 2 200 | 161g | 186g | 63g | 2 200 ✅ |\n| Jueves (salsa +100) | 2 296 | 161g | 203g | 64g | 2 300 ✅ |\n| Viernes | 2 200 | 161g | 185g | 62g | 2 200 ✅ |\n| Sábado (trampa noche) | ~2 900 | 135g+ | — | — | libre ✅ |\n| Domingo | 2 200 | 160g | 186g | 63g | 2 200 ✅ |\n| **Promedio (sin sábado)** | **2 232** | **160g** | **192g** | **63g** | **~2 200** ✅ |\n\n---\n\n## 🗺️ ROTACIÓN DE GASTRONOMÍAS\n\n| # | Gastronomía | Días |\n|---|---|---|\n| 🇯🇵 | Japonesa | Lunes D, Miércoles D, Domingo C/D |\n| 🇲🇽 | Mexicana Contemporánea | Lunes C, Viernes C |\n| 🇱🇧 | Árabe / Levantina | Martes C, Jueves D |\n| 🇫🇷 | Francesa | Miércoles C |\n| 🇵🇪 | Peruana | Jueves C |\n| 🇮🇷 | Persa | Martes D, Sábado D |\n| 🇸🇪🇩🇰 | Nórdica | Jueves D, Viernes D |\n| 🇮🇹 | Italiana | Viernes D |\n| 🇲🇦 | Marroquí | Martes D, Sábado C |\n| 🇪🇸 | Mediterránea / Española | Miércoles D |\n| 🇬🇷 | Griega | Domingo C |\n\n**Total: 10 gastronomías diferentes** ✅ *(mínimo requerido: 4-5)*\n\n---\n\n## 🛒 LISTA DE COMPRAS PRIORITARIA — Costco CDMX + City Market Santa Fe\n\n### 🥩 Proteínas\n- [ ] Pechuga de pollo sin piel — 1.2 kg\n- [ ] Salmón fresco (filete) — 600g\n- [ ] Pechuga de pavo — 600g\n- [ ] Res magra 90/10 molida — 400g\n- [ ] Camarones medianos — 600g\n- [ ] Tofu firme — 400g\n- [ ] Tempeh — 360g\n- [ ] Huevos — 2 docenas\n- [ ] Yogurt griego natural — 2 kg\n- [ ] Queso cottage — 800g\n\n### 🌾 Granos & Legumbres\n- [ ] Arroz basmati integral — 1 kg\n- [ ] Quinoa tri-color — 500g\n- [ ] Lentejas beluga — 400g\n- [ ] Garbanzos secos o cocidos — 400g\n- [ ] Frijoles bayos — 400g\n- [ ] Avena integral — 500g\n- [ ] Pan integral 100% — 2 barras\n- [ ] Tortillas de maíz nixtamalizado — 1 kg\n- [ ] Edamame congelado — 400g\n\n### 🥑 Grasas & Semillas\n- [ ] Aguacate Hass — 6 pzas\n- [ ] Aceite de oliva extra virgen — 1 L\n- [ ] Mantequilla de almendra natural — 300g\n- [ ] Mantequilla de cacahuate natural — 300g\n- [ ] Nueces de castilla — 200g\n- [ ] Almendras crudas — 200g\n- [ ] Semillas de chía — 100g\n- [ ] Semillas de linaza dorada — 150g\n- [ ] Semillas de calabaza — 150g\n- [ ] Tahini natural — 200g\n\n### 🫙 Condimentos & Especias\n- [ ] Pasta harissa — 1 frasco\n- [ ] Tamari bajo en sodio — 1 botella\n- [ ] Miso blanco (shiro) — 200g\n- [ ] Pasta de ají amarillo — 1 frasco\n- [ ] Achiote en pasta — 100g\n- [ ] Tomatillos frescos — 500g\n- [ ] Mostaza dijon antigua — 1 frasco\n- [ ] Vinagre de arroz — 1 botella\n- [ ] Kombu (alga seca) — 30g\n- [ ] Cúrcuma fresca o molida\n\n### 🥦 Verduras & Frutas\n- [ ] Espinaca baby — 400g\n- [ ] Rúcula — 100g\n- [ ] Pepino persa — 6 pzas\n- [ ] Pimientos tricolores — 1 kg\n- [ ] Jitomate cherry / heirloom — 600g\n- [ ] Espárragos — 300g\n- [ ] Camote naranja — 1.5 kg\n- [ ] Repollo — 1 pza\n- [ ] Champiñones shiitake — 200g\n- [ ] Frutos rojos congelados — 1 kg\n- [ ] Mango ataulfo — 4 pzas\n- [ ] Plátano maduro — 1 racimo\n- [ ] Fresas — 500g\n- [ ] Durazno — 4 pzas\n- [ ] Kiwi — 6 pzas\n- [ ] Melón cantaloupe — 1 pza\n- [ ] Papaya — 1 pza\n- [ ] Pera Bartlett — 4 pzas\n- [ ] Piña — 1 pza\n\n---\n\n*Menú diseñado para semana del 08 al 14 de junio 2026 · Todas las proteínas, granos y salsas preparadas el domingo 14 · Cocción activa entre semana: solo huevo al momento cuando aplica · 0 platillos repetidos de semanas anteriores ✅*", "recipes": ""}];
-const C = { costco: `# 🏪 COSTCO INTERLOMAS / SANTA FE
+const DAYS     = [];
+const C = { costco: `# 🔵 COSTCO INTERLOMAS / SANTA FE
 
 ## 1. 🥩 Carnes y Mariscos
 
-- [ ] Pechuga de pollo sin piel — **1.8 kg** — 3 pechugas grandes para confitar (meal prep) + souvlaki domingo + margen
-- [ ] Res molida 90/10 — **600 g** — koftas martes (3 comensales) + margen para moldear
-- [ ] Camarones medianos crudos congelados — **800 g** — tiradito jueves (3 porciones) + freekeh jueves cena
-- [ ] Salmón filete fresco o congelado — **900 g** — curado gravlax (meal prep) + tacos al pastor viernes (3 comensales) + margen
-- [ ] Pechuga de pavo entera o en filete — **900 g** — brasear para smørrebrød, ash-e-reshteh, brocheta fría, menemen, zuppa + okonomiyaki domingo
+- [ ] **Pechuga de pollo** — 2.5 kg — *Sous vide (Lun comida + caldo Jue + teriyaki Dom comida + tikka Mar cena + sopa Vie cena + colaciones pavo prep)* · Paquete Costco ~3 kg, uso alto toda la semana ✅
+- [ ] **Res molida 93%** — 1 kg — *Tacos Mar comida (3 comensales); paquete mínimo Costco ~1.5 kg, sobrante se congela* ✅
+- [ ] **Camarones medianos/grandes congelados** — 800 g — *Causa limeña Vie comida (3 comensales); bolsa Costco ~1 kg, sobrante se congela* ✅
+- [ ] **Tocino / jamón cocido** — 200 g — *Opcional para colaciones / garnish; solo si el paquete es accesible* · Si paquete >500 g → **omitir, no está en el menú**
+
+> ⚠️ Tocino: no aparece en ningún platillo del menú — **no comprar**
 
 ---
 
 ## 2. 🥦 Frutas y Verduras
 
-- [ ] Espinaca baby — **500 g** — ash-e-reshteh, cuenco nórdico lunes cena, varios
-- [ ] Pimientos mixtos (rojo/amarillo/verde) — **1.2 kg** — pisto manchego, matbucha, freekeh, chermoula, caldo de verduras
-- [ ] Jitomate cherry — **600 g** — niçoise, souvlaki domingo, varios ensamblajes
-- [ ] Jitomate bola — **600 g** — matbucha, pisto manchego, menemen, caldo de verduras
-- [ ] Cebolla blanca — **1 kg** — caldo de verduras, matbucha, pisto, bases generales
-- [ ] Cebolla morada — **400 g** — encurtido gravlax, tacos viernes, varias garnishes
-- [ ] Ajo — **2 cabezas** — marinadas, bases de salsas, todas las cocinas
-- [ ] Limones verdes — **1 bolsa (10–12 pzas)** — marinadas, vinagretas, leche de tigre, acabados
-- [ ] Limones amarillos — **6 pzas** — vinagreta dijon, tzatziki, gremolata, gravlax
-- [ ] Aguacate Hass — **8 pzas** — tostadas lunes, tiradito jueves, tacos viernes, varios; comprar variedad de maduración
-- [ ] Pepino — **8 pzas** — encurtido smørrebrød, tzatziki, brocheta fría, colación sábado, varios
-- [ ] Zanahoria — **500 g** — chermoula sábado, caldo de verduras
-- [ ] Camote naranja — **2 kg** — asado meal prep (1 kg min cocido), tiradito jueves, colación jueves
-- [ ] Brócoli — **300 g** — caldo de verduras, base flexible
-- [ ] Repollo (col) blanco — **1 pieza mediana** — okonomiyaki domingo
-- [ ] Ejotes — **250 g** — niçoise miércoles (blanqueados)
-- [ ] Kale — **200 g** — caldo de verduras, base flexible
-- [ ] Tomatillos frescos — **600 g** — salsa verde meal prep (viernes + tacos) 🌱
-- [ ] Choclo / elote — **3 mazorcas o 300 g desgranado** — tiradito jueves 🌱
-- [ ] Poro (puerro) — **2 piezas** — zuppa viernes cena, caldo de verduras
-- [ ] Mango ataulfo — **5 pzas** — colación viernes + extra 🌱
-- [ ] Plátano maduro — **1 racimo (8–10 pzas)** — colaciones múltiples toda la semana
-- [ ] Fresas frescas — **600 g** — colación jueves + batido domingo 🌱
-- [ ] Melón cantaloupe — **1 pieza** — colación lunes 🌱
-- [ ] Papaya mediana — **1 pieza** — colación miércoles 🌱
-- [ ] Pera Bartlett — **5 pzas** — colación domingo
-- [ ] Manzana — **4 pzas** — snack flexible / caldo de verduras
-- [ ] Naranja — **4 pzas** — ralladura, jugos para marinadas
-- [ ] Piña — **1 pieza** — piña asada tacos viernes (meal prep)
-- [ ] Arándanos y frambuesas congelados (mix frutos rojos) — **1 kg** — batidos miércoles, domingo, colaciones
+- [ ] **Espinacas baby (bolsa)** — 600 g — *Shakshuka Dom, bibimbap Lun, colaciones diarias, salsa tikka, cenas varias*
+- [ ] **Zanahoria** — 1 kg — *Bibimbap Lun, encurtido, colaciones jícama-zanahoria, causa, teriyaki Dom, wrap Mié*
+- [ ] **Pepino** — 6 piezas — *Bibimbap Lun, tataki Mié, wrap Mié, causa Vie, kabsa Sáb, bowl Dom*
+- [ ] **Pimiento rojo** — 4 piezas — *Menemen Sáb, shakshuka Dom, vizcaína Mié, tikka Mar, encurtido*
+- [ ] **Jitomate bola** — 2 kg — *Tacos Mar, shakshuka Dom, tlayuda Dom, bruschetta Sáb, menemen Sáb, salsa verde base, vizcaína Mié, tikka Mar*
+- [ ] **Jitomate cherry** — 500 g — *Colaciones AM (Lun/Mié/Vie/Sáb), bruschetta Sáb confitado, salsa vierge*
+- [ ] **Cebolla blanca** — 1 kg — *Tikka Mar, kabsa Sáb, vizcaína Mié, tlalpeño Jue, bases de salsas*
+- [ ] **Cebolla morada** — 6 piezas — *Encurtidos (Lun cena, Mar comida, Vie comida), lunes cena ramen, Jue cena, Mié cena*
+- [ ] **Ajo** — 2 cabezas — *Ajillo Vie, arrabiata Dom cena, tikka, vizcaína, tlalpeño*
+- [ ] **Limones verdes** — 2 kg — *Causa Vie (lima), tlalpeño Jue, marinadas, condimento general toda la semana*
+- [ ] **Limones amarillos** — 6 piezas — *Salmón confitado Jue, salsa vierge, smørrebrød Jue*
+- [ ] **Aguacate** — 10 piezas — *Colaciones AM diarias (ATM), tacos Mar, bibimbap Lun, tataki Mié, causa Vie, tlayuda Dom, kabsa Sáb* · 🌱 temporada
+- [ ] **Mango** — 1.5 kg — *Overnight oats Lun desayuno, smoothie bowl Mié, colación PM Jue, congelado para smoothies* · 🌱 temporada
+- [ ] **Plátano** — 2 racimos (~1.5 kg) — *Colaciones PM Lun/Mié, desayunos IOB diarios, smoothies varios*
+- [ ] **Manzana verde** — 12 piezas — *Colaciones AM/PM IOB todos los días*
+- [ ] **Fresas** — 600 g — *Colación PM Mar y Jue* · 🌱 temporada
+- [ ] **Arándanos frescos** — 300 g — *Parfait Mar desayuno*
+- [ ] **Kiwi** — 6 piezas — *Smoothie bowl Mié, colación PM Dom*
+- [ ] **Papaya** — 2 piezas medianas — *Colaciones AM IOB (Mar/Mié/Jue/Vie/Sáb/Dom)* · 🌱 temporada
+- [ ] **Piña** — 1 pieza — *Colación PM Vie (trozos)* · 🌱 temporada
+- [ ] **Brócoli** — 1 pieza — *Disponible como sustituto de verdura en preparaciones; verificar uso específico*
+- [ ] **Calabacita** — 4 piezas — *Doenjang jjigae Vie cena*
+- [ ] **Jalapeño** — 6 piezas — *Encurtido rápido (Mar/Vie), salsa verde, salsa roja*
 
 ---
 
-## 3. 🧀 Lácteos y Refrigerados
+## 3. 🥛 Lácteos y Refrigerados
 
-- [ ] Huevos — **30 pzas (2.5 docenas)** — tamagoyaki, chawan-mushi, huevo duro, pisto, menemen, okonomiyaki; redondear arriba
-- [ ] Yogurt griego natural (Fage o Kirkland) — **2.5 kg** — uso diario en colaciones, aderezos, tzatziki, brocheta, smørrebrød
-- [ ] Queso cottage — **1 kg** — tostadas lunes, colaciones martes/jueves/domingo
-- [ ] Mantequilla — **200 g** — bases de cocción, glaseado zanahoria
-- [ ] Crema para batir — **200 ml** — marinadas, bases flexibles
+- [ ] **Huevos orgánicos** — 30 piezas — *Bibimbap (Lun×2), ramen Lun (marinado), colaciones AM claras diarias, menemen Sáb (3 huevos), shakshuka Dom (3+claras), pochado Vie desayuno, huevos duros prep dominical*
+- [ ] **Yogurt griego sin grasa (Fage o Kirkland)** — 2 kg — *Desayunos parfait Mar, tikka Masala base, tzatziki Jue, Vie desayuno tahdig, Sáb desayuno menemen; uso recurrente toda la semana ✅*
+- [ ] **Queso crema Philadelphia** — 200 g — *Base para colaciones y untables varios* · Solo si aparece en recetas; revisar: **no está explícito en menú → omitir si duda**
+- [ ] **Mozzarella** — 250 g — *No aparece en menú → omitir*
+- [ ] **Mantequilla** — 250 g — *Salsas y salteos generales*
+- [ ] **Crema para batir** — 500 ml — *Tikka masala, salsas cremosas; paquete Costco ~1 L, uso moderado → **valorar si comprar o en City Market cantidad exacta*** · **→ City Market si solo se usa 1–2 veces**
+
+> ⚠️ Crema para batir: ver City Market si el uso es menor a 3 recetas
 
 ---
 
 ## 4. 🥫 Abarrotes y Despensa
 
-- [ ] Arroz basmati integral — **2 kg** — gohan, pilaf, 50/50 freekeh, base semanal
-- [ ] Quinoa tri-color — **800 g** — niçoise, brocheta fría, chermoula, freekeh, cena domingo
-- [ ] Avena integral en hojuelas — **500 g** — batidos, okonomiyaki (molida), colaciones
-- [ ] Lentejas negras beluga — **600 g** — ash-e-reshteh, zuppa viernes; si no hay beluga exacta, lentejas pardas son fallback
-- [ ] Garbanzos en lata — **3 latas (400 g c/u)** — kofta martes, pisto miércoles, jueves cena; más práctico cocido para la semana
-- [ ] Frijoles bayos en lata — **2 latas (400 g c/u)** — tostadas lunes
-- [ ] Pan integral 100% — **2 barras** — desayunos múltiples (smørrebrød, ash-e-reshteh, pisto, gravlax, menemen)
-- [ ] Tortillas de maíz nixtamalizado — **2 kg** — tostadas lunes, tacos viernes (3 comensales)
-- [ ] Leche de coco — **2 latas** — bases de cocción, leche de tigre
-- [ ] Passata / puré de jitomate — **2 frascos** — matbucha, pisto manchego, zuppa
-- [ ] Caldo de pollo Kirkland — **2 L (caja o lata)** — brasear pavo, dashi base, caldo de verduras
-- [ ] Harina de almendra — **250 g** — gremolata, empanizados ligeros
-- [ ] Atún en agua — **2 latas** — proteína de emergencia / flexibilidad
-- [ ] Proteína whey Kirkland — **1 bote** (si se requiere suplemento adicional; opcional según stock)
+- [ ] **Avena en hojuelas** — 1.5 kg — *Overnight oats DIARIO (ATM: 50–60g/día × 7 días + IOB ocasional), granola, smoothies; Costco OK ✅*
+- [ ] **Arroz jazmín** — 2 kg — *Bibimbap Lun, arroz base prep Dom; Costco OK ✅*
+- [ ] **Arroz integral** — 1 kg — *Doenjang jjigae Vie, bowl Dom, prep dominical*
+- [ ] **Arroz basmati** — 1 kg — *Tikka Masala Mar, tahdig Vie desayuno, kabsa Sáb, salmón Jue; uso alto ✅*
+- [ ] **Quinoa tricolor** — 500 g — *Tataki Mié, causa Vie, prep dominical*
+- [ ] **Pasta integral (penne)** — 1 kg — *Arrabiata Dom cena, bacalao Mié, salmón Jue; Costco OK ✅*
+- [ ] **Proteína en polvo sabor vainilla (Kirkland/Whey)** — 2 kg — *ATM: 60g×2 scoops×5 días gym + 30g×2 días normal + IOB 30g×7 días = ~680g total mínimo; Costco OK ✅*
+- [ ] **Semillas de chía** — 300 g — *Overnight oats Lun, diario*
+- [ ] **Linaza** — opcional / ya en despensa
+- [ ] **Almendras** — 500 g — *Snacks y colaciones generales si se necesita*
+- [ ] **Nueces de Castilla** — 200 g — *Parfait Mar desayuno, granola*
+- [ ] **Mantequilla de cacahuate natural** — 500 g — *Colaciones PM Lun/Mar/Jue/Vie/Sáb/Dom; uso diario ✅*
+- [ ] **Miel de abeja / agave** — 500 ml — *Colaciones diarias ATM (7g/día), salsa gochujang-miel; uso diario ✅*
+- [ ] **Frijoles negros en lata** — 4 latas (400g c/u) — *Torta Mar, tlayuda Dom, shakshuka Dom; también cocidos para prep*
+- [ ] **Garbanzos en lata** — 3 latas — *Tlalpeño Jue, shakshuka Dom, hummus Mié*
+- [ ] **Leche de coco** — 2 latas — *Tikka masala Mar, smoothie tropical opcional*
+- [ ] **Puré/passata de tomate** — 3 latas (400g) — *Arrabiata Dom, tikka Mar, vizcaína Mié, tlalpeño Jue, salsa daqqus Sáb*
+- [ ] **Caldo de pollo Kirkland (tetra)** — 2 L — *Tlalpeño Jue, quinoa (caldo verduras), ramen base, prep dominical*
+- [ ] **Atún en agua** — 4 latas — *No es el atún fresco del tataki; estas latas son para emergencias/colaciones* · **→ Solo comprar si están en el menú; el tataki requiere atún fresco de City Market**
+- [ ] **Salsa soya Kikkoman** — 1 botella — *Teriyaki Dom, huevo marinado tamari Lun, marinadas*
+- [ ] **Tortillas de maíz** — 1 kg — *Tacos Lun/Mar/Mié/Vie/Dom colaciones y comidas; Costco OK ✅*
+- [ ] **Pan integral (rebanadas)** — 2 bolsas — *Colaciones AM/PM diarias ATM; Costco OK ✅*
+- [ ] **Maíz en lata / congelado** — 200 g — *Ramen Lun cena*
+- [ ] **Edamame congelado** — 400 g — *Tataki Mié, bowl Dom*
+- [ ] **Noodles de arroz** — 300 g — *Ramen Lun cena*
+- [ ] **Nori (láminas)** — 1 paquete — *Ramen Lun cena (2 láminas)*
+- [ ] **Harina de almendra** — 500 g — *Solo si hay receta que lo requiera explícitamente; **omitir si no está en menú***
+- [ ] **Gelatina light** — 10 sobres / 1 caja grande — *Cenas IOB casi diarias (240–480 ml/día), prep dominical; uso muy alto ✅*
 
 ---
 
 ## 5. 🫙 Aceites, Salsas y Condimentos
 
-- [ ] Aceite de oliva extra virgen — **1 L** — uso diario, vinagreta, confitado, acabados
-- [ ] Aceite de coco — **250 g** — confitado pollo harissa (técnica 70°C)
-- [ ] Aceite de aguacate — **500 ml** — salteados a alta temperatura
-- [ ] Salsa soya Kikkoman — **500 ml** — base para tamari si no se consigue tamari; marinadas asiáticas
-- [ ] Mostaza Dijon — **1 frasco** — vinagreta niçoise, smørrebrød
-- [ ] Vinagre balsámico — **500 ml** — vinagretas, glaseados
-- [ ] Mayonesa — **pequeño** — salsa okonomiyaki
-- [ ] Miel de abeja — **350 g** — glaseado zanahoria, colaciones, gravlax
-- [ ] Ketchup — **1 frasco pequeño** — base okonomiyaki
-- [ ] Mantequilla de almendra natural — **500 g** — colaciones lunes, miércoles, viernes
-- [ ] Mantequilla de cacahuate natural — **500 g** — colaciones martes, jueves
-- [ ] Almendras crudas — **500 g** — gremolata, colaciones, laminadas
-- [ ] Nueces de castilla — **300 g** — colación jueves
-- [ ] Semillas de chía — **200 g** — colaciones miércoles, jueves
-- [ ] Semillas de linaza dorada — **200 g** — colaciones martes, sábado
-- [ ] Semillas de calabaza — **200 g** — cuenco nórdico lunes, colación sábado
-- [ ] Semillas de sésamo negro — **100 g** — tamagoyaki, acabados japoneses
-- [ ] Parmesano rallado — **100 g** — acabados varios, flexible
-- [ ] Sal de mar — **1 bolsa grande** — curado gravlax (usa bastante sal), cocción general
-- [ ] Pimienta negra entera — **1 bote** — marinadas, especiados
-- [ ] Comino molido — **1 bote** — koftas, especias árabes, garbanzos
-- [ ] Paprika ahumada — **1 bote** — matbucha, pisto, koftas
-- [ ] Orégano seco — **1 bote** — souvlaki, mediterráneo general
-- [ ] Canela molida — **1 bote** — colaciones, koftas árabes
-- [ ] Chile en polvo — **1 bote** — adobo, salsa morita, marinadas
-- [ ] Cúrcuma molida — **1 bote** — ash-e-reshteh, vinagreta limón-cúrcuma, especiados varios
-- [ ] Azúcar de coco — **250 g** — curado gravlax (sal+azúcar de coco), glaseados
-- [ ] Laurel — **1 paquete** — cocción lentejas, caldo de verduras
+- [ ] **Aceite de oliva extra virgen** — 1 lata (3–4 L) — *Salmón confitado Jue (requiere bastante volumen), arrabiata Dom, salsas, colaciones, vizcaína; uso alto toda la semana ✅*
+- [ ] **Aceite de aguacate** — 500 ml — *Salteos varios, bibimbap, causa*
+- [ ] **Vinagre balsámico** — 500 ml — *Encurtidos, salsas*
+- [ ] **Mostaza Dijon** — 1 frasco — *Tartine Lun colación AM*
+- [ ] **Mayonesa** — 1 frasco — *Causa limeña, varios*
+- [ ] **Sal de mar** — ya en despensa / reponer si necesario
+- [ ] **Pimienta negra entera** — 1 bolsa — *Moler fresco toda la semana*
+- [ ] **Comino molido** — 1 bolsa — *Tacos Mar, tikka Masala, tlalpeño Jue, menemen Sáb*
+- [ ] **Paprika ahumada** — 1 bolsa — *Vizcaína Mié, tikka Masala*
+- [ ] **Orégano** — 1 bolsa — *Arrabiata Dom, vizcaína Mié*
+- [ ] **Canela en polvo** — 1 bolsa — *Smoothie Jue desayuno, kabsa Sáb*
+- [ ] **Chile en polvo / pimentón** — 1 bolsa — *Tacos Mar, tlalpeño Jue*
+- [ ] **Cúrcuma molida** — 1 bolsa — *Tikka Masala Mar, kabsa Sáb*
+- [ ] **Hierbas de Provenza** — 1 bolsa — *Salmón confitado Jue, varias*
 
 ---
 
 ## 6. ❄️ Congelados
 
-- [ ] Edamame sin vaina congelado — **600 g** — chawan-mushi, tofu yakitori, okonomiyaki, hummus edamame sábado
-- [ ] Frutos rojos congelados (mix) — **ya listados en sección 2** *(no duplicar)*
+- [ ] **Salmón filetes (congelado)** — 2 kg — *Ramen Lun cena (250g ATM + 120g IOB), salmón confitado Jue (250g ATM + 120g IOB), arrabiata Dom cena (estimado ~300g), smørrebrød Jue (salmón ahumado → **ver nota**); uso en 3+ recetas ✅*
+
+> ⚠️ **Salmón ahumado** del smørrebrød Jue colación AM → es salmón curado/ahumado, **no es el mismo que los filetes frescos/congelados**. El salmón ahumado va en **City Market**.
+
+- [ ] **Mango congelado** — 500 g — *Smoothie bowl Mié desayuno*
+- [ ] **Pavo molido / pechuga de pavo cocida** — *Ver nota abajo*
+
+> ⚠️ **Pavo cocido (pechuga de pavo para colaciones AM)**: Costco vende pechuga de pavo en presentaciones grandes. Si se puede encontrar pechuga entera para cocer en casa → Costco OK. Si solo hay pavo en presentación deli/rebanado fino → **City Market**. La demanda semanal es alta (~200g ATM + 50–100g IOB × 6 días colación AM ≈ 1.5–2 kg cocido), por lo que **comprar pechuga entera de pavo cruda en Costco y cocer en prep dominical** es la mejor opción.
+
+- [ ] **Pechuga de pavo (entera, cruda)** — 2 kg — *Cocer domingo, rebanar/desebrar para colaciones AM toda la semana; Costco OK ✅*
 
 ---
 
-## 7. 🍞 Panadería y Tortillería
+## 7. 🥖 Panadería y Tortillería
 
-- [ ] Pan integral 100% — **ya listado en Abarrotes** *(no duplicar)*
-- [ ] Tortillas de maíz — **ya listadas en Abarrotes** *(no duplicar)*
+- [ ] **Chapata integral** — 2 piezas — *Tartine Lun AM, bruschetta Sáb, torta Mar, wrap Mié*
+- [ ] **Pan pita integral** — 1 paquete (8–10 piezas) — *Shakshuka Dom, wrap Mié colación AM*
 
 ---
 ---
-
-## 🏪 Costco CDMX
-
-| Categoría | Rango estimado MXN |
-|---|---|
-| Carnes y mariscos (pollo, salmón, camarones, pavo, res) | $1,400 – $1,800 |
-| Frutas y verduras | $600 – $800 |
-| Lácteos (huevos, yogurt griego, cottage) | $500 – $700 |
-| Abarrotes y despensa (granos, legumbres, latas, panes) | $700 – $900 |
-| Aceites, condimentos y semillas | $800 – $1,100 |
-| Congelados (edamame, frutos rojos) | $250 – $350 |
-| **Subtotal Costco** | **$4,250 – $5,650** |
-`, city: `# 🏬 CITY MARKET SANTA FE
+`, city: `# 🟢 CITY MARKET SANTA FE
+*(Solo ingredientes que Costco no tiene con certeza, o donde el volumen de Costco sería desproporcionado)*
 
 ## 1. 🐟 Pescadería Premium
 
-*(El salmón para curar necesita calidad premium; el de Costco puede funcionar pero para gravlax de calidad, City Market es más confiable)*
-
-- [ ] Salmón fresco premium (para curar) — **700 g adicionales o total si no confías en el de Costco** — gravlax lunes/viernes + tacos pastor; pedir sin espinas, con piel
-- [ ] Anchoas en aceite de oliva — **1 lata pequeña (50 g)** — base umami para matbucha, salsa niçoise
+- [ ] **Atún fresco aleta amarilla (sashimi grade)** — 800 g — *Tataki Mié comida (3 comensales): 200g ATM + 120g IOB + 200g 3er = 520g + margen* · **Cantidad exacta, no hay en Costco**
+- [ ] **Bacalao desalado / fresco** — 500 g — *Bacalao vizcaína Mié cena: 250g ATM + 120g IOB + margen* · **No está en Costco**
+- [ ] **Salmón ahumado noruego** — 200 g — *Smørrebrød Jue colación AM: 120g ATM + 60g IOB* · **Curado/ahumado ≠ filetes congelados de Costco**
 
 ---
 
 ## 2. 🥩 Carnicería y Charcutería
 
-- [ ] Tofu firme — **600 g** — yakitori domingo cena, batido tofu domingo, marinar tare; buscar marca japonesa si disponible
-- [ ] Tempeh — **400 g** — chermoula sábado comida; el tempeh es difícil en Costco
+- [ ] **Filete de res magro (sirloin o similar)** — 700 g — *Kabsa Sáb comida: 200g ATM + 120g IOB; corte específico magro, no res molida* · **Cantidad exacta**
+- [ ] **Tofu firme** — 400 g — *Doenjang jjigae Vie cena: 200g ATM + 100g IOB* · **City Market (cantidad exacta); Costco no siempre tiene tofu firme de calidad**
 
 ---
 
 ## 3. 🌿 Frutas, Verduras e Hierbas
 
-- [ ] Eneldo fresco — **1 manojo grande** — gravlax (usa bastante), smørrebrød viernes 🌱
-- [ ] Menta fresca — **1 manojo** — brocheta fría martes cena, varios acabados 🌱
-- [ ] Cilantro fresco — **2 manojos** — chermoula, leche de tigre, tiradito, tacos viernes, freekeh 🌱
-- [ ] Perejil fresco (plano/italiano) — **2 manojos** — kofta, chermoula, matbucha, gremolata 🌱
-- [ ] Estragón fresco — **1 manojo pequeño** — vinagreta dijon-estragón niçoise miércoles 🌱
-- [ ] Tomillo fresco — **1 manojo** — confitado pollo, caldo de verduras, chermoula 🌱
-- [ ] Romero fresco — **1 ramita grande** — aceite al romero zuppa viernes, confitado 🌱
-- [ ] Rúcula fresca — **150 g** — smørrebrød jueves, ensaladas 🌱
-- [ ] Jengibre fresco — **150 g** — emulsión miso-jengibre, marinadas asiáticas, ash-e-reshteh
-- [ ] Cúrcuma fresca — **100 g** — ash-e-reshteh, vinagreta (el menú pide cúrcuma fresca específicamente)
-- [ ] Jalapeño fresco — **6 pzas** — salsa verde tomatillo 🌱
-- [ ] Chile morita seco — **50 g** — salsa morita ahumada lunes comida
-- [ ] Chile chipotle seco o en adobo — **1 lata pequeña** — marinada salmón al pastor
-- [ ] Betabel (remolacha) — **3 pzas medianas** — chermoula sábado, asadas en meal prep 🌱
-- [ ] Shiitake frescos — **250 g** — chawan-mushi miércoles, dashi, base umami
-- [ ] Espárragos frescos — **300 g** — tofu yakitori domingo cena 🌱
-- [ ] Hinojo — **1 bulbo** — caldo de verduras, chermoula (complemento aromático) 🌱
-- [ ] Durazno fresco — **5 pzas** — colación martes + extra 🌱
-- [ ] Kiwi — **8 pzas** — colación sábado + extra 🌱
-- [ ] Lima (kaffir o Key lime) — **6 pzas** — ralladura colaciones, leche de tigre, gravlax
+- [ ] **Nopal fresco** — 4 piezas medianas — *Overnight oats Lun desayuno (cocido en cubos), tlayuda Dom, colaciones* · **Verdura muy específica; Costco no tiene**
+- [ ] **Bok choy** — 4 piezas — *Ramen Lun cena: 100g ATM + 100g IOB* · **No está en Costco**
+- [ ] **Espárragos** 🌱 — 1 kg — *Tikka Masala Mar (100+134g), bacalao Mié (100+134g), salmón Jue (100+134g), doenjang Vie (80+134g); uso alto toda la semana* · **Costco a veces tiene, pero poca certeza → City Market por seguridad**
+- [ ] **Ejotes tiernos** 🌱 — 200 g — *Tlalpeño Jue comida: 60g×2* · **Cantidad exacta**
+- [ ] **Jícama** 🌱 — 3 kg — *Colaciones diarias ATM y IOB: 130g+130g×7 días ≈ 1.8 kg; jícama en bastones toda la semana* · **Costco no tiene con certeza**
+- [ ] **Daikon** — 1 pieza mediana — *Tataki Mié (encurtido): 40g ATM + 40g IOB + 3er ≈ 150g total* · **No está en Costco**
+- [ ] **Hongos shiitake frescos** — 200 g — *Doenjang jjigae Vie cena: 80g ATM + 80g IOB* · **No está en Costco**
+- [ ] **Poro (puerro)** — 2 piezas — *Salmón confitado Jue (poro caramelizado): 60g ATM + 40g IOB* · **Costco no tiene con certeza**
+- [ ] **Berros frescos** — 1 manojo — *Tahdig Vie desayuno: 40g ATM + 40g IOB* · **No está en Costco**
+- [ ] **Tomatillos** — 500 g — *Salsa verde prep (Mar tacos, Vie colación, Dom tlayuda)* · **Costco no tiene**
+- [ ] **Papa amarilla** — 600 g — *Causa limeña Vie: 150g ATM + 80g IOB + 3er ≈ 430g + margen* · **Papa amarilla específica, Costco no tiene**
+- [ ] **Albahaca fresca** — 2 manojos — *Salsa vierge Jue, arrabiata Dom cena, bruschetta Sáb* · **Costco solo tiene seco**
+- [ ] **Cilantro fresco** — 2 manojos — *Tlalpeño Jue, causa Vie, tacos Mar, tlayuda Dom*
+- [ ] **Epazote fresco** — 1 manojo — *Tlalpeño Jue, quesadilla Vie, tlayuda Dom* · **No está en Costco**
+- [ ] **Eneldo fresco** — 1 manojo — *Smørrebrød Jue colación AM* · **No está en Costco**
+- [ ] **Cebollín fresco** — 1 manojo — *Doenjang jjigae Vie cena* · **No está en Costco**
+- [ ] **Hierbas de la colación AM varias** — *Tomillo fresco, romero fresco* — 1 manojo c/u — *Salmón confitado Jue, marinadas* · **Costco solo tiene seco**
 
 ---
 
 ## 4. 🧀 Quesos y Lácteos
 
-- [ ] Tofu sedoso (silken tofu) — **400 g** — batido domingo colación PM *(también puede ser en sección de refrigerados asiáticos)*
+- [ ] **Queso brie** — 150 g — *Tartine Lun colación AM: 30g ATM* · **Artesanal, Costco no tiene**
+- [ ] **Queso feta light** — 200 g — *Shakshuka Dom: 30g ATM + 10g IOB; colaciones varios* · **Costco no tiene feta de calidad**
+- [ ] **Queso cottage** — 400 g — *Smørrebrød Jue (80g ATM + 40g IOB), bruschetta Sáb (80g+40g); uso 2 recetas ✅*
+- [ ] **Queso panela light** — 300 g — *Quesadilla Vie (40g+20g), tlayuda Dom (40g+20g)*
+- [ ] **Leche de almendra sin azúcar** — 3 L — *Overnight oats Lun (200+100ml), smoothie Jue (200+150ml), varias; Costco no siempre tiene leche de almendra → City Market por seguridad*
+- [ ] **Leche de avena** — 1 L — *Smoothie bowl Mié desayuno (150+100ml)* · **Costco no tiene con certeza**
+- [ ] **Crema para batir** — 250 ml — *Si se usa en tikka masala o salmón confitado (cantidad pequeña)* · **Cantidad exacta**
 
 ---
 
 ## 5. 🌶️ Especias y Condimentos Gourmet
 
-- [ ] Pasta harissa — **1 frasco (150–200 g)** — confitado pollo (meal prep central de la semana), aderezo brocheta martes
-- [ ] Miso blanco (shiro miso) — **300 g** — emulsión miso-jengibre, marinada tempeh; buscar marca japonesa (Hikari o similar)
-- [ ] Pasta de ají amarillo — **1 frasco** — leche de tigre tiradito jueves
-- [ ] Achiote en pasta — **100 g** — marinada salmón al pastor viernes
-- [ ] Tahini natural artesanal — **300 g** — kofta martes, hummus edamame, emulsión miso-tahini
-- [ ] Sriracha — **1 botella** — salsa okonomiyaki domingo
-- [ ] Za'atar — **1 frasco pequeño** — acabados árabes / levantinos, kofta
-- [ ] Comino en grano — **50 g** — koftas, garbanzos especiados (mejor calidad que Costco)
-- [ ] Cardamomo molido — **30 g** — ash-e-reshteh persa, kofta árabe
-- [ ] Cilantro en semilla molido — **30 g** — chermoula, kofta
-- [ ] Pimienta de Jamaica (allspice) — **30 g** — kofta árabe, marinadas árabes
-- [ ] Sumac — **1 frasco** — kofta, acabados árabes, brocheta
-- [ ] Canela en rama — **4 ramas** — ash-e-reshteh persa
-- [ ] Nuez moscada — **1 entera o molida** — chawan-mushi, pisto manchego
-- [ ] Vinagre de arroz premium — **500 ml** — encurtidos pepino/cebolla, gohan, marinadas; mejor calidad que Costco
+- [ ] **Pasta miso blanco** — 200 g — *Ramen Lun cena (caldo dashi-miso), glaseado miso-jengibre Mié* · **No está en Costco**
+- [ ] **Doenjang (pasta de soya coreana fermentada)** — 200 g — *Doenjang jjigae Vie cena: 15g ATM + 10g IOB; pequeño frasco* · **No está en Costco**
+- [ ] **Gochujang** — 200 g — *Salsa gochujang-miel prep dominical (bibimbap Lun), marinada pollo sous vide* · **No está en Costco**
+- [ ] **Pasta de ají amarillo** — 100 g — *Causa limeña Vie: 15g ATM + 10g IOB + 3er* · **No está en Costco**
+- [ ] **Salsa rocoto (pasta o en frasco)** — 100 g — *Causa limeña Vie: 30g+20g* · **No está en Costco**
+- [ ] **Harissa** — 100 g — *Shakshuka Dom desayuno* · **No está en Costco**
+- [ ] **Sumac** — 50 g — *Wrap de pavo Mié colación AM* · **No está en Costco**
+- [ ] **Baharat (mezcla árabe: canela-clavo-cardamomo-pimienta)** — 50 g — *Kabsa Sáb comida; se puede hacer en casa con especias Costco o comprar mezclado* · **City Market si quieres mezcla lista**
+- [ ] **Garam masala** — 50 g — *Tikka masala Mar cena* · **City Market cantidad exacta; Costco no siempre tiene**
+- [ ] **Comino negro (nigella seeds)** — 30 g — *Menemen Sáb desayuno* · **No está en Costco**
+- [ ] **Cardamomo molido** — 30 g — *Arroz basmati tikka, kabsa Sáb* · **Costco no tiene con certeza**
+- [ ] **Azafrán** — 1 gramo (sobre pequeño) — *Tahdig Vie desayuno, kabsa Sáb* · **No está en Costco**
+- [ ] **Matcha en polvo (ceremonial o culinario)** — 30 g — *Smoothie bowl Mié desayuno* · **No está en Costco**
+- [ ] **Lúcuma en polvo** — 100 g — *Smoothie Jue desayuno* · **No está en Costco**
+- [ ] **Maca en polvo** — 100 g — *Smoothie Jue desayuno* · **No está en Costco**
+- [ ] **Espirulina en polvo** — 50 g — *Smoothie bowl Mié desayuno* · **No está en Costco**
+- [ ] **Semillas de cáñamo** — 100 g — *Smoothie bowl Mié desayuno: 15g ATM* · **No está en Costco**
+- [ ] **Semillas de girasol** — 100 g — *Smoothie Jue desayuno: 15g ATM* · **No está en Costco**
+- [ ] **Semillas de sésamo (negro y blanco)** — 150 g — *Tataki Mié (sésamo negro coating), bibimbap Lun, bowl Dom, ramen* · **Costco no tiene sésamo negro con certeza**
+- [ ] **Aceite de sésamo tostado** — 150 ml — *Ramen Lun (5ml), doenjang Vie (5ml)* · **Premium, no está en Costco**
+- [ ] **Piñones** — 50 g — *Kabsa Sáb: 10g ATM* · **No está en Costco**
 
 ---
 
-## 6. 📦 Conservas y Productos Importados
+## 6. 🥫 Conservas y Productos Importados
 
-- [ ] Kombu (alga seca) — **50 g** — dashi casero miércoles desayuno (base del chawan-mushi)
-- [ ] Katsuobushi (hojuelas de bonito) — **50 g** — dashi casero + acabado okonomiyaki domingo
-- [ ] Tamari bajo en sodio — **300 ml** — marinada tofu, salsa yakitori tare; Costco tiene soya pero tamari es diferente
-- [ ] Mirin — **300 ml** — glaseado tare yakitori, marinadas japonesas
-- [ ] Sake de cocina — **300 ml** — marinadas japonesas, dashi
-- [ ] Salsa ponzu — **150 ml** — yakitori domingo cena; o preparar con tamari+limón+dashi
-- [ ] Aceite de sésamo tostado — **150 ml** — marinadas asiáticas, acabado yakitori
-- [ ] Pasta de tamarindo — **100 g** — salsa matbucha árabe, marinada árabe
-- [ ] Aceitunas kalamata — **200 g** — niçoise miércoles, souvlaki domingo
-- [ ] Alcaparras en sal o vinagre — **1 frasco pequeño** — niçoise, acabados mediterráneos
-- [ ] Lentejas beluga / negras secas — **400 g adicionales** *(si Costco no tiene beluga específicamente)* — zuppa + ash-e-reshteh
+- [ ] **Alcaparras (frasco)** — 100 g — *Smørrebrød Jue (15g×2), salsa vierge Jue, arrabiata Dom* · **Alcaparras de calidad, City Market**
+- [ ] **Aceitunas kalamata (frasco)** — 150 g — *Bacalao vizcaína Mié: 20g ATM* · **City Market**
+- [ ] **Pasta de tamarindo** — 100 g — *No aparece en menú explícitamente → **solo si se usa en marinada; verificar antes de comprar***
+- [ ] **Dashi (caldo japonés en sobre o líquido)** — 4 sobres / 500 ml — *Ramen Lun cena (caldo dashi-miso); o usar caldo pollo + miso como alternativa* · **City Market si se quiere auténtico**
+- [ ] **Tamari (salsa soya sin gluten)** — 150 ml — *Huevo marinado Lun, teriyaki Dom; Kikkoman de Costco es soya regular; tamari es diferente* · **City Market cantidad exacta**
+- [ ] **Mirin** — 150 ml — *Teriyaki Dom, glaseado miso* · **No está en Costco**
+- [ ] **Sake de cocina** — 150 ml — *Teriyaki Dom* · **No está en Costco**
+- [ ] **Vinagre de arroz** — 200 ml — *Encurtido daikon Mié, encurtido cebolla/zanahoria prep* · **City Market**
+- [ ] **Rye crispbread / galletas de centeno** — 1 paquete (200g) — *Smørrebrød Jue: 80g ATM + 30g IOB* · **City Market o tienda especializada; Costco no tiene**
+- [ ] **Farro perlado** — 300 g — *Salmón confitado Jue: 150g ATM + 75g IOB* · **No está en Costco**
+- [ ] **Hummus de garbanzo** — 300 g — *Wrap Mié colación AM: 50g ATM + 30g IOB; o hacer casero con garbanzos Costco + tahini* · **City Market si se compra listo; o preparar casero**
+- [ ] **Tahini (pasta de ajonjolí)** — 150 g — *Para hummus casero si se prepara en meal prep* · **City Market**
+- [ ] **Pasta de curry (tikka masala base)** — 100 g — *Tikka masala Mar; o hacer casero con especias* · **City Market si se compra listo**
+
+---
+
+## 7. 🫒 Aceites y Vinagres
+
+- [ ] **Vinagre de jerez o manzana artesanal** — 250 ml — *Encurtidos rápidos (zanahoria-jalapeño-cebolla), salsa vierge* · **City Market; Costco solo tiene balsámico`, prep: `# 🏪 Plan de Meal Prep
+## Semana del 05 de June de 2026
+
+# 🗓️ PLAN DE MEAL PREP — SEMANA 8–14 DE JUNIO 2026
 
 ---
 
-## 7. 🫙 Aceites y Vinagres
+## SÁBADO 7 DE JUNIO — Por la tarde (45–60 min)
 
-- [ ] Aceite de oliva extra virgen premium (italiano o español) — **500 ml** — acabados en crudo, aceite al romero; para cocción usar el de Costco
-- [ ] Vinagre de jerez — **250 ml** — matbucha árabe, vinagreta dijon
-- [ ] Vinagre de champagne — **250 ml** — vinagretas delicadas, gravlax brine
+> Todo lo que necesita 24h+ para funcionar correctamente
+
+### 🥩 Marinados (hacer en el orden indicado)
+
+**1. Pollo sous vide coreano (para lunes comida)**
+- Pesar **600g de pechuga de pollo** (300g ATM + 200g IOB + 100g extra para caldo tlalpeño jueves)
+- Mezclar marinada: 40g gochujang · 20ml salsa de soya baja sodio · 15ml aceite de sésamo · 10g miel · 3 dientes de ajo rallado · 10g jengibre rallado · 5g azúcar morena
+- Bolsa al vacío o bolsa zip con toda la mezcla; masajear, sellar, refrigerar
+
+**2. Camarones al ajillo (para viernes comida — cocinar CRUDO el domingo)**
+- Pelar y desvenar **600g de camarón mediano** (200g ATM + 120g IOB + 200g 3er comensal + 80g extra)
+- Marinada: 6 dientes de ajo laminado · 30ml aceite de oliva · ralladura de 1 limón · 5g chile de árbol seco · sal · pimienta
+- Bolsa hermética, refrigerar. **Nota:** estos NO se cocinan el domingo — la cocción de 4 min ocurre el viernes al calentar.
+
+**3. Salmón para confitar (jueves cena + lunes cena)**
+- Porcionar **800g de filete de salmón** sin piel: 4 porciones de 200g
+  - Lunes cena: ATM 250g + IOB 120g = **370g** (congelar en crudo marinado)
+  - Jueves cena: ATM 250g + IOB 120g = **370g** (confitar el domingo)
+- Marinada común: 60ml aceite de oliva · ralladura + jugo de 1 limón · 3 ramas de tomillo · 2 dientes de ajo aplastados · sal kosher
+- Separar en dos bolsas; la porción del lunes al **congelador** hoy mismo; la porción del jueves al **refrigerador**
+
+**4. Remojo de leguminosas**
+- **Garbanzos secos 300g** → enjuagar y cubrir con agua fría 3× el volumen, refrigerar (para caldo tlalpeño jueves + shakshuka domingo)
+- **Frijoles negros secos 150g** → remojar igual (para torta martes + tlayuda domingo)
+
+**5. Bacalao desalado (para miércoles cena)**
+- Si usas bacalao salado: poner **500g** en tazón con agua fría, cambiar el agua cada 8h (sábado tarde + noche + domingo mañana)
+- Si usas bacalao fresco: omitir este paso
+
+**6. Huevos marinados en tamari (para lunes cena)**
+- Hervir **8 huevos** exactamente 7 minutos desde agua hirviendo; enfriar en baño de hielo 5 min; pelar
+- Marinada: 120ml tamari · 60ml mirin · 60ml agua · 1 cdita de azúcar
+- Calentar la marinada a fuego medio hasta disolver el azúcar; enfriar completamente antes de agregar los huevos
+- Sumergir los huevos en frasco hermético, refrigerar mínimo 8h (idealmente 24h)
 
 ---
+
+## DOMINGO 8 DE JUNIO — Sesión Principal de Meal Prep
+
+**Duración objetivo: 4.5–5 horas**
+**Cronograma sugerido: 9:00am – 2:00pm**
+
 ---
 
-# 💰 RESUMEN DE PRESUPUESTO ESTIMADO
+### TURNO 1 — 9:00am | Arrancar todo lo de largo tiempo
 
-## 🏬 City Market Santa Fe
+**→ HORNO a 180°C (precalentar)**
 
-| Categoría | Rango estimado MXN |
+| Quemador / Equipo | Tarea |
 |---|---|
-| Pescadería premium (salmón gravlax calidad) | $400 – $600 |
-| Proteínas especiales (tempeh, tofu firme, silken) | $300 – $450 |
-| Hierbas frescas (eneldo, estragón, tomillo, romero, menta, cilantro, perejil) | $250 – $380 |
-| Verduras especiales (shiitake, espárragos, betabel, jengibre, cúrcuma fresca) | $350 – $500 |
-| Especias y condimentos gourmet (miso, harissa, tahini, ají amarillo, za'atar, sumac, tamari) | $600 – $900 |
-| Conservas importadas (kombu, katsuobushi, mirin, sake cocina, ponzu, sésamo, aceitunas, alcaparras) | $450 – $700 |
-| Aceites y vinagres premium | $250 – $400 |
-| **Subtotal City Market** | **$2,600 – $3,930** |
+| **Olla grande (10L)** | Garbanzos + frijoles: escurrir remojo, poner a cocer por separado |
+| **Olla mediana** | Caldo base para doenjang jjigae (viernes cena) |
+| **Horno** | Pimientos rojos para asar (sábado desayuno + salsa vizcaína) |
+| **Sous vide / Olla baja** | Llenar con agua, subir a 65°C |
+
+**DETALLE POR ESTACIÓN:**
+
+**🫕 Olla 1 — Garbanzos** (quemador 1)
+- Escurrir garbanzos, cubrir con agua limpia fría, añadir 1 hoja de laurel y ½ cebolla
+- Llevar a hervor, reducir a fuego medio-bajo
+- **Tiempo estimado:** 60–75 min hasta que estén tiernos pero enteros
+- No salar hasta los últimos 10 min
+
+**🫕 Olla 2 — Frijoles negros** (quemador 2)
+- Igual que garbanzos; añadir epazote si tienes
+- **Tiempo estimado:** 60–70 min
+- Reservar el caldo de cocción (sirve para el refrito)
+
+**🌡️ Sous vide** (quemador 3 o circulador eléctrico)
+- Agua a 65°C
+- Introducir la bolsa del pollo coreano marinado desde ayer
+- **Tiempo:** 1h 30min a exactamente 65°C
+
+**🔥 Horno — Pimientos rojos**
+- Colocar 4 pimientos rojos enteros + 2 tomates enteros en charola con papel encerado
+- 180°C por 35–40 min hasta que la piel ampolla y se carbonice ligeramente
+- Sacar, cubrir con papel film 15 min para que suden → pelar fácil
+
+**⏱️ MIENTRAS TODO ESTO ARRANCA (9:00–9:30am):**
+- Cocer los **8 huevos duros** para la semana: 8 min desde agua hirviendo, agua fría, pelar, refrigerar en recipiente con tapa
+- Poner a hervir **1.5L de agua** para blanquear verduras después
+- Sacar el salmón del refrigerador (el de jueves) para atemperar 20 min antes de confitar
 
 ---
 
-## 📊 TOTAL SEMANA
+### TURNO 2 — 9:30am | Proteínas principales (batch completo)
 
-| | Rango MXN |
-|---|---|
-| **Costco** | **$4,250 – $5,650** |
-| **City Market** | **$2,600 – $3,930** |
-| **TOTAL ESTIMADO** | **$6,850 – $9,580** |
-| **Promedio central realista** | **≈ $8,200 MXN** |
+> El sous vide del pollo coreano sigue corriendo. Garbanzos y frijoles siguen.
 
----
+**HORNO: bajar a 60°C cuando terminen los pimientos (≈9:40am) → entrar el salmón**
 
-> **💡 Notas de presupuesto:**
-> - El rango amplio se debe a la variabilidad de precios en salmón fresco y camarones según temporada
-> - Tempeh y tofu firme de calidad japonesa en City Market pueden ser los ítems más caros del ticket proporcionalmente
-> - Si el presupuesto aprieta: el salmón de Costco funciona perfectamente para el curado (gravlax); ahorras ~$300–400 MXN
-> - Los condimentos y conservas asiáticas (mirin, sake, kombu, katsuobushi) se consiguen también en tiendas como Sanborns Gourmet o El Globo Interlomas a precios similares
-> - Sake de cocina y mirin pueden encontrarse en Costco ocasionalmente — verificar disponibilidad antes de ir a City Market`, prep: `# 🏪 Plan de Meal Prep
-## Semana del 04 de June de 2026
+**🐟 Salmón confitado — HORNO 60°C** (solo para jueves; el de lunes va congelado crudo)
+- Sacar el salmón (370g: ATM 250g + IOB 120g) de su marinada
+- Porcionar en fuente de vidrio o cerámica; cubrir completamente con el aceite de oliva de la marinada + añadir más hasta sumergir
+- Introducir al horno a **60°C por 25–30 min**
+- El salmón estará listo cuando cambia de translúcido a opaco rosado pero aún se desmorona suave al tacto
+- Sacar, enfriar a temperatura ambiente 20 min, refrigerar en su aceite
 
-# 🍳 PLAN DE MEAL PREP — Semana 08–14 Junio 2026
+**🍗 Pollo para tikka masala (martes cena) + caldo tlalpeño (jueves) + teriyaki (domingo) + doenjang (viernes)**
 
-> **Cocina activa:** Domingo 14 de junio (sesión principal 4–5 h) + sábado 13 tarde (30–45 min marinados)
-> **Principio rector:** Entre semana = calentar + ensamblar, máximo 10 min por comida
+*Esta es la proteína que más trabaja la semana — batch grande*
 
----
+Necesitas en total:
+- Martes cena: ATM 250g + IOB 120g cocido = **~500g crudo**
+- Jueves comida (deshebrado): ATM 200g + IOB 120g cocido = **~400g crudo**
+- Viernes cena (en sopa): ATM 100g + IOB 50g = **~200g crudo**
+- Domingo comida (teriyaki): ATM 200g + IOB 120g = **~400g crudo**
+- **Total crudo necesario: ≈1,500g de pechuga**
 
-## 🗓️ SÁBADO 13 DE JUNIO — Tarde (30–45 min)
-*Después de la comida trampa de la noche, o antes si prefieres. Objetivo: dejar todo marinado/remojado para el domingo.*
+**División técnica:**
+1. **Tikka masala + tlalpeño + doenjang** → hervir/pochear en caldo aromático:
+   - Olla con 2L agua · ½ cebolla · 2 dientes ajo · sal · pimienta negra en grano · 1 zanahoria
+   - Llevar a 85°C (no a hervor pleno — técnica de pochado)
+   - Introducir **1,100g de pechuga** (para martes, jueves y viernes)
+   - Cocer 20–22 min a 85°C hasta temperatura interna 74°C
+   - Reservar el caldo (base del caldo tlalpeño y del doenjang jjigae)
+   - Enfriar y desmenuzar/rebanar según uso (ver Turno 4)
 
-### ① Salmón — Curado (Gravlax) \`[15 min activos]\`
-**Total a curar:** ATM usa 80g lunes + 100g viernes = 180g · IOB usa 75g lunes + 90g viernes = 165g · 3er comensal viernes = 100g → **curar 500g de filete en una sola pieza** (margen incluido)
+2. **Teriyaki (domingo)** → saltear al final en sartén con salsa (Turno 3)
 
-Mezcla de curación:
-- 40g sal kosher gruesa
-- 30g azúcar de coco (o azúcar mascabado)
-- 1 cucharadita pimienta negra molida
-- 20g eneldo fresco picado fino
-- Ralladura de 1 limón
+**🥩 Res molida para tacos (martes comida)**
+- Quemador libre: sartén de hierro a fuego alto
+- Dorar **600g de res molida 93%** (ATM 200g × 2 porciones martes + ATM 200g + IOB 120g = total: ATM necesita 200g, IOB 120g, 3er comensal 200g = **520g mínimo, hacer 600g**)
+- Dorar sin mover 3 min, romper, salpimentar
+- Añadir: 1 cdita comino tostado · ½ cdita chile guajillo en polvo · ½ cdita achiote · ½ cdita ajo en polvo · ½ cdita orégano
+- Mezclar 2 min; escurrir grasa sobre colador; probar y ajustar sal
+- Enfriar completamente antes de refrigerar
 
-Procedimiento:
-1. Secar el filete de salmón con papel absorbente. Revisar que no queden espinas con pinza.
-2. Mezclar todos los ingredientes de la curación en un tazón.
-3. Extender la mitad de la mezcla en el fondo de un contenedor hermético de vidrio (mínimo 20×15 cm).
-4. Colocar el salmón con la piel hacia abajo. Cubrir la superficie de la carne con el resto de la mezcla, presionando con la mano para adherir.
-5. Sellar herméticamente. **Refrigerar con un peso encima** (otra tapa + lata de conservas) durante **36–40 horas** → listo el domingo a mediodía para porcionar.
+**🥩 Res para kabsa (sábado comida)**
+- Mismo sartén de hierro: sellar **440g de filete de res magro** (ATM 200g + IOB 120g = 320g mínimo; hacer 440g)
+- Sellar a fuego muy alto: 3 min/lado para sellar; no debe cocer completamente
+- Transferir a olla pequeña; añadir: ½ cdita canela · ¼ cdita clavo molido · ¼ cdita cardamomo · ½ cdita pimienta negra · ½ cdita comino (mezcla baharat) · 200ml caldo de res o agua
+- Cocinar tapado a fuego bajo 25–30 min hasta tierno; el jugo reducirá en salsa daqqus (ver Turno 3)
 
----
+**🐟 Atún sellado (miércoles comida)**
+- Sartén de hierro muy caliente a fuego máximo
+- Secar perfectamente el atún con papel (ATM 200g + IOB 120g + 3er comensal 200g = **520g de atún**, idealmente en 2–3 bloques)
+- Cubrir los bloques con sésamo negro presionando
+- Sellar **exactamente 30 segundos por lado** (incluye los 4 lados)
+- El interior debe quedar completamente crudo — rosado oscuro brillante
+- Enfriar sobre rejilla; NO sobre papel que crea vapor y continúa la cocción
+- Refrigerar descubierto 15 min, luego envolver en film apretado
 
-### ② Pollo — Marinado en Harissa \`[5 min activos]\`
-**Total:** 3 pechugas (≈1.1 kg total). Usos: lunes desayuno (salmón), lunes comida 160g ATM/150g IOB, lunes cena 140g ATM+IOB, miércoles comida 160g ATM/150g IOB + 160g 3er comensal.
+> ⚠️ **NOTA CRÍTICA:** El atún sellado pierde calidad después de 2 días. Cocinar el domingo, consumir el miércoles = día 3. Aceptable. Si prefieres máxima calidad, puedes sellar el martes por la noche (2 min de trabajo activo).
 
-> *Nota: El desayuno del lunes lleva salmón curado, no pollo. El pollo cubre: lunes comida + lunes cena + miércoles comida.*
-
-Marinada harissa:
-- 80g pasta harissa
-- 30g aceite de oliva EVOO
-- 2 dientes ajo rallados
-- Jugo de ½ limón
-- 1 cucharadita comino molido
-- 1 cucharadita pimentón ahumado
-- ½ cucharadita sal
-
-Procedimiento:
-1. Aplanar las pechugas a grosor uniforme de 2 cm con mazo de cocina o fondo de sartén.
-2. Mezclar todos los ingredientes de la marinada.
-3. Colocar las pechugas en bolsa zip grande o contenedor, verter marinada, masajear bien. Sellar.
-4. **Refrigerar 12–18 horas** → domingo se confitan directamente desde el frío.
+**🦐 Camarones** — NO cocinar hoy. Ya están marinados en crudo desde ayer. Dejar en refrigerador hasta el viernes.
 
 ---
 
-### ③ Pavo — Preparar para braseado \`[5 min activos]\`
-**Total:** 600g pechuga de pavo. Usos: martes desayuno, martes cena, miércoles desayuno, jueves desayuno, viernes cena, sábado desayuno.
+### TURNO 3 — 11:00am | Granos, salsas, verduras y preparaciones de apoyo
 
-Brine seco:
-- 1 cucharadita sal kosher por cada 250g de carne
-- ½ cucharadita pimienta negra
-- ½ cucharadita tomillo seco
-- ¼ cucharadita nuez moscada
+> El salmón ya salió del horno. El sous vide del pollo termina ≈10:30am (sacarlo, enfriar, no abrir la bolsa hasta que baje a temperatura ambiente). Los garbanzos y frijoles deberían estar listos o casi.
 
-Procedimiento:
-1. Aplicar brine seco uniforme sobre toda la superficie del pavo.
-2. Colocar sobre rejilla dentro de un contenedor destapado en el refrigerador (así la piel se seca → mejor sellado al brasear).
-3. **Refrigerar destapado 12–18 horas.**
+**ORGANIZACIÓN DE ESTE BLOQUE: 4 estaciones simultáneas**
 
 ---
 
-### ④ Camarones — Marinado crudo \`[5 min activos]\`
-**Total:** 600g camarones medianos pelados y desvenados. Usos: jueves comida 200g ATM/190g IOB, jueves cena 150g ATM+IOB.
+**ESTACIÓN A — Horno a 200°C | Hornear tandas**
 
-Marinada leche de tigre base:
-- 60g pasta ají amarillo
-- Jugo de 3 limones
-- 2 dientes ajo rallados
-- 1 cucharadita sal
-- 30g cilantro picado
-- 15g aceite de oliva
+**Tanda 1 — Entrar al horno:**
+- **Camote / papa amarilla** para la causa del viernes: 300g papa amarilla + camotes opcionales, en charola a 200°C por 35–40 min hasta suaves al pinchar
+- **Jitomates cherry confitados** (sábado colación AM): 160g jitomate cherry + 20ml AOVE + tomillo + sal; charola pequeña a 160°C (bajar temperatura) 45 min → sacar cuando estén arrugados y concentrados
 
-Procedimiento:
-1. Pelar y desvenar camarones si no vienen limpios.
-2. Dividir en dos bolsas: **Bolsa A "Tiradito"** 390g (200 ATM + 190 IOB) con la marinada completa · **Bolsa B "Levantino"** 300g (150 ATM + 150 IOB) con solo sal, pimienta, comino, coriandro — se cocinará con especias levantinas el domingo.
-3. Sellar y **refrigerar máximo 24 horas** (no más — el ácido "cocina" la proteína).
+**Tanda 2** (cuando salen los anteriores, ≈11:40am):
+- **Nopales asados**: limpiar y cortar en tiras 240g (80g ATM dom + 80g IOB dom + extra para desayunos); asar a 200°C 20 min con sal y aceite mínimo
 
 ---
 
-### ⑤ Tempeh — Marinado en miso-chermoula \`[5 min activos]\`
-**Total:** 360g. Uso: sábado comida.
+**ESTACIÓN B — Quemadores | Granos (todos de una vez)**
 
-Marinada:
-- 40g miso blanco
-- 30g aceite de oliva
-- 20g tamari
-- Jugo de 1 limón
-- 1 cucharadita jengibre rallado
-- 1 cucharadita comino
-- ½ cucharadita pimentón
-- 10g perejil + cilantro picados (agregar el domingo la parte fresca)
+*Usar todas las ollas disponibles en paralelo:*
 
-Procedimiento:
-1. Cortar tempeh en losas de 1.5 cm.
-2. Mezclar marinada (excepto hierbas frescas), verter sobre tempeh en contenedor.
-3. **Refrigerar 12–24 horas.**
+| Olla | Grano | Agua | Tiempo | Total a cocer |
+|---|---|---|---|---|
+| **Olla A** | Arroz jazmín | 1:1.5 agua | 18 min | 600g crudo → ~1,200g cocido |
+| **Olla B** | Arroz basmati | 1:1.5 agua | 15 min con 3 vainas cardamomo | 400g crudo → ~800g cocido |
+| **Olla C** | Arroz integral | 1:2 agua | 40 min | 400g crudo → ~800g cocido |
+| **Olla D** | Quinoa tricolor | 1:1.75 caldo verduras | 15 min | 300g crudo → ~600g cocido |
+| **Olla E (pequeña)** | Farro perlado | 1:3 agua con laurel | 25 min | 200g crudo → ~450g cocido |
 
----
+> 💡 Estrategia: Arrancar arroz integral primero (40 min), luego el resto. Jazmín y basmati en los últimos 20 min.
 
-### ⑥ Garbanzos secos — Remojo \`[2 min activos]\`
-Si usas garbanzos secos (más económicos), cubrir con agua fría abundante (el triple en volumen), 1 cucharadita sal. **Remojar 12 horas mínimo.**
-Si usas garbanzos de lata → omitir este paso, escurrir y enjuagar el domingo.
+**Pasta integral:** cocer **400g** al dente en agua con sal abundante (10L agua, 10g sal por litro); escurrir al 80% cocción, pasar por agua fría, mezclar con 15ml AOVE para que no pegue. Porcionar.
+
+**Noodles de arroz (lunes cena):** hidratar **225g** en agua caliente 8 min, escurrir, mezclar con gotitas de aceite de sésamo.
 
 ---
 
-### ⑦ Tofu firme — Prensado + marinado \`[5 min activos]\`
-**Total:** 400g. Uso: domingo cena.
+**ESTACIÓN C — Licuadora / Procesador | Salsas (todas de una vez)**
 
-Procedimiento:
-1. Envolver tofu en 4 capas de papel absorbente, colocar entre dos tablas, poner peso encima (libro pesado + lata). **Prensar 30 min mínimo** → idealmente toda la noche en el refrigerador entre toallas de tela.
-2. Marinada tare (preparar el domingo cuando esté prensado — ver domingo turno 3).
+Hacer en este orden (de más delicada a más robusta para no limpiar entre cada una):
 
-> **Nota:** El prensado nocturno en el refrigerador es opcional pero da mejor textura. Si lo prensan desde el sábado, cambiar las toallas una vez.
+**1. Glaseado miso-jengibre** (miércoles comida) — sin cocción
+- Mezclar: 40g miso blanco · 20ml mirin · 15ml salsa de soya baja sodio · 10g jengibre rallado · 5g azúcar · 15ml agua caliente para soltar
+- Batir con tenedor hasta homogéneo. Frasco pequeño.
 
----
+**2. Salsa gochujang-miel** (lunes comida) — sin cocción
+- 40g gochujang · 20ml vinagre de arroz · 15g miel · 10ml aceite de sésamo · 5g ajo rallado · 5g jengibre rallado · 20ml agua
+- Batir hasta integrado. Frasco pequeño.
 
-## 🍳 DOMINGO 14 DE JUNIO — Sesión Principal
-**Duración objetivo: 4.5–5 horas · Inicio sugerido: 9:00 AM (después del desayuno y colación)**
+**3. Chermoula** (viernes comida) — sin cocción
+- Procesar: 1 manojo cilantro · 1 manojo perejil · 4 dientes ajo · 1 cdita comino tostado · 1 cdita pimentón · ½ cdita cúrcuma · jugo de 1 limón · 80ml AOVE · sal
+- Procesar hasta pasta gruesa. No licuar fino — textura rústica.
 
-> **Antes de arrancar:** Sacar del refrigerador: pollo marinado, pavo con brine seco. Encender horno. Poner agua a hervir en olla grande.
+**4. Salsa verde de tomatillo** (martes comida + domingo colación AM)
+- Asar 400g tomatillo + 2 chiles serranos + ½ cebolla en comal seco hasta carbonizar
+- Licuar con 1 diente ajo · sal · cilantro al gusto
+- Hervir la salsa 5 min en olla pequeña; enfriar
 
----
+**5. Tzatziki** (jueves cena) — sin cocción
+- Rallar ½ pepino, exprimir exceso de agua con paño
+- Mezclar: 200g yogurt griego · pepino rallado · 1 diente ajo rallado · 10ml AOVE · hojas de menta picada · sal · pimienta
+- Refrigerar inmediatamente
 
-### TURNO 1 — 9:00 AM · Arrancar todo lo de largo tiempo
+**6. Salsa vizcaína** (miércoles cena) — cocción corta
+- Usar los pimientos asados y pelados del Turno 1
+- Sofreír ½ cebolla + 3 dientes ajo en AOVE; añadir 400g jitomate san marzano machacado + pimientos en tiras + 1 cdita pimentón ahumado + 20g aceitunas kalamata picadas
+- Cocinar 20 min a fuego medio; salpimentar; enfriar
 
-#### 🔥 HORNO a 200°C (convección si disponible)
+**7. Salsa tikka masala** (martes cena)
+- En la misma olla donde estaba la vizcaína (o una nueva): sofreír ½ cebolla + 4 dientes ajo + 20g jengibre en AOVE
+- Añadir: 1 cdita garam masala · 1 cdita cúrcuma · 1 cdita comino · ½ cdita coriandro
+- Tostar especias 1 min; añadir 400g jitomate triturado + 150g yogurt griego batido (añadir fuera del fuego para evitar corte) + 100ml agua
+- Cocinar 15 min; licuar parcialmente (textura semidensa); regresar al fuego 5 min; enfriar
 
-**[HORNO — Bandeja 1]** Camote naranja — 1.5 kg total
-1. NO pelar. Lavar y secar los camotes.
-2. Pinchar con tenedor 8–10 veces cada uno.
-3. Untar ligeramente con aceite de oliva, sal gruesa.
-4. Colocar en bandeja con papel encerado.
-5. **Hornear 200°C / 50–60 min** hasta que al insertar cuchillo no encuentre resistencia y la cáscara esté arrugada.
-6. Sacar, enfriar 15 min, refrigerar enteros con cáscara (pelar al porcionar).
+**8. Salsa daqqus** (sábado comida)
+- Con los jugos de la cocción de la res + 200g jitomate bola asado + 1 chile de árbol + sal + comino
+- Licuar todo junto; colar si se desea más fina; reducir 5 min
 
-**PARALELO [HORNO — Bandeja 2, parrilla inferior]** Pimientos tricolores + verduras para pisto + poro
-- 4 pimientos enteros (para porciones de la semana: pisto manchego, cena levantina jueves)
-- 200g poro cortado en mitades longitudinales (para viernes cena)
-- **Hornear 200°C / 40 min** junto con camotes. Dar vuelta a los 20 min.
-- Sacar pimientos, meter en bolsa plástica hermética 10 min → pelar fácil.
+**9. Salsa teriyaki** (domingo comida)
+- 60ml tamari · 40ml mirin · 20ml sake (o vino blanco) · 10g azúcar · 5g jengibre rallado
+- Reducir en sartén pequeña 8 min hasta que nape la cuchara; reservar
 
-#### 🫕 ESTUFA — Quemador 1: Caldo de verduras (2+ litros)
-Arrancar de inmediato — necesita 90 min a fuego lento.
-
-Ingredientes:
-- 2 cebollas partidas a la mitad (dorar en la misma olla sin aceite 3 min)
-- 3 zanahorias troceadas
-- 4 tallos de apio
-- 1 cabeza de ajo partida a la mitad
-- Perejil, tomillo, laurel
-- 1 cucharadita pimienta negra en grano
-- 2.5 L agua fría
-
-Procedimiento:
-1. Olla grande sin aceite a fuego alto: dorar cebolla y ajo partidos a la mitad, cara plana hacia abajo, 3–4 min hasta carbonizar ligeramente → da color y sabor.
-2. Agregar resto de verduras, hierbas, pimienta. Cubrir con 2.5 L agua fría.
-3. Llevar a hervor, bajar a fuego mínimo. **Cocinar 90 min sin tapar.**
-4. Colar, reservar 2 L para la semana. El resto usar para brasear el pavo.
+**10. Salsa vierge** (jueves cena) — sin cocción
+- 150g jitomate bola en brunoise · 20 hojas albahaca en chiffonade · 15g alcaparras · 60ml AOVE · jugo de ½ limón · sal · pimienta
+- Mezclar en frío. No cocinar.
 
 ---
 
-#### 🫕 ESTUFA — Quemador 2: Arroz basmati integral (batch completo)
-**Total a cocinar:** 1.5 kg cocido ≈ 600g crudo
+**ESTACIÓN D — Quemador libre | Verduras y guarniciones**
 
-Cálculo de usos:
-- Lunes desayuno: 130g ATM + 135g IOB = 265g
-- Martes comida: 140g ATM + 145g IOB + 140g 3er = 425g
-- Miércoles desayuno: 110g ATM + 115g IOB = 225g
-- Jueves comida: 100g ATM + 105g IOB = 205g
-- Domingo cena: 130g ATM + 135g IOB = 265g
-- **Total: ≈1,385g cocido** → cocinar 560g crudo (rinde ~2.5×)
+**Blanquear en el mismo agua (de menor a mayor tiempo):**
+1. **Edamame pelado** 240g → 3 min agua hirviendo, agua fría
+2. **Ejotes** 120g → 4 min agua hirviendo, agua fría
+3. **Bok choy** 200g → 2 min agua hirviendo, agua fría
+4. **Espárragos** 600g (para toda la semana: lunes cena 214g + martes cena 234g + miércoles cena 234g + jueves cena 234g + viernes cena 214g) → 3 min agua hirviendo, agua fría; cortar puntas
 
-Procedimiento:
-1. Lavar arroz bajo agua fría hasta que salga clara (3–4 enjuagues).
-2. Remojar 20 min en agua fría → escurrir.
-3. Olla mediana: 560g arroz + 1,120 ml agua + 1 cucharadita sal + 1 trozo kombu (5 cm).
-4. Hervir destapado, bajar a mínimo, tapar herméticamente.
-5. **Cocinar 35–40 min** sin destapar.
-6. Apagar fuego, dejar reposar tapado 10 min.
-7. Destapar, esponjar con tenedor, retirar kombu. Enfriar extendido en bandeja antes de refrigerar.
+**Saltear en sartén antiadherente:**
+- **Espinacas** 360g con ajo laminado y aceite de oliva → 2 min hasta marchitar; escurrir bien
+- **Champiñones shiitake** 160g con soya y gotitas de sésamo → 4 min a fuego alto
+- **Zanahoria juliana/bastones** para bibimbap (lunes): 120g + gotitas aceite sésamo + sal · 2 min en sartén
+- **Poro caramelizado** (jueves): 2 poros limpios en rodajas → sartén a fuego bajo con 10ml AOVE + sal + 5g azúcar → 20–25 min removiendo hasta dorado
 
----
+**Encurtidos rápidos:**
+- **Cebolla morada**: 200g en juliana fina · cubrir con 100ml vinagre de manzana + 100ml agua + 10g sal + 10g azúcar + 5g orégano · dejar reposar 30 min mínimo; refrigerar
+- **Daikon encurtido** (para miércoles): 100g daikon en juliana + 50ml vinagre de arroz + 5g azúcar + 5g sal · mismo procedimiento
+- **Pepino marinado** (para jueves smørrebrød): 80g pepino en láminas + 40ml vinagre blanco + 5g sal + 3g eneldo seco
 
-#### 🫕 ESTUFA — Quemador 3: Garbanzos (si secos, escurrir y cocinar)
-**Total:** 400g cocidos
-
-Si partiste de secos (ya remojados):
-1. Escurrir el agua de remojo, enjuagar.
-2. Olla mediana: garbanzos + agua fría (el doble en volumen) + 1 hoja laurel + ½ cebolla + 2 dientes ajo.
-3. Hervir, espumar, bajar a fuego medio-bajo.
-4. **Cocinar 45–60 min** hasta suaves pero firmes. Salar al final.
-5. Escurrir, reservar el líquido de cocción (puede reemplazar caldo en recetas).
-
-Si son de lata: escurrir, enjuagar, reservar — se sazonan en turno 3.
-
-**PARALELO mientras garbanzos cocinan:** preparar dashi en quemador 4.
+**Gelatina light:**
+- Preparar 6 moldes de 480ml (lunes, martes, miércoles, jueves, viernes, sábado — cada uno ATM + IOB)
+- Usar sabores distintos o neutro con fruta natural; seguir instrucciones del paquete
+- Refrigerar mínimo 3h antes del primer uso (lunes cena)
 
 ---
 
-#### 🫕 ESTUFA — Quemador 4: Dashi casero ligero
-**Total:** 600 ml (para miércoles desayuno chawan-mushi × 2 porciones: 120 ml c/u + margen)
+**ESTACIÓN E — Preparaciones finales puntuales**
 
-Ingredientes:
-- 600 ml agua fría
-- 15g kombu (alga seca)
-- 15g katsuobushi (copos de bonito)
-
-Procedimiento:
-1. Olla pequeña: agua fría + kombu. **Calentar a fuego bajo-medio, 15–20 min**, sin hervir (máx 60°C para dashi de calidad — burbujas pequeñas apenas visibles).
-2. Cuando el agua esté a punto de hervir, retirar el kombu.
-3. Subir a fuego medio, agregar katsuobushi. **Infusionar 3–4 min** sin hervir vigorosamente.
-4. Colar con colador fino + gasa. Enfriar rápido en baño María inverso (tazón sobre hielo).
-5. Conservar en frasco hermético.
-
----
-
-### TURNO 2 — 10:00 AM · Proteínas principales
-
-> *En este punto: camotes y verduras en el horno (quedan ≈20–30 min), arroz en cocción, caldo hirviendo, garbanzos casi listos.*
-
-#### 🫕 ESTUFA — Quemador 1: Confitado de pollo harissa
-**Total:** 3 pechugas marinadas (~1.1 kg)
-
-El confitado a baja temperatura es la técnica clave de esta semana → pollo jugoso, fácil de desmenuzar, aguanta 4 días refrigerado sin secarse.
-
-Procedimiento:
-1. Sacar el pollo del refrigerador 15 min antes para que pierda frío.
-2. Sartén de hierro fundido o cazuela ancha de fondo grueso: calentar a fuego medio.
-3. Verter 80 ml aceite de oliva (el aceite de confitado — se puede reusar como aceite harissa para aderezar después).
-4. Agregar las pechugas con toda la marinada. Reducir a fuego **muy bajo** (termómetro: mantener 65–70°C en el aceite — apenas tiembla sin burbujear agresivamente).
-5. **Confitar 90–100 min**, volteando cada 30 min. Temperatura interna del pollo: 75°C.
-6. Retirar, reposar 10 min antes de desmenuzar o laminar.
-7. Desmenuzar 2 pechugas (para comidas que lo llevan deshebrado). Dejar 1 pechuga entera para laminar en la cena del lunes.
-8. Reservar el aceite harissa sobrante — oro líquido para aderezar.
-
-> **PARALELO:** Mientras el pollo confita (90 min pasivos), se hacen todas las demás preparaciones.
-
----
-
-#### 🫕 ESTUFA — Quemador 2: Braseado de pavo en caldo
-**Total:** 600g pechuga de pavo (con brine seco)
-
-Procedimiento:
-1. Secar el pavo con papel — el brine habrá extraído humedad superficial.
-2. Sartén de acero inoxidable a fuego alto: 15g aceite de oliva. Sellar el pavo por todos los lados hasta dorado profundo, ≈2–3 min por lado.
-3. Transferir a olla/cazuela con tapa. Agregar:
-   - 400 ml del caldo de verduras caliente (del quemador 1)
-   - 1 cebolla en cuartos
-   - 2 dientes ajo aplastados
-   - 2 hojas laurel
-   - 1 rama tomillo
-   - 5 granos pimienta negra
-4. Llevar a hervor, tapar, bajar a fuego muy bajo.
-5. **Brasear 60–70 min** hasta que el tenedor entre sin resistencia y la temperatura interna sea 82°C.
-6. Sacar, enfriar sobre rejilla 15 min.
-7. **Laminar 300g** (para smørrebrød y brocheta fría) y **desmenuzar 300g** (para sopas, menemen, zuppa).
-8. Reservar el caldo de braseado → filtrar y usar como base para zuppa del viernes.
-
----
-
-#### 🔥 HORNO 180°C — Mientras el horno baja de temperatura tras los camotes: Piña asada
-**Total:** 200g piña en rodajas (para viernes comida: 50g × 2 personas + 3er comensal + margen)
-
-1. Precalentar en rejilla media.
-2. Rodajas de piña de 1 cm, sin cáscara.
-3. Espolvorear con 5g azúcar de coco + pizca de chile de árbol molido.
-4. **Hornear 180°C / 20 min** hasta que los bordes caramelicen.
-5. Enfriar y refrigerar en contenedor hermético.
-
----
-
-#### 🫕 ESTUFA — Quemador 3: Lentejas beluga
-**Total:** 600g cocidas (≈240g crudas)
-
-Usos:
-- Martes desayuno: 120g ATM + 120g IOB = 240g
-- Viernes cena: 150g ATM + 150g IOB = 300g
-- Martes desayuno también lleva en caldo tipo sopa
-
-Procedimiento:
-1. Enjuagar las lentejas (las beluga no requieren remojo).
-2. Olla mediana: lentejas + agua fría (2.5× en volumen) + 2 hojas laurel + 1 cucharadita cúrcuma + ½ cebolla + 2 dientes ajo.
-3. Hervir, espumar, bajar a fuego medio.
-4. **Cocinar 25–30 min** — las beluga mantienen su forma mejor que las rojas; quieres que estén tiernas pero enteras.
-5. Salar al final (sal antes endurece la piel). Escurrir, retirar laurel, enfriar.
-
----
-
-#### 🫕 ESTUFA — Quemador 4: Res molida para kofta
-**Total:** 400g res magra 90/10
-
-Procedimiento de koftas pre-formadas y semi-cocidas:
-1. Mezclar la res molida con:
-   - 1 cucharadita comino molido
-   - 1 cucharadita cilantro molido
-   - ½ cucharadita canela
-   - ½ cucharadita allspice (pimienta gorda molida)
-   - ¼ cucharadita cayena
-   - 15g perejil picado fino
-   - ½ cebolla rallada (exprimir el exceso de agua con tela)
-   - 1 cucharadita sal
-   - Pimienta negra al gusto
-2. Mezclar energéticamente con mano hasta que la mezcla sea homogénea y ligeramente pegajosa.
-3. Formar koftas ovaladas de ≈45g (rendirá ≈9 piezas).
-4. Sartén de hierro a fuego alto: 10g aceite. Sellar las koftas 2 min por cada lado (4 lados = 8 min total) — quedan selladas por fuera pero semi-crudas por dentro.
-5. Terminarán de cocinarse el martes al recalentar en la salsa matbucha.
-6. Enfriar sobre rejilla, refrigerar.
-
----
-
-### TURNO 3 — 11:30 AM · Granos secundarios, salsas y verduras restantes
-
-> *En este punto: pollo confitando (quedan ≈30 min), pavo ya braseado reposando, arroz listo, camotes listos del horno, lentejas listas, garbanzos listos.*
-
-#### 🫕 ESTUFA — Quemador 1: Quinoa tri-color
-**Total:** 800g cocida (≈320g cruda)
-
-Usos:
-- Martes cena (brocheta fría): 120g ATM + 125g IOB = 245g
-- Miércoles comida (niçoise): 130g ATM + 135g IOB + 130g 3er = 395g
-- Sábado comida (chermoula): 130g ATM + 135g IOB = 265g
-- **Total: ≈905g cocido** → cocinar 365g cruda (rinde ~2.5×)
-
-Procedimiento:
-1. Lavar quinoa en colador fino bajo agua fría, frotar suavemente para eliminar saponinas (hasta que el agua salga clara).
-2. Olla mediana: 365g quinoa + 730 ml caldo de verduras (caliente del quemador que ya está en marcha) + 1 cucharadita sal.
-3. Hervir, bajar a mínimo, tapar.
-4. **Cocinar 15–18 min** hasta que se vean los "anillos" o gérmenes de los granos separados.
-5. Apagar, reposar tapado 5 min. Esponjar con tenedor.
-
----
-
-#### 🫕 ESTUFA — Quemador 2: Salsa matbucha (romesco árabe)
-**Total:** ≈400g (para martes comida: 80g × 2 + 80g 3er = 240g, más margen)
-
-Ingredientes:
-- 600g jitomate maduro picado
-- 4 p` };
+**Pechuga de pavo para toda la semana:**
+- El pavo recorre toda la semana en colaciones AM: lunes, martes, miércoles, jueves, viernes, sábado, domingo
+- ATM: 200g × 7 días = **1,400g de pechuga de pavo**
+- IOB: 50–55g ×` };
 const SHOP_KEY   = 'ns_20260605';
 const RATING_KEY = 'nr_20260605';
 
