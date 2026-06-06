@@ -53,27 +53,31 @@ Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)""
             week_date = date.today()
 
         menu_content = Path(menu_path).read_text(encoding="utf-8")
-        first_half, second_half = self._split_menu_days(menu_content)
+        chunks = self._split_menu_into_chunks(menu_content, chunk_size=2)
 
-        base_instruction = (
+        day_hdr = (
+            "Usa encabezados de sección exactamente así antes de cada grupo de recetas: "
+            "'# 🗓️ NOMBRE_DÍA DD DE MES' con el nombre del día en mayúsculas igual que en el menú "
+            "(ej: # 🗓️ LUNES 8 DE JUNIO, # 🗓️ JUEVES 11 DE JUNIO)."
+        )
+        base = (
             "Crea las tarjetas de receta para todos los platillos indicados (excepto comida trampa 🎉). "
             "Organiza por día y tiempo de comida en el mismo orden del menú."
         )
 
-        day_hdr = "Usa encabezados de sección exactamente así antes de cada grupo de recetas: '## 📅 NOMBRE_DÍA DD DE MES' con el nombre del día en mayúsculas igual que en el menú (ej: ## 📅 LUNES 8 DE JUNIO, ## 📅 JUEVES 11 DE JUNIO)."
-        part1 = self._call_claude(
-            self.SYSTEM_PROMPT,
-            f"{base_instruction} {day_hdr}\n\n{first_half}",
-            max_tokens=8000,
-        )
-        part2 = self._call_claude(
-            self.SYSTEM_PROMPT,
-            f"{base_instruction} {day_hdr}\n\n{second_half}\n\n"
-            "Al final incluye '## Preparaciones Base Compartidas' si alguna base del domingo se reutiliza.",
-            max_tokens=8000,
-        )
+        parts = []
+        for i, chunk in enumerate(chunks):
+            extra = (
+                "\nAl final incluye '## Preparaciones Base Compartidas' si alguna base del domingo se reutiliza."
+                if i == len(chunks) - 1 else ""
+            )
+            parts.append(self._call_claude(
+                self.SYSTEM_PROMPT,
+                f"{base} {day_hdr}\n\n{chunk}{extra}",
+                max_tokens=16000,
+            ))
 
-        content = part1 + "\n\n---\n\n" + part2
+        content = "\n\n---\n\n".join(parts)
         header = (
             f"# 📖 Recetario Semanal\n"
             f"## Semana del {week_date.strftime('%d de %B de %Y')}\n\n"
@@ -83,22 +87,22 @@ Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)""
         return self._save_output(header + content, "outputs/recipes", filename)
 
     @staticmethod
-    def _split_menu_days(menu_content: str):
-        """Split menu at day 4 (Thursday) so each half fits in one API call."""
+    def _split_menu_into_chunks(menu_content: str, chunk_size: int = 2) -> list:
+        """Split menu into chunks of `chunk_size` days each."""
         import re
-        # Match only top-level day section headers (single # at start of line,
-        # followed by the day name as a standalone word — not inside a table cell)
         day_re = re.compile(
             r'^#{1,2} [^a-zA-Z\n]{0,10}(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)',
             re.MULTILINE | re.IGNORECASE,
         )
         matches = list(day_re.finditer(menu_content))
-        if len(matches) >= 4:
-            split_pos = matches[3].start()   # split before day 4 (Thursday)
-            return menu_content[:split_pos], menu_content[split_pos:]
-        # Fallback: split roughly in half by character count
-        mid = len(menu_content) // 2
-        return menu_content[:mid], menu_content[mid:]
+        if not matches:
+            return [menu_content]
+        chunks = []
+        for i in range(0, len(matches), chunk_size):
+            start = matches[i].start()
+            end = matches[i + chunk_size].start() if i + chunk_size < len(matches) else len(menu_content)
+            chunks.append(menu_content[start:end].strip())
+        return chunks
 
     def find_single(self, dish_name: str) -> str:
         user_message = f"Crea la tarjeta de receta completa para: **{dish_name}**"

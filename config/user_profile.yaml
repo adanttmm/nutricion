@@ -10,8 +10,20 @@ persons:
     weight_kg: 96
     goal: "pérdida de grasa"
     notes: "Plan de nutriólogo del 2016 (ganancia muscular) ya no aplica. Usar metas calculadas."
+    target_overrides:
+      goal: "pérdida de grasa"
+      calories: 2800.0
+      protein_g: 192.0
+      carbs_g: 317.0
+      fat_g: 85.0
   IOB:
     goal: "pérdida de grasa"
+    target_overrides:
+      goal: "pérdida de grasa"
+      calories: 1700.0
+      protein_g: 135.5
+      carbs_g: 186.4
+      fat_g: 47.8
 
 household:
   primary_adults: 2
