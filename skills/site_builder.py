@@ -7,7 +7,7 @@ import yaml
 from .base_skill import BaseSkill
 
 _DAY_RE = re.compile(
-    r'^# [^\n]*(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)[^\n]*$',
+    r'^## (?:📅\s*)?(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)',
     re.MULTILINE | re.IGNORECASE,
 )
 _DAY_SHORT = {

@@ -60,7 +60,7 @@ Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)""
             "Organiza por día y tiempo de comida en el mismo orden del menú."
         )
 
-        day_hdr = "Usa encabezados de sección exactamente así antes de cada grupo de recetas: '# 🗓️ DÍA DD DE MES' (igual que en el menú)."
+        day_hdr = "Usa encabezados de sección exactamente así antes de cada grupo de recetas: '## 📅 NOMBRE_DÍA DD DE MES' con el nombre del día en mayúsculas igual que en el menú (ej: ## 📅 LUNES 8 DE JUNIO, ## 📅 JUEVES 11 DE JUNIO)."
         part1 = self._call_claude(
             self.SYSTEM_PROMPT,
             f"{base_instruction} {day_hdr}\n\n{first_half}",
@@ -89,7 +89,7 @@ Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)""
         # Match only top-level day section headers (single # at start of line,
         # followed by the day name as a standalone word — not inside a table cell)
         day_re = re.compile(
-            r'^# [^\n]*(LUNES|MARTES|MIÉRCOLES|MIERCOLES|JUEVES|VIERNES|SÁBADO|SABADO|DOMINGO)[^\n]*$',
+            r'^## (?:📅\s*)?(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)',
             re.MULTILINE | re.IGNORECASE,
         )
         matches = list(day_re.finditer(menu_content))
