@@ -717,13 +717,24 @@ class SiteBuilderSkill(BaseSkill):
 </head>
 <body>
 <script>
-/* Separate probe — runs even if main script has a syntax error */
-(function(){
-  var p=document.createElement('div');
-  p.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#7c3aed;color:#fff;padding:6px 14px;font:12px monospace;z-index:9999';
-  p.id='pre-probe';p.textContent='PRE-PROBE OK — JS is running';
-  document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(p);});
-})();
+/* Separate probe — catches parse errors from the main script block */
+window.addEventListener('error', function(ev){
+  var b=document.getElementById('pre-probe')||document.createElement('div');
+  b.id='pre-probe';
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#b91c1c;color:#fff;padding:8px 14px;font:13px monospace;z-index:9999;white-space:pre-wrap';
+  b.textContent='SYNTAX ERROR: '+ev.message+'\n  line '+ev.lineno+' col '+ev.colno;
+  document.body&&document.body.appendChild(b);
+});
+document.addEventListener('DOMContentLoaded',function(){
+  var p=document.getElementById('pre-probe');
+  if(!p){
+    p=document.createElement('div');
+    p.id='pre-probe';
+    p.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#7c3aed;color:#fff;padding:6px 14px;font:12px monospace;z-index:9999';
+    p.textContent='PRE-PROBE OK (main script ran without parse errors)';
+    document.body.appendChild(p);
+  }
+});
 </script>
 
 <header>
