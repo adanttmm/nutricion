@@ -716,6 +716,15 @@ class SiteBuilderSkill(BaseSkill):
   </style>
 </head>
 <body>
+<script>
+/* Separate probe — runs even if main script has a syntax error */
+(function(){
+  var p=document.createElement('div');
+  p.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#7c3aed;color:#fff;padding:6px 14px;font:12px monospace;z-index:9999';
+  p.id='pre-probe';p.textContent='PRE-PROBE OK — JS is running';
+  document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(p);});
+})();
+</script>
 
 <header>
   <div class="hd-inner">
