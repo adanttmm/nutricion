@@ -2134,9 +2134,13 @@ const SHOP_KEY           = 'ns_20260626';
 const RATING_KEY         = 'nr_20260626';
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let checks  = JSON.parse(localStorage.getItem(SHOP_KEY)   || '{}');
-let ratings = JSON.parse(localStorage.getItem(RATING_KEY) || '{}');
-let weights = JSON.parse(localStorage.getItem('nw_weights') || '{"atm":[],"iob":[]}');
+function _lsGet(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+  catch(e) { try { localStorage.removeItem(key); } catch(_){} return fallback; }
+}
+let checks  = _lsGet(SHOP_KEY,   {});
+let ratings = _lsGet(RATING_KEY, {});
+let weights = _lsGet('nw_weights', {atm:[],iob:[]});
 let curDay  = 0;
 let _trackingInited = false;
 let _weightTrendPerson = 'atm';
