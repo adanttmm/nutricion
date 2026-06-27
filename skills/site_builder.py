@@ -43,6 +43,7 @@ class SiteBuilderSkill(BaseSkill):
         days_data        = self._split_by_days(menu_md, recipes_md)
         week_key         = week_date.strftime("%Y-%m-%d")
         ingr_hist        = self._update_ingredient_history(shopping_md, week_key)
+        all_weeks        = self._build_all_weeks_history()
         ratings_hist     = self._load_ratings_history()
 
         plan_name    = diet_plan.get("plan_name") or f"Plan Nutricional — {week_date.strftime('%d/%m/%Y')}"
@@ -62,6 +63,7 @@ class SiteBuilderSkill(BaseSkill):
             .replace("__PREV_RECIPES_HTML__",   self._md_to_html(prev_recipes_md) if prev_recipes_md else "<p style='color:#a0aec0;padding:1.5rem 0;text-align:center'>Sin recetas de semana anterior.</p>")
             .replace("__PREV_RECIPES_LABEL__",  prev_recipes_lbl)
             .replace("__INGREDIENT_HISTORY__",  json.dumps(ingr_hist, ensure_ascii=False))
+            .replace("__ALL_WEEKS__",           json.dumps(all_weeks, ensure_ascii=False))
             .replace("__RATINGS_HISTORY__",     json.dumps(ratings_hist, ensure_ascii=False))
             .replace("__WEEK_KEY__",            week_date.strftime("%Y%m%d"))
         )
@@ -286,6 +288,42 @@ class SiteBuilderSkill(BaseSkill):
             iob['carbs_g']   += int(m.group(7))
             iob['fat_g']     += int(m.group(8))
         return atm, iob
+
+    def _build_all_weeks_history(self) -> list:
+        """Load every menu_*.md and return flat list of {week_key, days[]} for the JS history chart."""
+        _DOW = ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO','DOMINGO']
+        _DOW_ALT = ['LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO','DOMINGO']
+        weeks = []
+        for f in sorted(Path("outputs/menus").glob("menu_*.md")):
+            m = re.search(r'menu_(\d{4}-\d{2}-\d{2})\.md', f.name)
+            if not m:
+                continue
+            try:
+                week_start = date.fromisoformat(m.group(1))
+                menu_md = f.read_text(encoding='utf-8')
+            except Exception:
+                continue
+            days = []
+            for day_m in _DAY_RE.finditer(menu_md):
+                day_key = day_m.group(1).upper()
+                # find section end
+                next_m = _DAY_RE.search(menu_md, day_m.end())
+                section = menu_md[day_m.start(): next_m.start() if next_m else len(menu_md)]
+                norm = day_key.replace('É','E').replace('Á','A')
+                idx = next((i for i, d in enumerate(_DOW) if d == norm), None)
+                if idx is None:
+                    continue
+                day_date = week_start + timedelta(days=idx)
+                n_atm, n_iob = SiteBuilderSkill._parse_day_nutrition(section)
+                days.append({
+                    'date':  day_date.isoformat(),
+                    'short': f"{_DAY_SHORT.get(day_key, _DAY_SHORT.get(norm, day_key[:3]))} {day_date.day}/{day_date.month}",
+                    'nutrition_atm': n_atm,
+                    'nutrition_iob': n_iob,
+                })
+            if days:
+                weeks.append({'week_key': m.group(1), 'days': days})
+        return weeks
 
     @staticmethod
     def _split_meal_sections(text: str) -> list:
@@ -943,18 +981,30 @@ class SiteBuilderSkill(BaseSkill):
     <div class="card">
       <div class="card-pad">
         <div class="flex items-center justify-between mb-3">
-          <span class="sec-label">📊 Tendencia Semanal</span>
-          <select id="trend-nutrient" class="ctrl-select" onchange="updateTrendChart()">
-            <option value="calories">Calorías (kcal)</option>
-            <option value="protein_g">Proteína (g)</option>
-            <option value="carbs_g">Carbohidratos (g)</option>
-            <option value="fat_g">Grasa (g)</option>
-          </select>
+          <span class="sec-label">📊 Tendencia</span>
+          <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
+            <div style="display:flex;gap:2px">
+              <button id="btn-tv-week" class="toggle-btn active" onclick="setTrendView('week',this)">Esta semana</button>
+              <button id="btn-tv-hist" class="toggle-btn" onclick="setTrendView('hist',this)">Historial</button>
+            </div>
+            <select id="trend-nutrient" class="ctrl-select" onchange="onTrendNutrientChange()">
+              <option value="calories">Calorías</option>
+              <option value="protein_g">Proteína</option>
+              <option value="carbs_g">Carbohidratos</option>
+              <option value="fat_g">Grasa</option>
+            </select>
+          </div>
+        </div>
+        <div id="trend-range-btns" style="display:none;gap:2px;margin-bottom:.6rem">
+          <button class="toggle-btn active" id="btn-tr-2" onclick="setTrendRange(2,this)">2 sem</button>
+          <button class="toggle-btn" id="btn-tr-4" onclick="setTrendRange(4,this)">4 sem</button>
+          <button class="toggle-btn" id="btn-tr-0" onclick="setTrendRange(0,this)">Todo</button>
         </div>
         <div id="trend-nodata" class="hidden text-center" style="padding:2rem 0;color:#a0aec0">
-          <p class="text-sm">Usa <code style="background:#f4f2ee;padding:2px 6px;border-radius:4px">python main.py registrar</code> para ver tendencias.</p>
+          <p class="text-sm">Sin datos de menú disponibles.</p>
         </div>
         <canvas id="chart-trend" height="95"></canvas>
+        <canvas id="chart-trend-hist" height="95" style="display:none"></canvas>
       </div>
     </div>
 
@@ -967,7 +1017,7 @@ class SiteBuilderSkill(BaseSkill):
     <div class="card">
       <div class="card-pad">
         <div class="flex items-center justify-between mb-3">
-          <span class="sec-label">🌿 Ingredientes de la Semana</span>
+          <span class="sec-label">🌿 Ingredientes</span>
           <select id="cloud-week" class="ctrl-select" onchange="renderWordCloud(this.value)"></select>
         </div>
         <div id="word-cloud-wrap" style="width:100%;min-height:220px;display:flex;align-items:center;justify-content:center">
@@ -1028,6 +1078,7 @@ const PERSONS            = __PERSONS__;
 const TRACKING           = __TRACKING__;
 const DAYS               = __DAYS__;
 const INGREDIENT_HISTORY = __INGREDIENT_HISTORY__;
+const ALL_WEEKS          = __ALL_WEEKS__;
 const RATINGS_HISTORY    = __RATINGS_HISTORY__;
 const SHOP_KEY           = 'ns___WEEK_KEY__';
 const RATING_KEY         = 'nr___WEEK_KEY__';
@@ -1045,6 +1096,9 @@ let _trackingInited = false;
 let _weightTrendPerson = 'atm';
 let _rankPerson        = 'avg';
 let _trendChart        = null;
+let _trendHistChart    = null;
+let _trendView         = 'week';
+let _trendRange        = 2;
 let _wChart            = null;
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
@@ -1511,9 +1565,33 @@ const _NUTRIENT_LABELS = {calories:'Calorías (kcal)',protein_g:'Proteína (g)',
 const _NUTRIENT_COLORS = {calories:'#4a919e',protein_g:'#ce6a6b',carbs_g:'#ebaca2',fat_g:'#bed3c3'};
 const _PERSON_KEYS     = {calories:'calories',protein_g:'protein_g',carbs_g:'carbs_g',fat_g:'fat_g'};
 
+function onTrendNutrientChange() {
+  if (_trendView === 'week') updateTrendChart();
+  else updateTrendHistChart();
+}
+
+function setTrendView(view, btn) {
+  _trendView = view;
+  document.querySelectorAll('#btn-tv-week,#btn-tv-hist').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const isHist = view === 'hist';
+  document.getElementById('chart-trend').style.display      = isHist ? 'none' : '';
+  document.getElementById('chart-trend-hist').style.display = isHist ? '' : 'none';
+  document.getElementById('trend-range-btns').style.display = isHist ? 'flex' : 'none';
+  if (isHist) updateTrendHistChart(); else updateTrendChart();
+}
+
+function setTrendRange(n, btn) {
+  _trendRange = n;
+  document.querySelectorAll('#btn-tr-2,#btn-tr-4,#btn-tr-0').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateTrendHistChart();
+}
+
 function initTrendChart() {
-  const hasPlanned = DAYS.some(d => d.nutrition_atm && d.nutrition_atm.calories > 0);
-  if (!hasPlanned) {
+  const hasData = DAYS.some(d => d.nutrition_atm && d.nutrition_atm.calories > 0)
+               || ALL_WEEKS.length > 0;
+  if (!hasData) {
     document.getElementById('trend-nodata').classList.remove('hidden');
     document.getElementById('chart-trend').style.display = 'none';
     return;
@@ -1528,13 +1606,11 @@ function updateTrendChart() {
   const label = _NUTRIENT_LABELS[nutrient];
   const hasLogged = tr.weekly && tr.weekly.some(d => d && d[nutrient]);
   const datasets = [];
-
   if (hasLogged) {
     const logged = dLabels.map((_, i) => { const d = tr.weekly[i]; return d ? (d[nutrient]||0) : null; });
     datasets.push({ label:'Registrado', data:logged,
       backgroundColor:_NUTRIENT_COLORS[nutrient]+'c0', borderRadius:6, borderSkipped:false, order:3 });
   }
-
   const atmData = DAYS.map(d => d.nutrition_atm ? (d.nutrition_atm[nutrient]||0) : null);
   const iobData = DAYS.map(d => d.nutrition_iob ? (d.nutrition_iob[nutrient]||0) : null);
   const suffix = hasLogged ? ' (plan)' : '';
@@ -1542,27 +1618,43 @@ function updateTrendChart() {
     backgroundColor:'#212e5390', borderRadius:6, borderSkipped:false, order:hasLogged?4:3 });
   datasets.push({ label:'IOB'+suffix, data:iobData,
     backgroundColor:'#9b4a4090', borderRadius:6, borderSkipped:false, order:hasLogged?5:4 });
-
-  const t_atm = PERSONS[0]?.[nutrient] || null;
-  const t_iob = PERSONS[1]?.[nutrient] || null;
+  const t_atm = PERSONS[0]?.[nutrient]||null;
+  const t_iob = PERSONS[1]?.[nutrient]||null;
   if (t_atm) datasets.push({ label:'Meta ATM', data:Array(7).fill(t_atm), type:'line',
     borderColor:'#212e53', borderWidth:1.5, borderDash:[5,4], pointRadius:0, fill:false, order:1 });
   if (t_iob) datasets.push({ label:'Meta IOB', data:Array(7).fill(t_iob), type:'line',
     borderColor:'#9b4a40', borderWidth:1.5, borderDash:[3,3], pointRadius:0, fill:false, order:2 });
-
   const title = label + (hasLogged ? ' · Esta semana' : ' · Planificado');
-  if (_trendChart) {
-    _trendChart.data.datasets = datasets;
-    _trendChart.options.plugins.title.text = title;
-    _trendChart.update();
-    return;
-  }
+  if (_trendChart) { _trendChart.data.datasets=datasets; _trendChart.options.plugins.title.text=title; _trendChart.update(); return; }
   _trendChart = new Chart(document.getElementById('chart-trend'), {
-    type: 'bar',
-    data: { labels: dLabels, datasets },
-    options: { responsive:true,
-      plugins:{ title:{ display:true, text:title,
-        color:'#212e53', font:{weight:'600'} }, legend:{position:'bottom'} } }
+    type:'bar', data:{labels:dLabels, datasets},
+    options:{responsive:true, plugins:{title:{display:true,text:title,color:'#212e53',font:{weight:'600'}},legend:{position:'bottom'}}}
+  });
+}
+
+function updateTrendHistChart() {
+  if (!ALL_WEEKS.length) return;
+  const nutrient = document.getElementById('trend-nutrient').value;
+  const label = _NUTRIENT_LABELS[nutrient];
+  const weeksSlice = _trendRange > 0 ? ALL_WEEKS.slice(-_trendRange) : ALL_WEEKS;
+  const allDays = weeksSlice.flatMap(w => w.days);
+  const labels  = allDays.map(d => d.short);
+  const atmData = allDays.map(d => d.nutrition_atm ? (d.nutrition_atm[nutrient]||0) : null);
+  const iobData = allDays.map(d => d.nutrition_iob ? (d.nutrition_iob[nutrient]||0) : null);
+  const t_atm = PERSONS[0]?.[nutrient]||null;
+  const t_iob = PERSONS[1]?.[nutrient]||null;
+  const datasets = [
+    {label:'ATM', data:atmData, borderColor:'#212e53', backgroundColor:'#212e5320', fill:true, tension:0.3, pointRadius:3, pointHoverRadius:5},
+    {label:'IOB', data:iobData, borderColor:'#9b4a40', backgroundColor:'#9b4a4020', fill:true, tension:0.3, pointRadius:3, pointHoverRadius:5},
+  ];
+  if (t_atm) datasets.push({label:'Meta ATM', data:Array(labels.length).fill(t_atm), borderColor:'#212e53', borderWidth:1.5, borderDash:[5,4], pointRadius:0, fill:false});
+  if (t_iob) datasets.push({label:'Meta IOB', data:Array(labels.length).fill(t_iob), borderColor:'#9b4a40', borderWidth:1.5, borderDash:[3,3], pointRadius:0, fill:false});
+  const title = label + ' · Historial';
+  if (_trendHistChart) { _trendHistChart.data.labels=labels; _trendHistChart.data.datasets=datasets; _trendHistChart.options.plugins.title.text=title; _trendHistChart.update(); return; }
+  _trendHistChart = new Chart(document.getElementById('chart-trend-hist'), {
+    type:'line', data:{labels, datasets},
+    options:{responsive:true, plugins:{title:{display:true,text:title,color:'#212e53',font:{weight:'600'}},legend:{position:'bottom'}},
+      scales:{x:{ticks:{maxTicksLimit:14,maxRotation:45}}}}
   });
 }
 
@@ -1589,19 +1681,27 @@ function initWordCloud() {
   const weeks = Object.keys(INGREDIENT_HISTORY).sort().reverse();
   if (!weeks.length) {
     document.getElementById('word-cloud-wrap').innerHTML =
-      '<p class="text-xs" style="color:#9ca3af;padding:1.5rem 0">Sin historial de ingredientes todavía — actualiza el sitio con un menú activo.</p>';
+      '<p class="text-xs" style="color:#9ca3af;padding:1.5rem 0">Sin historial de ingredientes todavía.</p>';
     return;
   }
-  sel.innerHTML = weeks.map(w => `<option value="${w}">${w}</option>`).join('');
-  renderWordCloud(weeks[0]);
+  sel.innerHTML = '<option value="__all__">Todas las semanas</option>'
+    + weeks.map(w => `<option value="${w}">${w}</option>`).join('');
+  renderWordCloud('__all__');
 }
 
 function renderWordCloud(weekKey) {
   const canvas = document.getElementById('word-cloud-canvas');
   const wrap   = document.getElementById('word-cloud-wrap');
   if (!canvas || !wrap) return;
-  const ingredients = INGREDIENT_HISTORY[weekKey] || {};
-  const entries = Object.entries(ingredients).sort((a,b)=>b[1]-a[1]).slice(0,60);
+  let ingredients = {};
+  if (weekKey === '__all__') {
+    Object.values(INGREDIENT_HISTORY).forEach(week => {
+      Object.entries(week).forEach(([k,v]) => { ingredients[k] = (ingredients[k]||0) + v; });
+    });
+  } else {
+    ingredients = INGREDIENT_HISTORY[weekKey] || {};
+  }
+  const entries = Object.entries(ingredients).sort((a,b)=>b[1]-a[1]).slice(0,80);
   if (!entries.length) { wrap.innerHTML = '<p class="text-xs" style="color:#9ca3af">Sin datos.</p>'; return; }
   if (typeof WordCloud === 'undefined') { setTimeout(() => renderWordCloud(weekKey), 250); return; }
   const palette = ['#212e53','#4a919e','#3a6652','#ce6a6b','#2a5070','#9b4a40','#4a919e'];
