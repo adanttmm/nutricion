@@ -15,6 +15,9 @@ _DAY_SHORT = {
     'JUEVES': 'Jue', 'VIERNES': 'Vie', 'SÁBADO': 'Sáb', 'SABADO': 'Sáb', 'DOMINGO': 'Dom',
 }
 _MEAL_EMOJIS = ['🌅', '🍎', '🍽', '🌿', '🌙', '🎉']
+_MACRO_RE = re.compile(
+    r'\| \*\*kcal · P · C · G\*\* \| \*\*(\d+) · (\d+)g · (\d+)g · (\d+)g\*\*.*?\| \*\*(\d+) · (\d+)g · (\d+)g · (\d+)g\*\*'
+)
 
 
 class SiteBuilderSkill(BaseSkill):
@@ -257,14 +260,32 @@ class SiteBuilderSkill(BaseSkill):
                 SiteBuilderSkill._split_meal_sections(menu_content),
                 SiteBuilderSkill._split_meal_sections(rec_content),
             )
+            n_atm, n_iob = SiteBuilderSkill._parse_day_nutrition(menu_content)
             days.append({
                 "key":    day_key.lower().replace("é", "e").replace("á", "a"),
                 "short":  _DAY_SHORT.get(day_key, day_key[:3]),
                 "name":   header,
                 "dishes": SiteBuilderSkill._extract_dishes(menu_content),
                 "meals":  meals,
+                "nutrition_atm": n_atm,
+                "nutrition_iob": n_iob,
             })
         return days
+
+    @staticmethod
+    def _parse_day_nutrition(menu_content: str) -> tuple:
+        atm = {'calories': 0, 'protein_g': 0, 'carbs_g': 0, 'fat_g': 0}
+        iob = {'calories': 0, 'protein_g': 0, 'carbs_g': 0, 'fat_g': 0}
+        for m in _MACRO_RE.finditer(menu_content):
+            atm['calories']  += int(m.group(1))
+            atm['protein_g'] += int(m.group(2))
+            atm['carbs_g']   += int(m.group(3))
+            atm['fat_g']     += int(m.group(4))
+            iob['calories']  += int(m.group(5))
+            iob['protein_g'] += int(m.group(6))
+            iob['carbs_g']   += int(m.group(7))
+            iob['fat_g']     += int(m.group(8))
+        return atm, iob
 
     @staticmethod
     def _split_meal_sections(text: str) -> list:
@@ -1491,9 +1512,8 @@ const _NUTRIENT_COLORS = {calories:'#4a919e',protein_g:'#ce6a6b',carbs_g:'#ebaca
 const _PERSON_KEYS     = {calories:'calories',protein_g:'protein_g',carbs_g:'carbs_g',fat_g:'fat_g'};
 
 function initTrendChart() {
-  const tr = TRACKING;
-  const hasData = tr.weekly && tr.weekly.some(d => d && (d.calories||d.protein_g||d.carbs_g||d.fat_g));
-  if (!hasData) {
+  const hasPlanned = DAYS.some(d => d.nutrition_atm && d.nutrition_atm.calories > 0);
+  if (!hasPlanned) {
     document.getElementById('trend-nodata').classList.remove('hidden');
     document.getElementById('chart-trend').style.display = 'none';
     return;
@@ -1505,23 +1525,35 @@ function updateTrendChart() {
   const nutrient = document.getElementById('trend-nutrient').value;
   const tr = TRACKING;
   const dLabels = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-  const data = dLabels.map((_, i) => { const d = tr.weekly && tr.weekly[i]; return d ? (d[nutrient]||0) : null; });
-  const color = _NUTRIENT_COLORS[nutrient];
   const label = _NUTRIENT_LABELS[nutrient];
-  const pKey  = _PERSON_KEYS[nutrient];
-  const t_atm = PERSONS[0]?.[pKey] || null;
-  const t_iob = PERSONS[1]?.[pKey] || null;
-  const datasets = [{
-    label, data, backgroundColor: color + 'c0',
-    borderRadius: 6, borderSkipped: false, order: 2
-  }];
+  const hasLogged = tr.weekly && tr.weekly.some(d => d && d[nutrient]);
+  const datasets = [];
+
+  if (hasLogged) {
+    const logged = dLabels.map((_, i) => { const d = tr.weekly[i]; return d ? (d[nutrient]||0) : null; });
+    datasets.push({ label:'Registrado', data:logged,
+      backgroundColor:_NUTRIENT_COLORS[nutrient]+'c0', borderRadius:6, borderSkipped:false, order:3 });
+  }
+
+  const atmData = DAYS.map(d => d.nutrition_atm ? (d.nutrition_atm[nutrient]||0) : null);
+  const iobData = DAYS.map(d => d.nutrition_iob ? (d.nutrition_iob[nutrient]||0) : null);
+  const suffix = hasLogged ? ' (plan)' : '';
+  datasets.push({ label:'ATM'+suffix, data:atmData,
+    backgroundColor:'#212e5390', borderRadius:6, borderSkipped:false, order:hasLogged?4:3 });
+  datasets.push({ label:'IOB'+suffix, data:iobData,
+    backgroundColor:'#9b4a4090', borderRadius:6, borderSkipped:false, order:hasLogged?5:4 });
+
+  const t_atm = PERSONS[0]?.[nutrient] || null;
+  const t_iob = PERSONS[1]?.[nutrient] || null;
   if (t_atm) datasets.push({ label:'Meta ATM', data:Array(7).fill(t_atm), type:'line',
     borderColor:'#212e53', borderWidth:1.5, borderDash:[5,4], pointRadius:0, fill:false, order:1 });
   if (t_iob) datasets.push({ label:'Meta IOB', data:Array(7).fill(t_iob), type:'line',
-    borderColor:'#9b4a40', borderWidth:1.5, borderDash:[3,3], pointRadius:0, fill:false, order:1 });
+    borderColor:'#9b4a40', borderWidth:1.5, borderDash:[3,3], pointRadius:0, fill:false, order:2 });
+
+  const title = label + (hasLogged ? ' · Esta semana' : ' · Planificado');
   if (_trendChart) {
     _trendChart.data.datasets = datasets;
-    _trendChart.options.plugins.title.text = label + ' · Esta semana';
+    _trendChart.options.plugins.title.text = title;
     _trendChart.update();
     return;
   }
@@ -1529,8 +1561,8 @@ function updateTrendChart() {
     type: 'bar',
     data: { labels: dLabels, datasets },
     options: { responsive:true,
-      plugins:{ title:{ display:true, text:label+' · Esta semana',
-        color:'#212e53',font:{weight:'600'} }, legend:{position:'bottom'} } }
+      plugins:{ title:{ display:true, text:title,
+        color:'#212e53', font:{weight:'600'} }, legend:{position:'bottom'} } }
   });
 }
 
