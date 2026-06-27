@@ -996,6 +996,12 @@ class SiteBuilderSkill(BaseSkill):
 <script src="https://cdn.jsdelivr.net/npm/chart.js" async></script>
 <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.js" async></script>
 <script>
+window.addEventListener('error', function(ev) {
+  var b = document.createElement('div');
+  b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;padding:10px 16px;z-index:9999;font:13px/1.5 monospace;white-space:pre-wrap';
+  b.textContent = '⚠ Error JS (reportar a Adán):\n' + ev.message + '\n  línea ' + ev.lineno + ', col ' + ev.colno + (ev.filename ? '\n  ' + ev.filename : '');
+  document.body.prepend(b);
+});
 // ── Data ──────────────────────────────────────────────────────────────────────
 const PERSONS            = __PERSONS__;
 const TRACKING           = __TRACKING__;
@@ -1006,9 +1012,13 @@ const SHOP_KEY           = 'ns___WEEK_KEY__';
 const RATING_KEY         = 'nr___WEEK_KEY__';
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let checks  = JSON.parse(localStorage.getItem(SHOP_KEY)   || '{}');
-let ratings = JSON.parse(localStorage.getItem(RATING_KEY) || '{}');
-let weights = JSON.parse(localStorage.getItem('nw_weights') || '{"atm":[],"iob":[]}');
+function _lsGet(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+  catch(e) { try { localStorage.removeItem(key); } catch(_){} return fallback; }
+}
+let checks  = _lsGet(SHOP_KEY,   {});
+let ratings = _lsGet(RATING_KEY, {});
+let weights = _lsGet('nw_weights', {atm:[],iob:[]});
 let curDay  = 0;
 let _trackingInited = false;
 let _weightTrendPerson = 'atm';
