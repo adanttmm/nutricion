@@ -1036,6 +1036,15 @@ function tab(name, btn) {
   if (name === 'tracking') initTracking();
 }
 
+// ── Debug probe (remove after fix) ───────────────────────────────────────────
+(function() {
+  var dbg = document.createElement('div');
+  dbg.id = 'dbg-probe';
+  dbg.style.cssText = 'background:#1e3a5f;color:#7dd3fc;padding:6px 14px;font:12px monospace;position:fixed;bottom:0;left:0;right:0;z-index:9998';
+  dbg.textContent = 'JS OK — DAYS:' + DAYS.length + ' gallery:' + !!document.getElementById('tile-gallery') + ' tbody:' + !!document.getElementById('week-tbody');
+  document.body.appendChild(dbg);
+})();
+
 // ── Tile gallery ──────────────────────────────────────────────────────────────
 const TILE_COLORS = ['#212e53','#3a7a85','#3a6652','#ce6a6b','#2a5070','#9b4a40','#4a919e'];
 const SLOT_EMOJI = {desayuno:'🌅', col_am:'🍎', comida:'🍽', col_pm:'🌿', cena:'🌙'};
