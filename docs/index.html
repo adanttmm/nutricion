@@ -2745,6 +2745,18 @@ function initMacroChart() {
 }
 
 // ── 2. Ingredient word cloud ──────────────────────────────────────────────────
+const _CLOUD_STOP = new Set([
+  // aceites (siempre presentes, no aportan info)
+  'aceite de coco','aceite de oliva','aceite de ajonjolí','aceite de girasol',
+  'aceite de ajonjoli','aceite de sesamo','aceite de sésamo',
+  // condimentos y especias genéricas
+  'sal gruesa / fina','sal gruesa','sal fina','sal',
+  'pimienta negra (grano o molida)','pimienta negra',
+  'agua',
+  // uso general
+  'uso general toda la semana',
+].map(s => s.toLowerCase()));
+
 function initWordCloud() {
   const sel = document.getElementById('cloud-week');
   const weeks = Object.keys(INGREDIENT_HISTORY).sort().reverse();
@@ -2770,7 +2782,9 @@ function renderWordCloud(weekKey) {
   } else {
     ingredients = INGREDIENT_HISTORY[weekKey] || {};
   }
-  const entries = Object.entries(ingredients).sort((a,b)=>b[1]-a[1]).slice(0,80);
+  const entries = Object.entries(ingredients)
+    .filter(([w]) => !_CLOUD_STOP.has(w.toLowerCase()))
+    .sort((a,b)=>b[1]-a[1]).slice(0,80);
   if (!entries.length) { wrap.innerHTML = '<p class="text-xs" style="color:#9ca3af">Sin datos.</p>'; return; }
   if (typeof WordCloud === 'undefined') { setTimeout(() => renderWordCloud(weekKey), 250); return; }
   const palette = ['#212e53','#4a919e','#3a6652','#ce6a6b','#2a5070','#9b4a40','#4a919e'];
