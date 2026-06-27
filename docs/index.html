@@ -263,23 +263,6 @@
   </style>
 </head>
 <body>
-<script>
-(function(){
-  var div=document.createElement('div');
-  div.id='pre-probe';
-  div.style.cssText='position:fixed;bottom:0;left:0;right:0;padding:6px 14px;font:12px monospace;z-index:99999;color:#fff';
-  window.addEventListener('error',function(ev){
-    div.style.background='#b91c1c';
-    div.textContent='JS ERR L'+ev.lineno+': '+ev.message;
-    if(!div.parentNode)document.body&&document.body.appendChild(div);
-  });
-  document.addEventListener('DOMContentLoaded',function(){
-    if(!div.textContent)div.textContent='JS OK — main script parse OK';
-    div.style.background=div.textContent.indexOf('ERR')>-1?'#b91c1c':'#7c3aed';
-    if(!div.parentNode)document.body.appendChild(div);
-  });
-})();
-</script>
 
 <header>
   <div class="hd-inner">
@@ -2144,10 +2127,7 @@
 window.addEventListener('error', function(ev) {
   var b = document.createElement('div');
   b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;padding:10px 16px;z-index:9999;font:13px/1.5 monospace;white-space:pre-wrap';
-  b.textContent = '⚠ Error JS (reportar a Adán):
-' + ev.message + '
-  línea ' + ev.lineno + ', col ' + ev.colno + (ev.filename ? '
-  ' + ev.filename : '');
+  b.textContent = '⚠ Error JS: ' + ev.message + ' (linea ' + ev.lineno + ', col ' + ev.colno + ')';
   document.body.prepend(b);
 });
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -2183,15 +2163,6 @@ function tab(name, btn) {
   if (name === 'compras') initShopChecks();
   if (name === 'tracking') initTracking();
 }
-
-// ── Debug probe (remove after fix) ───────────────────────────────────────────
-(function() {
-  var dbg = document.createElement('div');
-  dbg.id = 'dbg-probe';
-  dbg.style.cssText = 'background:#1e3a5f;color:#7dd3fc;padding:6px 14px;font:12px monospace;position:fixed;bottom:0;left:0;right:0;z-index:9998';
-  dbg.textContent = 'JS OK — DAYS:' + DAYS.length + ' gallery:' + !!document.getElementById('tile-gallery') + ' tbody:' + !!document.getElementById('week-tbody');
-  document.body.appendChild(dbg);
-})();
 
 // ── Tile gallery ──────────────────────────────────────────────────────────────
 const TILE_COLORS = ['#212e53','#3a7a85','#3a6652','#ce6a6b','#2a5070','#9b4a40','#4a919e'];
@@ -2461,8 +2432,7 @@ function _updateSaveStatus(connected) {
 
 async function setupAutoSave() {
   if (!('showDirectoryPicker' in window)) {
-    alert('Tu navegador no soporta File System Access API.
-Usa Chrome o Edge para auto-guardar valoraciones.');
+    alert('Tu navegador no soporta File System Access API. Usa Chrome o Edge para auto-guardar valoraciones.');
     return;
   }
   try {
