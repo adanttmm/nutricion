@@ -1215,8 +1215,21 @@ class SiteBuilderSkill(BaseSkill):
             <button class="toggle-btn" onclick="setWeightTrendPerson('iob',this)">IOB</button>
           </div>
         </div>
+        <!-- Manual weight entry -->
+        <div id="weight-entry-form" style="background:rgba(74,145,158,.07);border-radius:.6rem;padding:.75rem .9rem;margin-bottom:1rem">
+          <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin-bottom:.6rem">➕ Registrar peso</div>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+            <input type="date" id="wi-date" style="font-size:.78rem;padding:.3rem .5rem;border:1px solid #cbd5e0;border-radius:.4rem;background:#fff;color:#2d3748">
+            <input type="number" id="wi-atm" placeholder="ATM kg" step="0.1" min="30" max="200"
+              style="width:80px;font-size:.78rem;padding:.3rem .5rem;border:1px solid #cbd5e0;border-radius:.4rem;background:#fff;color:#2d3748">
+            <input type="number" id="wi-iob" placeholder="IOB kg" step="0.1" min="30" max="200"
+              style="width:80px;font-size:.78rem;padding:.3rem .5rem;border:1px solid #cbd5e0;border-radius:.4rem;background:#fff;color:#2d3748">
+            <button onclick="logWeight()" style="font-size:.75rem;padding:.3rem .75rem;background:var(--teal);color:#fff;border:none;border-radius:.4rem;cursor:pointer;font-weight:600">Guardar</button>
+          </div>
+          <div id="wi-msg" style="font-size:.7rem;color:var(--teal);margin-top:.4rem;display:none"></div>
+        </div>
         <div id="weight-chart-empty" style="display:none;padding:1.5rem 0;text-align:center;color:#a0aec0">
-          <p class="text-sm">Sin datos de peso — registra mediciones arriba.</p>
+          <p class="text-sm">Sin datos de peso — ingresa mediciones arriba o sincroniza con Xiaomi.</p>
         </div>
         <canvas id="chart-weight" height="140"></canvas>
       </div>
@@ -1574,6 +1587,7 @@ _restoreAutoSave();
 function saveRatings() {
   localStorage.setItem(RATING_KEY, JSON.stringify(ratings));
   renderFavoritos();
+  if (_trackingInited) renderRankings();
   _writeRatingsFile();
 }
 
@@ -1907,10 +1921,38 @@ function setRankPerson(p, btn) {
   renderRankings();
 }
 
+// Merge server-side history (RATINGS_HISTORY) with live localStorage ratings.
+// localStorage wins for dishes that exist in both — it has the most current stars.
+function _mergedRankingsDishes() {
+  const dishes = JSON.parse(JSON.stringify(RATINGS_HISTORY.dishes || {}));
+  for (const [key, r] of Object.entries(ratings)) {
+    const title = (r.title || key).trim();
+    if (!title) continue;
+    if (!dishes[title]) {
+      dishes[title] = { ratings:[], avg_stars:0, all_tags:[], last_rating:{}, times_served:1 };
+    }
+    for (const pk of ['atm', 'iob']) {
+      const pr = r[pk] || {};
+      if (pr.stars || pr.tag) {
+        dishes[title].last_rating[pk] = { stars: pr.stars||0, tag: pr.tag||'' };
+        if (pr.tag && !dishes[title].all_tags.includes(pr.tag))
+          dishes[title].all_tags.push(pr.tag);
+      }
+    }
+    // Recompute avg from merged last_rating
+    const stars = Object.values(dishes[title].last_rating).map(p=>p.stars||0).filter(s=>s>0);
+    if (stars.length) dishes[title].avg_stars = Math.round(10 * stars.reduce((a,b)=>a+b,0) / stars.length) / 10;
+  }
+  return dishes;
+}
+
 function renderRankings() {
-  const dishes = (RATINGS_HISTORY.dishes) || {};
+  const dishes = _mergedRankingsDishes();
   const list   = document.getElementById('rankings-list');
-  if (!Object.keys(dishes).length) return;
+  if (!Object.keys(dishes).length) {
+    list.innerHTML = '<p class="text-xs" style="color:#9ca3af">Sin valoraciones todavía — califica los platos en la pestaña del menú.</p>';
+    return;
+  }
   const scored = Object.entries(dishes).map(([title, data]) => {
     let score = 0;
     if (_rankPerson === 'avg') {
@@ -1939,6 +1981,35 @@ function renderRankings() {
 }
 
 // ── 5. Weight trend chart ─────────────────────────────────────────────────────
+// Set default date in the weight entry form
+(function() {
+  const el = document.getElementById('wi-date');
+  if (el) el.value = new Date().toISOString().slice(0,10);
+})();
+
+function logWeight() {
+  const d   = document.getElementById('wi-date').value;
+  const atm = parseFloat(document.getElementById('wi-atm').value);
+  const iob = parseFloat(document.getElementById('wi-iob').value);
+  const msg = document.getElementById('wi-msg');
+  if (!d) { msg.textContent = 'Selecciona una fecha.'; msg.style.display=''; return; }
+  if (!atm && !iob) { msg.textContent = 'Ingresa al menos un peso.'; msg.style.display=''; return; }
+  if (atm) {
+    weights.atm = weights.atm.filter(e => e.date !== d);
+    weights.atm.push({ date: d, kg: atm });
+  }
+  if (iob) {
+    weights.iob = weights.iob.filter(e => e.date !== d);
+    weights.iob.push({ date: d, kg: iob });
+  }
+  localStorage.setItem('nw_weights', JSON.stringify(weights));
+  document.getElementById('wi-atm').value = '';
+  document.getElementById('wi-iob').value = '';
+  msg.textContent = '✅ Guardado — ' + d + (atm ? '  ATM: ' + atm + 'kg' : '') + (iob ? '  IOB: ' + iob + 'kg' : '');
+  msg.style.display = '';
+  updateWeightChart();
+}
+
 function setWeightTrendPerson(p, btn) {
   _weightTrendPerson = p;
   document.querySelectorAll('#weight-trend-tabs .toggle-btn').forEach(b=>b.classList.remove('active'));

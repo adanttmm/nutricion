@@ -522,6 +522,71 @@ def importar_mifitness(archivo, persona, dry_run):
     ))
 
 
+@cli.command("xiaomi-bootstrap")
+@click.option("--cookies-file", "-c", default=None,
+              help="JSON exportado con Cookie-Editor desde account.xiaomi.com (recomendado)")
+@click.option("--token", "-t", default=None,
+              help="Valor de una cookie individual (serviceToken o passToken)")
+@click.option("--region", "-r", default=None)
+def xiaomi_bootstrap(cookies_file, token, region):
+    """Obtén el app_token de Mi Fitness usando la sesión del navegador.
+
+    OPCIÓN A — cookies completas (recomendado, más confiable):
+      1. Instala la extensión 'Cookie-Editor' en Chrome/Edge
+      2. Ve a account.xiaomi.com (ya logueado)
+      3. Abre Cookie-Editor → Export → pega en un archivo
+      4. python main.py xiaomi-bootstrap --cookies-file data/xiaomi_cache/cookies.json
+
+    OPCIÓN B — un solo token:
+      1. F12 → Network → recarga → click en petición → Request Headers → cookie:
+      2. Copia el valor de serviceToken o passToken
+      3. python main.py xiaomi-bootstrap --token 'VALOR'
+    """
+    import os, json as _json
+    from skills.xiaomi_sync import XiaomiSyncClient
+
+    if not cookies_file and not token:
+        console.print("[red]Debes pasar --cookies-file o --token[/red]")
+        raise SystemExit(1)
+
+    region = region or os.environ.get("XIAOMI_REGION", "cn")
+    email = os.environ.get("XIAOMI_EMAIL", "")
+    password = os.environ.get("XIAOMI_PASSWORD", "")
+    phone_device_id = os.environ.get("XIAOMI_DEVICE_ID")
+    client = XiaomiSyncClient(email, password, region=region, device_id=phone_device_id)
+    device_id = client._get_or_create_device_id()
+
+    if cookies_file:
+        # Load all browser cookies and inject them into the exchange
+        raw = _json.loads(Path(cookies_file).read_text())
+        # Cookie-Editor exports as a list of objects with name/value/domain/path
+        if isinstance(raw, list):
+            cookies = {c["name"]: c["value"] for c in raw if "name" in c and "value" in c}
+        else:
+            cookies = raw  # plain dict
+        console.print(f"[cyan]Cargando {len(cookies)} cookies del navegador...[/cyan]")
+        svc = cookies.get("serviceToken") or cookies.get("passToken") or ""
+        if not svc:
+            console.print("[red]No se encontró serviceToken ni passToken en el archivo.[/red]")
+            raise SystemExit(1)
+        try:
+            client._exchange_with_all_cookies(cookies, device_id)
+        except Exception as e:
+            console.print(f"[red]❌ {e}[/red]")
+            raise SystemExit(1)
+    else:
+        console.print("[cyan]Usando token individual...[/cyan]")
+        try:
+            client._exchange_service_token_for_app_token(token, device_id)
+        except Exception as e:
+            console.print(f"[red]❌ {e}[/red]")
+            raise SystemExit(1)
+
+    client._save_token()
+    console.print(f"[green]✅ Token guardado. user_id={client.user_id}[/green]")
+    console.print("Ahora corre [yellow]bash actualizar_xiaomi.sh[/yellow] normalmente.")
+
+
 @cli.command("sincronizar-xiaomi")
 @click.option("--persona", "-p", default="ATM",
               type=click.Choice(["ATM", "IOB"], case_sensitive=False))
@@ -540,12 +605,16 @@ def sincronizar_xiaomi(persona, region, dias, dry_run, forzar_login):
     email = os.environ.get("XIAOMI_EMAIL", "")
     password = os.environ.get("XIAOMI_PASSWORD", "")
     region = region or os.environ.get("XIAOMI_REGION", "cn")
+    device_id = os.environ.get("XIAOMI_DEVICE_ID")  # real Android ID from the phone
 
     if not email or not password:
         console.print("[red]Falta XIAOMI_EMAIL o XIAOMI_PASSWORD en .env[/red]")
         raise SystemExit(1)
 
-    client = XiaomiSyncClient(email, password, region=region)
+    if device_id:
+        console.print(f"  [dim]Usando device_id del teléfono: {device_id}[/dim]")
+
+    client = XiaomiSyncClient(email, password, region=region, device_id=device_id)
 
     with console.status("[cyan]Autenticando con Xiaomi...", spinner="dots"):
         try:
@@ -770,15 +839,16 @@ def resumen(fecha):
 
 @cli.command("peso")
 @click.option("--kg", "-k", required=True, type=float, prompt="Peso en kg")
+@click.option("--persona", "-p", default="ATM", show_default=True, help="ATM o IOB")
 @click.option("--notas", "-n", default=None, help="Notas (ej: 'en ayunas')")
-def peso(kg, notas):
+def peso(kg, persona, notas):
     """Registra el peso corporal."""
     from tracker.daily_log import DailyLog
 
     log = DailyLog()
-    log.log_weight(kg, notas)
+    log.log_weight(kg, person=persona, notes=notas)
     log.close()
-    console.print(f"[green]✅[/green] Peso registrado: [bold]{kg} kg[/bold]"
+    console.print(f"[green]✅[/green] Peso registrado: [bold]{kg} kg[/bold] ({persona})"
                   + (f" — {notas}" if notas else ""))
 
 

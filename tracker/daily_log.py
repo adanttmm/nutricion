@@ -44,6 +44,17 @@ class DailyLog:
                 logged_at   TEXT DEFAULT CURRENT_TIMESTAMP
             );
 
+            CREATE TABLE IF NOT EXISTS dish_ratings (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                recipe      TEXT NOT NULL,
+                week        TEXT NOT NULL,
+                person      TEXT NOT NULL,
+                stars       INTEGER,
+                tag         TEXT,
+                logged_at   TEXT DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(recipe, week, person)
+            );
+
             CREATE TABLE IF NOT EXISTS body_composition (
                 id                   INTEGER PRIMARY KEY AUTOINCREMENT,
                 date                 TEXT NOT NULL,
@@ -181,6 +192,36 @@ class DailyLog:
             for r in rows
         ]
 
+    def log_rating(self, recipe: str, week: str, person: str, stars: int = None, tag: str = None):
+        """Upsert a dish rating (one per recipe/week/person)."""
+        self.conn.execute(
+            """INSERT INTO dish_ratings (recipe, week, person, stars, tag)
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(recipe, week, person) DO UPDATE SET
+                   stars=excluded.stars, tag=excluded.tag,
+                   logged_at=CURRENT_TIMESTAMP""",
+            (recipe, week, person.upper(), stars, tag or ""),
+        )
+        self.conn.commit()
+
+    def get_ratings(self, person: str = None, min_stars: int = None) -> list:
+        """Return all dish ratings, optionally filtered."""
+        query = "SELECT recipe, week, person, stars, tag FROM dish_ratings"
+        params = []
+        conditions = []
+        if person:
+            conditions.append("person = ?")
+            params.append(person.upper())
+        if min_stars is not None:
+            conditions.append("stars >= ?")
+            params.append(min_stars)
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+        query += " ORDER BY week DESC, recipe"
+        rows = self.conn.execute(query, params).fetchall()
+        return [{"recipe": r[0], "week": r[1], "person": r[2], "stars": r[3], "tag": r[4]}
+                for r in rows]
+
     def log_body_composition(self, data: dict, person: str = 'ATM', source: str = 'manual'):
         """Upsert a full body composition reading (one per day per person)."""
         person = person.upper()
@@ -219,9 +260,19 @@ class DailyLog:
         return [dict(zip(keys, r)) for r in rows]
 
     def get_weight_history(self, limit: int = 60, person: str = 'ATM') -> list:
+        # Union manual peso logs + body_composition records (Xiaomi/scale imports).
+        # body_metrics wins on duplicate dates (it's a manual override).
         rows = self.conn.execute(
-            "SELECT date, weight_kg, notes FROM body_metrics WHERE person = ? ORDER BY date DESC LIMIT ?",
-            (person.upper(), limit),
+            """
+            SELECT date, weight_kg, notes FROM body_metrics
+             WHERE person = ? AND weight_kg IS NOT NULL
+            UNION
+            SELECT date, weight_kg, NULL FROM body_composition
+             WHERE person = ? AND weight_kg IS NOT NULL
+               AND date NOT IN (SELECT date FROM body_metrics WHERE person = ? AND weight_kg IS NOT NULL)
+            ORDER BY date DESC LIMIT ?
+            """,
+            (person.upper(), person.upper(), person.upper(), limit),
         ).fetchall()
         return [{"date": r[0], "weight_kg": r[1], "notes": r[2]} for r in rows]
 

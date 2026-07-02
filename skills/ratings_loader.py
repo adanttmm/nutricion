@@ -42,6 +42,7 @@ class RatingsLoader:
                 continue
             week_key = self._week_key_from_filename(path.name)
             n_dishes = self._merge_week(week_key, raw)
+            self._write_to_db(week_key, raw)
             ingested.add(path.name)
             new_count += 1
             print(f"  ✅ Valoraciones ingresadas: {path.name} ({n_dishes} platos)")
@@ -56,6 +57,24 @@ class RatingsLoader:
             self._import_weights(weights_path)
 
         return new_count
+
+    def backfill_db(self) -> int:
+        """Write all ratings already in ratings_history.json into the DB. Safe to run multiple times."""
+        from tracker.daily_log import DailyLog
+        log = DailyLog()
+        count = 0
+        for title, data in self._history.get("dishes", {}).items():
+            for week_entry in data.get("ratings", []):
+                week = week_entry.get("week", "")
+                for pk in PERSONS:
+                    pr = week_entry.get(pk) or {}
+                    stars = int(pr.get("stars") or 0) or None
+                    tag = str(pr.get("tag") or "")
+                    if stars or tag:
+                        log.log_rating(title, week, pk, stars=stars, tag=tag)
+                        count += 1
+        log.close()
+        return count
 
     def _import_weights(self, path: Path):
         """Import per-person weight entries from JSON into SQLite body_metrics."""
@@ -171,6 +190,25 @@ class RatingsLoader:
             json.dumps(self._history, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+
+    def _write_to_db(self, week_key: str, raw: dict):
+        """Upsert ratings from a weekly JSON file into nutricion.db."""
+        try:
+            from tracker.daily_log import DailyLog
+            log = DailyLog()
+            for _slug, entry in raw.items():
+                title = (entry.get("title") or "").strip()
+                if not title:
+                    continue
+                for pk in PERSONS:
+                    pr = entry.get(pk) or {}
+                    stars = int(pr.get("stars") or 0) or None
+                    tag = str(pr.get("tag") or "")
+                    if stars or tag:
+                        log.log_rating(title, week_key, pk, stars=stars, tag=tag)
+            log.close()
+        except Exception as e:
+            print(f"  ⚠ No se pudieron guardar valoraciones en DB: {e}")
 
     @staticmethod
     def _week_key_from_filename(name: str) -> str:

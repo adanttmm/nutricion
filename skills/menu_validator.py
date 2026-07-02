@@ -23,10 +23,10 @@ CONTEXTO DEL HOGAR:
 
 TOLERANCIAS ACEPTABLES (fuera de estas → RECHAZADO):
 - Excluye el sábado del analisis ya que es el dia de comida libre y no se considera, el promedio semanal sólo considera 6 dias.
-- Calorías diarias por persona: ±8 % de la meta del día
-- Proteína diaria: ±6 % (nutriente más crítico — defecto de proteína es falla automática)
-- Carbohidratos diarios: ±10 %
-- Grasa diaria: ±10 %
+- Calorías diarias por persona: ±5 % de la meta del día
+- Proteína diaria: ±5 % (nutriente más crítico — defecto de proteína es falla automática)
+- Carbohidratos diarios: ±5 %
+- Grasa diaria: ±5 %
 - Si todos los días pasan, el promedio semanal (sin sábado) también debe estar dentro de ±10 %.
 
 PROCESO:

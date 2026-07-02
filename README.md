@@ -148,3 +148,9 @@ docs/                static site (committed to GitHub)
 data/                SQLite DB + ratings + Xiaomi token cache
 config/parsed_diets/ parsed diet YAMLs
 ```
+
+## SQLite database exploration
+
+```
+sqlitebrowser /home/adan/Documentos/Nutricion/data/tracking/nutricion.db
+```

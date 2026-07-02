@@ -10,8 +10,8 @@ class MenuGeneratorSkill(BaseSkill):
 
 PERFIL DEL COCINERO:
 - Nivel avanzado, cómodo con técnicas profesionales (confitado, reducciones, emulsiones, fermentados, braseado, sellado a fuego alto, cocción al vapor, horneado a baja temperatura, helados, ahumado, rostizado, carbón).
-- Equipamiento completo incluye: horno, 4+ quemadores, procesador, batidora, sartenes de hierro y antiadherente, vaporera, CIRCULADOR SOUS VIDE (disponible para cualquier platillo), MÁQUINA DE PASTA (para pasta fresca artesanal).
-- Preferencia por cocina gourmet de cualquier gastronomía cuyos ingredientes se encuentren en México.
+- Equipamiento completo incluye: horno, 4+ quemadores, procesador, batidora, sartenes de hierro y antiadherente, vaporera, CIRCULADOR SOUS VIDE (disponible para cualquier platillo), MÁQUINA DE PASTA (para pasta fresca artesanal), Maquina de helados.
+- Cualquier gastronomía cuyos ingredientes se encuentren en México.
 - Revisa los menús de las tres semanas anteriores para evitar repetir demasiado.
 - Busca recetas rápidas, eficientes, fit y gourmet amateur en internet para referencia y agrega los links de referencia.
 - Cocina para 2 personas (ATM e IOB) en todos los tiempos; martes, miércoles y viernes hay un 3er comensal a la comida con la misma porción que IOB; evitar ingredientes premium o demasiado exoticos los dias del tercer comensal
@@ -43,7 +43,6 @@ USO DEL PLAN NUTRICIONAL:
 - El plan del nutriólogo define METAS NUMÉRICAS por tiempo de comida (kcal, proteína, carbohidratos, grasa). Esos números son obligatorios.
 - Los ALIMENTOS que el nutriólogo listó son solo una referencia de qué tan saciante o denso es el plan — NO son el menú a reproducir.
 - Diseña platillos ORIGINALES y CREATIVOS cada semana que alcancen los mismos macros. Varía proteínas, granos, verduras, técnicas y gastronomías libremente.
-- Un cocinero avanzado no come lo mismo cada semana: usa el perfil completo (confitado, braseado, emulsiones, fermentados, sous vide, cocción a baja temperatura en horno, técnicas japonesas, peruanas, árabes, francesas, pasta fresca) para crear menús que un nutriólogo básico jamás prescribiría. El sous vide y la pasta fresca son bienvenidos y se integran al plan de prep.
 
 LEYENDA:
 🏪 = Preparar el domingo (meal prep)
