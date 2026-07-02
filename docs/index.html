@@ -2176,6 +2176,7 @@ _restoreAutoSave();
 function saveRatings() {
   localStorage.setItem(RATING_KEY, JSON.stringify(ratings));
   renderFavoritos();
+  if (_trackingInited) renderRankings();
   _writeRatingsFile();
 }
 
@@ -2509,10 +2510,38 @@ function setRankPerson(p, btn) {
   renderRankings();
 }
 
+// Merge server-side history (RATINGS_HISTORY) with live localStorage ratings.
+// localStorage wins for dishes that exist in both — it has the most current stars.
+function _mergedRankingsDishes() {
+  const dishes = JSON.parse(JSON.stringify(RATINGS_HISTORY.dishes || {}));
+  for (const [key, r] of Object.entries(ratings)) {
+    const title = (r.title || key).trim();
+    if (!title) continue;
+    if (!dishes[title]) {
+      dishes[title] = { ratings:[], avg_stars:0, all_tags:[], last_rating:{}, times_served:1 };
+    }
+    for (const pk of ['atm', 'iob']) {
+      const pr = r[pk] || {};
+      if (pr.stars || pr.tag) {
+        dishes[title].last_rating[pk] = { stars: pr.stars||0, tag: pr.tag||'' };
+        if (pr.tag && !dishes[title].all_tags.includes(pr.tag))
+          dishes[title].all_tags.push(pr.tag);
+      }
+    }
+    // Recompute avg from merged last_rating
+    const stars = Object.values(dishes[title].last_rating).map(p=>p.stars||0).filter(s=>s>0);
+    if (stars.length) dishes[title].avg_stars = Math.round(10 * stars.reduce((a,b)=>a+b,0) / stars.length) / 10;
+  }
+  return dishes;
+}
+
 function renderRankings() {
-  const dishes = (RATINGS_HISTORY.dishes) || {};
+  const dishes = _mergedRankingsDishes();
   const list   = document.getElementById('rankings-list');
-  if (!Object.keys(dishes).length) return;
+  if (!Object.keys(dishes).length) {
+    list.innerHTML = '<p class="text-xs" style="color:#9ca3af">Sin valoraciones todavía — califica los platos en la pestaña del menú.</p>';
+    return;
+  }
   const scored = Object.entries(dishes).map(([title, data]) => {
     let score = 0;
     if (_rankPerson === 'avg') {
