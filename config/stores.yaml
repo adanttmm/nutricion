@@ -1,0 +1,30 @@
+costco:
+  name: "Costco"
+  locations:
+    - "Interlomas, Naucalpan"
+    - "Santa Fe, CDMX"
+  notes: "Compras a granel. Excelente en salmón, pollo, proteínas, lácteos y básicos."
+  sections:
+    - "Carnes y Mariscos"
+    - "Frutas y Verduras"
+    - "Lácteos y Refrigerados"
+    - "Abarrotes y Despensa"
+    - "Aceites, Salsas y Condimentos"
+    - "Congelados"
+    - "Panadería y Tortillería"
+    - "Bebidas"
+
+city_market:
+  name: "City Market"
+  locations:
+    - "Santa Fe, CDMX"
+  notes: "Solo para especialidades gourmet que no se consiguen en Costco."
+  sections:
+    - "Carnicería y Charcutería Artesanal"
+    - "Pescadería Premium"
+    - "Frutas, Verduras y Hierbas Especiales"
+    - "Quesos y Lácteos de Especialidad"
+    - "Aceites Importados y Vinagres"
+    - "Especias y Condimentos Gourmet"
+    - "Pasta, Arroz y Granos Especiales"
+    - "Conservas y Productos Importados"

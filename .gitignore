@@ -5,5 +5,6 @@ __pycache__/
 *.pyo
 Dietas/
 data/
-outputs/
+outputs/shopping/
+outputs/meal_prep/
 config/parsed_diets/

@@ -6,47 +6,47 @@ import urllib.parse
 
 class RecipeFinderSkill(BaseSkill):
 
-    SYSTEM_PROMPT = """Eres un chef instructor que crea tarjetas de receta profesionales y concisas para cocineros avanzados.
+    SYSTEM_PROMPT = """Eres un chef instructor que crea tarjetas de receta profesionales y concisas para cocineros avanzados. Busca recetas rapidas, eficientes, fit, gourmet amateur y comida hogareña como referencia y conserva los links para usar en las tarjetas.
 
-NIVEL DEL COCINERO: Avanzado. No explicar técnicas básicas como "cortar la cebolla". Ir directo a la técnica y el resultado.
-ESTILO: Gourmet. Incluir técnicas profesionales, consejos de temperatura, texturas y presentación elegante.
+NIVEL DEL COCINERO: Avanzado. No explicar técnicas básicas. Ir directo a la técnica y el resultado.
+ESTILO: Gourmet amateur, rápido, eficiente, fit y hogareño. Técnicas profesionales, temperaturas exactas, indicadores visuales/táctiles de punto.
+EQUIPO: horno convencional, estufa de gas, sartén de hierro, olla de presión, licuadora, procesador, batidora, maquina helados, big green egg, ahumados y rostiados.
+INGREDIENTES: Preferentemente locales, frescos y de temporada. También considerar conservas gourmet. EXLCUIR TERMINANTEMENTE LOS SIGUIENTES INGREDIENTES:
+    - Tajin
 IDIOMA: Español mexicano.
 
-ESTRUCTURA DE CADA TARJETA DE RECETA:
+ESTRUCTURA DE CADA TARJETA — exactamente así, sin secciones adicionales:
 
-### [Nombre del Platillo]
-**Tiempo:** prep XX min · cocción XX min | **Porciones:** 2 (ajustar si aplica)
-**Macros por porción:** XXX kcal · P XXg · C XXg · G XXg
+### [emoji] [Tiempo de comida] — [Nombre del Platillo]
+**Tiempo:** prep XX min · cocción XX min | **Porciones:** 2 (o 3 si aplica)
 
-**Ingredientes**
-Lista precisa con gramajes cuando importa
+| Ingrediente | 🧔 ATM | 👤 IOB |
+|---|---|---|
+| [nombre ingrediente] | [cantidad cruda] | [cantidad cruda] |
 
-**Mise en place** *(qué adelantar el domingo)*
-Lista de lo que se puede preparar con anticipación
+*(una fila por ingrediente con peso en crudo; omitir condimentos "al gusto")*
 
-**Elaboración**
-Pasos numerados al estilo profesional — temperatura, técnica, indicadores visuales/táctiles de punto
+**Preparación**
+Pasos numerados enunciando ingredientes y cantidades respectivas. Para cada paso que se realiza el fin de semana en el meal prep, antepón exactamente esta nota en cursiva:
+*🏪 Prep fin de semana — hecho el domingo, guardar refrigerado.*
+Luego el paso normalmente. Los pasos del día de servicio van directamente sin nota.
 
 **Emplatado**
-Sugerencia de presentación de 1-2 líneas
-
-**Conservación** *(si aplica para meal prep)*
-Cómo y cuánto tiempo conservar
+1-2 líneas de presentación.
 
 **Tip del chef**
-Un consejo técnico no obvio
+Un consejo técnico no obvio.
 
 ---
-🎥 **Video tutorial:** [Buscar en YouTube](URL_YOUTUBE_ES) · [English version](URL_YOUTUBE_EN)
-📖 **Receta de referencia:** [Buscar en Google](URL_GOOGLE)
+Agregar link de referencia.
+🎥 [Buscar en YouTube ES](https://www.youtube.com/results?search_query=receta+NOMBRE) · [YouTube EN](https://www.youtube.com/results?search_query=how+to+make+NOMBRE_EN) · [Referencia Google](https://www.google.com/search?q=receta+gourmet+NOMBRE)
 
 ---
 
-IMPORTANTE para los URLs:
-- YouTube ES: https://www.youtube.com/results?search_query=receta+[nombre-con-guiones]
-- YouTube EN: https://www.youtube.com/results?search_query=how+to+make+[english-name-hyphens]
-- Google: https://www.google.com/search?q=receta+gourmet+[nombre-con-guiones]
-Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)"""
+REGLAS:
+- NO incluir secciones "Mise en place", "Conservación", "Regeneración" ni "Meal prep durante la semana". Solo las secciones indicadas arriba.
+- Los URLs deben tener nombres codificados (sin acentos, espacios como +).
+- Si el mismo platillo aparece varios días, genera la tarjeta completa cada vez — nunca referencies otro día."""
 
     def generate_for_menu(self, menu_path: str, week_date: date = None) -> Path:
         if week_date is None:
@@ -62,7 +62,9 @@ Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)""
         )
         base = (
             "Crea las tarjetas de receta para todos los platillos indicados (excepto comida trampa 🎉). "
-            "Organiza por día y tiempo de comida en el mismo orden del menú."
+            "Organiza por día y tiempo de comida en el mismo orden del menú. "
+            "IMPORTANTE: Si el mismo platillo aparece en múltiples días, genera la receta COMPLETA en cada día. "
+            "Nunca uses referencias a otros días ('Ver receta del X') — cada día debe ser completamente autónomo."
         )
 
         parts = []
@@ -81,7 +83,7 @@ Los nombres en las URLs deben estar codificados (sin acentos, espacios como +)""
         header = (
             f"# 📖 Recetario Semanal\n"
             f"## Semana del {week_date.strftime('%d de %B de %Y')}\n\n"
-            f"> **Nivel:** Avanzado · **Para:** 2 personas (3 en comidas mar/mié/vie)\n\n---\n\n"
+            f"> **Nivel:** Avanzado · **Para:** 2 personas (3 en comidas mar/mié/vie — 3er comensal porción IOB)\n\n---\n\n"
         )
         filename = f"recetas_{week_date.strftime('%Y-%m-%d')}.md"
         return self._save_output(header + content, "outputs/recipes", filename)

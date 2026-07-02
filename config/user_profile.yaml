@@ -4,7 +4,7 @@ name: "Adan"
 persons:
   ATM:
     full_name: "Adán"
-    age: 40
+    age: 41
     sex: "male"
     height_cm: 187
     weight_kg: 96
@@ -17,6 +17,11 @@ persons:
       carbs_g: 317.0
       fat_g: 85.0
   IOB:
+    full_name: "Itzel"
+    age: 37
+    sex: "female"
+    height_cm: 165
+    weight_kg: 57
     goal: "pérdida de grasa"
     target_overrides:
       goal: "pérdida de grasa"
@@ -36,9 +41,18 @@ cooking:
   cuisines: "todas"  # mediterránea, asiática, mexicana contemporánea, francesa, japonesa, peruana, árabe, etc.
   meal_prep: true
   meal_prep_day: "domingo"
+  equipment_available:
+    - horno convencional
+    - estufa de gas
+    - sartén de hierro
+    - olla de presión
+    - licuadora
+    - procesador de alimentos
+  equipment_not_available:
+    - sous vide / circulador de inmersión
 
 activity:
-  wake_time: "06:00"
+  wake_time: "07:00"
   sleep_time: "23:00"
   gym:
     days_per_week: 3

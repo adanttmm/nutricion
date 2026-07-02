@@ -36,7 +36,6 @@ class SiteBuilderSkill(BaseSkill):
         menu_md          = self._load_latest("outputs/menus",     "menu_*.md")
         shopping_md      = self._load_latest("outputs/shopping",  "compras_*.md")
         recipes_md       = self._load_latest("outputs/recipes",   "recetas_*.md")
-        prep_md          = self._load_latest("outputs/meal_prep", "meal_prep_*.md")
         prev_recipes_md  = self._load_prev("outputs/recipes",     "recetas_*.md")
         prev_recipes_lbl = self._prev_label("outputs/recipes",    "recetas_*.md")
         tracking         = self._export_tracking()
@@ -45,6 +44,9 @@ class SiteBuilderSkill(BaseSkill):
         ingr_hist        = self._update_ingredient_history(shopping_md, week_key)
         all_weeks        = self._build_all_weeks_history()
         ratings_hist     = self._load_ratings_history()
+        prep_blocks      = self._extract_meal_prep_from_recipes(recipes_md)
+        ingr_totals      = self._parse_menu_ingredient_totals(menu_md)
+        compiled_prep    = self._compile_meal_prep(prep_blocks, ingr_totals)
 
         plan_name    = diet_plan.get("plan_name") or f"Plan Nutricional — {week_date.strftime('%d/%m/%Y')}"
         nutritionist = diet_plan.get("nutritionist") or ""
@@ -59,7 +61,7 @@ class SiteBuilderSkill(BaseSkill):
             .replace("__TRACKING__",            json.dumps(tracking, ensure_ascii=False, default=str))
             .replace("__DAYS__",                json.dumps(days_data, ensure_ascii=False))
             .replace("__SHOPPING_HTML__",       self._md_to_html(shopping_md))
-            .replace("__PREP_HTML__",           self._md_to_html(prep_md))
+            .replace("__PREP_HTML__",           compiled_prep)
             .replace("__PREV_RECIPES_HTML__",   self._md_to_html(prev_recipes_md) if prev_recipes_md else "<p style='color:#a0aec0;padding:1.5rem 0;text-align:center'>Sin recetas de semana anterior.</p>")
             .replace("__PREV_RECIPES_LABEL__",  prev_recipes_lbl)
             .replace("__INGREDIENT_HISTORY__",  json.dumps(ingr_hist, ensure_ascii=False))
@@ -505,6 +507,166 @@ class SiteBuilderSkill(BaseSkill):
             except Exception:
                 pass
         return {"dishes": {}}
+
+    @staticmethod
+    def _extract_meal_prep_from_recipes(recipes_md: str) -> list:
+        """Extract 🏪 prep steps from recipe markdown. Returns list of {day, slot, dish, text}."""
+        _SLOT_MAP = {'🌅': 'Desayuno', '🍎': 'Colación AM', '🍽': 'Comida', '🌿': 'Colación PM', '🌙': 'Cena'}
+        blocks = []
+        seen = set()
+        current_day = ''
+        current_meal = ''
+        lines = recipes_md.split('\n')
+        i = 0
+        while i < len(lines):
+            stripped = lines[i].strip()
+            if stripped.startswith('#') and re.search(
+                r'(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)', stripped.upper()
+            ):
+                current_day = stripped.lstrip('#').strip()
+            elif stripped.startswith('### ') and any(e in stripped for e in _SLOT_MAP):
+                current_meal = stripped.lstrip('#').strip()
+            elif re.match(r'^\d+\.\s', stripped) and '🏪' in stripped and 'Prep' in stripped:
+                step_lines = []
+                j = i + 1
+                while j < len(lines):
+                    ns = lines[j].strip()
+                    if (not ns
+                            or re.match(r'^\d+\.\s', ns)
+                            or ns.startswith('#')
+                            or ns.startswith('---')
+                            or ns.startswith('**') and any(k in ns for k in ('Tiempo', 'Emplatado', 'Tip', 'Ingrediente'))):
+                        break
+                    if ns and not ns.startswith('*🏪'):
+                        step_lines.append(ns)
+                    j += 1
+                if step_lines:
+                    text = re.sub(r'\*\*(.+?)\*\*', r'\1', ' '.join(step_lines))
+                    text = re.sub(r'\*(.+?)\*', r'\1', text)
+                    sig = (current_meal[:40], text[:80])
+                    if sig not in seen:
+                        seen.add(sig)
+                        slot = next((v for k, v in _SLOT_MAP.items() if k in current_meal), 'Otro')
+                        blocks.append({'day': current_day, 'slot': slot, 'meal': current_meal, 'text': text})
+                i = j
+                continue
+            i += 1
+        return blocks
+
+    @staticmethod
+    def _parse_menu_ingredient_totals(menu_md: str) -> dict:
+        """Sum ingredient gram quantities across all meals in the menu markdown."""
+        totals: dict = {}
+        in_ingr_table = False
+        for line in menu_md.split('\n'):
+            s = line.strip()
+            if not s.startswith('|'):
+                in_ingr_table = False
+                continue
+            cells = [c.strip() for c in s.strip('|').split('|')]
+            if all(re.match(r'^[-:]+$', c) for c in cells if c.strip()):
+                continue
+            if len(cells) >= 2 and ('ATM' in cells[1] or '🧔' in cells[1]):
+                in_ingr_table = True
+                continue
+            if not in_ingr_table or len(cells) < 2:
+                continue
+            name_raw = cells[0]
+            if 'kcal' in name_raw.lower():
+                continue
+            name = re.sub(r'\*\*', '', name_raw).strip()
+            if not name or name in ('', '—', '-'):
+                continue
+            atm_raw = cells[1] if len(cells) > 1 else ''
+            iob_raw = cells[2] if len(cells) > 2 else ''
+
+            def _g(text: str):
+                m = re.search(r'\((\d+(?:\.\d+)?)\s*g\)', text)
+                if m:
+                    return float(m.group(1))
+                m = re.search(r'^(\d+(?:\.\d+)?)\s*g(?:\b|$)', text.strip())
+                if m:
+                    return float(m.group(1))
+                return None
+
+            atm_g = _g(atm_raw)
+            iob_g = _g(iob_raw)
+            if atm_g is None and iob_g is None:
+                continue
+            key = name.lower().strip()
+            if key not in totals:
+                totals[key] = {'name': name, 'atm_g': 0.0, 'iob_g': 0.0}
+            if atm_g:
+                totals[key]['atm_g'] += atm_g
+            if iob_g:
+                totals[key]['iob_g'] += iob_g
+        return {k: v for k, v in totals.items() if v['atm_g'] > 0 or v['iob_g'] > 0}
+
+    @staticmethod
+    def _compile_meal_prep(prep_blocks: list, ingredient_totals: dict) -> str:
+        """Build meal prep HTML: ingredient totals table + extracted prep steps."""
+        import html as h
+        out = []
+
+        # 1. Ingredient totals table
+        if ingredient_totals:
+            out.append(
+                '<h2 style="color:var(--navy);font-size:1rem;font-weight:700;margin-bottom:.5rem">'
+                '📦 Ingredientes a Pesar — Total Semanal (crudo)</h2>'
+                '<p style="font-size:.78rem;color:#718096;margin-bottom:.75rem">'
+                'Suma de todas las porciones de la semana por persona. Usa como guía de pesaje antes del prep.</p>'
+            )
+            out.append(
+                '<table class="prose-table"><thead><tr>'
+                '<th>Ingrediente</th><th>🧔 ATM total</th><th>👤 IOB total</th>'
+                '</tr></thead><tbody>'
+            )
+            for data in sorted(ingredient_totals.values(), key=lambda x: x['name'].lower()):
+                atm = f"{data['atm_g']:.0f}g" if data['atm_g'] else '—'
+                iob = f"{data['iob_g']:.0f}g" if data['iob_g'] else '—'
+                out.append(f"<tr><td>{h.escape(data['name'])}</td><td>{atm}</td><td>{iob}</td></tr>")
+            out.append('</tbody></table>')
+
+        # 2. Prep steps grouped by slot
+        if prep_blocks:
+            out.append(
+                '<h2 style="color:var(--navy);font-size:1rem;font-weight:700;margin:1.75rem 0 .4rem">'
+                '🏪 Pasos de Prep del Fin de Semana</h2>'
+                '<p style="font-size:.78rem;color:#718096;margin-bottom:.85rem">'
+                'Extraído de las recetas — pasos marcados 🏪. Duplicados entre días eliminados.</p>'
+            )
+            _SLOT_ORDER = ['Desayuno', 'Colación AM', 'Comida', 'Colación PM', 'Cena', 'Otro']
+            blocks_sorted = sorted(prep_blocks, key=lambda b: (_SLOT_ORDER.index(b['slot']) if b['slot'] in _SLOT_ORDER else 99, b['meal']))
+            cur_slot = None
+            for block in blocks_sorted:
+                if block['slot'] != cur_slot:
+                    if cur_slot is not None:
+                        out.append('</div>')
+                    cur_slot = block['slot']
+                    out.append(
+                        f'<div style="margin-bottom:1.1rem">'
+                        f'<h3 style="font-size:.82rem;color:var(--teal);font-weight:700;'
+                        f'padding:.3rem 0;border-bottom:1px solid var(--teal-20);margin-bottom:.45rem">'
+                        f'{h.escape(cur_slot)}</h3>'
+                    )
+                dish = re.sub(r'^[^\w]+', '', block['meal'].split('—')[-1].strip()) if '—' in block['meal'] else ''
+                ctx = f'<span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">{h.escape(dish)}</span>' if dish else ''
+                out.append(
+                    f'<div style="margin-bottom:.5rem;padding:.55rem .75rem;'
+                    f'background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55">'
+                    + ctx +
+                    h.escape(block['text']) +
+                    '</div>'
+                )
+            if cur_slot is not None:
+                out.append('</div>')
+
+        if not ingredient_totals and not prep_blocks:
+            out.append(
+                '<p style="color:#a0aec0;padding:2rem 0;text-align:center">'
+                'Sin recetas disponibles para compilar el prep.</p>'
+            )
+        return '\n'.join(out)
 
     @staticmethod
     def _js(text: str) -> str:
@@ -1207,6 +1369,12 @@ function showDay(i, targetSlot) {
             '<div class="recipe-inner">' +
               '<div class="recipe-rating-placeholder" data-rkey="' + m.rkey +
                 '" data-title="' + safe + '" data-day="' + d.short + '"></div>' +
+              '<div style="margin-bottom:.85rem;padding:.6rem .85rem;background:rgba(74,145,158,.07);' +
+                'border-left:3px solid var(--teal);border-radius:0 .5rem .5rem 0">' +
+                '<div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;' +
+                  'color:var(--teal);margin-bottom:.35rem">📊 Cantidades a servir (cocinado)</div>' +
+                '<div class="prose max-w-none" style="font-size:.8rem">' + m.menu_html + '</div>' +
+              '</div>' +
               m.recipe_html +
             '</div></details>';
       }

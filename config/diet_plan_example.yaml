@@ -1,0 +1,141 @@
+# ============================================================
+# PLAN NUTRICIONAL
+# Reemplaza con el plan real de tu nutriólogo.
+# Puedes tener múltiples archivos: diet_plan_fase1.yaml, etc.
+# ============================================================
+plan_name: "Plan de Composición Corporal - Fase 1"
+nutritionist: "Dr./Lic. [Nombre del Nutriólogo]"
+created_date: "2026-06-01"
+goal: "Pérdida de grasa corporal manteniendo masa muscular"
+
+daily_targets:
+  calories: 2200
+  protein_g: 165     # ~30 % de las calorías (×4 kcal/g)
+  carbs_g: 220       # ~40 % de las calorías (×4 kcal/g)
+  fat_g: 73          # ~30 % de las calorías (×9 kcal/g)
+  fiber_g: 35
+  water_liters: 3.0
+  sodium_mg: 2300
+
+meal_structure:
+  desayuno:
+    time: "07:00"
+    calories: 450
+    protein_g: 35
+    carbs_g: 45
+    fat_g: 15
+    notes: "Alta proteína. Carbohidratos complejos para energía matutina."
+
+  colacion_am:
+    time: "10:30"
+    calories: 200
+    protein_g: 15
+    carbs_g: 20
+    fat_g: 6
+    notes: "Colación ligera. Fruta + proteína o lácteo."
+
+  comida:
+    time: "14:00"
+    calories: 650
+    protein_g: 50
+    carbs_g: 65
+    fat_g: 20
+    notes: "Comida principal. Balance completo. L/M/V hay un tercer comensal."
+
+  colacion_pm:
+    time: "17:30"
+    calories: 200
+    protein_g: 20
+    carbs_g: 15
+    fat_g: 6
+    notes: "Pre-entrenamiento cuando aplique. Carbohidratos + proteína."
+
+  cena:
+    time: "20:30"
+    calories: 500
+    protein_g: 40
+    carbs_g: 40
+    fat_g: 16
+    notes: "Cena moderada. Énfasis en verduras y proteína magra."
+
+  # ~200 kcal de flexibilidad diaria
+
+gym_nutrition:
+  pre_workout:
+    timing: "45-60 min antes"
+    focus: "Carbohidratos de rápida absorción + proteína moderada"
+    examples:
+      - "Plátano + yogurt griego"
+      - "Pan integral + mantequilla de almendra"
+      - "Avena + frutos rojos"
+  post_workout:
+    timing: "30 min después"
+    focus: "Proteína de alta calidad + carbohidratos"
+    examples:
+      - "Pollo + arroz integral"
+      - "Huevos + camote"
+      - "Batido de proteína + fruta"
+
+allowed_foods:
+  proteins:
+    - "Pechuga de pollo sin piel"
+    - "Salmón"
+    - "Atún en agua"
+    - "Pechuga de pavo"
+    - "Huevos"
+    - "Yogurt griego natural"
+    - "Queso cottage"
+    - "Camarones"
+    - "Robalo / tilapia"
+    - "Res magra (90/10)"
+    - "Lentejas, garbanzos, frijoles"
+    - "Tofu / tempeh"
+
+  carbs:
+    - "Avena integral"
+    - "Arroz integral o basmati"
+    - "Quinoa"
+    - "Camote"
+    - "Papa con cáscara"
+    - "Pan integral 100%"
+    - "Tortilla de maíz nixtamalizado"
+    - "Todas las frutas frescas"
+    - "Todas las verduras"
+    - "Pasta integral"
+
+  fats:
+    - "Aguacate"
+    - "Aceite de oliva extra virgen"
+    - "Nueces y almendras"
+    - "Semillas (chía, linaza, calabaza)"
+    - "Mantequilla de almendra o cacahuate (natural)"
+
+  free_vegetables:
+    - "Lechuga y espinaca"
+    - "Pepino, apio, calabaza"
+    - "Jitomate, chile, pimiento"
+    - "Brócoli, coliflor, espárragos"
+
+restricted_foods:
+  avoid:
+    - "Azúcar refinada"
+    - "Harinas refinadas"
+    - "Bebidas azucaradas"
+    - "Frituras y ultra-procesados"
+    - "Aceites vegetales refinados"
+  limit_weekly:
+    - "Alcohol: máximo 1-2 copas de vino tinto"
+    - "Quesos maduros: máximo 2-3 veces"
+    - "Carne roja: máximo 2 veces"
+
+cheat_meal:
+  per_week: 1
+  preferred_day: "sábado"
+  preferred_time: "cena"
+  notes: "Sin restricciones. Disfrutar plenamente. Puede ser restaurante."
+
+context:
+  extra_person_days: "martes, miércoles y viernes"
+  meal_prep_day: "domingo"
+  gym_calorie_bonus: 150
+  salsa_calorie_bonus: 100
