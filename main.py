@@ -522,69 +522,6 @@ def importar_mifitness(archivo, persona, dry_run):
     ))
 
 
-@cli.command("xiaomi-bootstrap")
-@click.option("--cookies-file", "-c", default=None,
-              help="JSON exportado con Cookie-Editor desde account.xiaomi.com (recomendado)")
-@click.option("--token", "-t", default=None,
-              help="Valor de una cookie individual (serviceToken o passToken)")
-@click.option("--region", "-r", default=None)
-def xiaomi_bootstrap(cookies_file, token, region):
-    """Obtén el app_token de Mi Fitness usando la sesión del navegador.
-
-    OPCIÓN A — cookies completas (recomendado, más confiable):
-      1. Instala la extensión 'Cookie-Editor' en Chrome/Edge
-      2. Ve a account.xiaomi.com (ya logueado)
-      3. Abre Cookie-Editor → Export → pega en un archivo
-      4. python main.py xiaomi-bootstrap --cookies-file data/xiaomi_cache/cookies.json
-
-    OPCIÓN B — un solo token:
-      1. F12 → Network → recarga → click en petición → Request Headers → cookie:
-      2. Copia el valor de serviceToken o passToken
-      3. python main.py xiaomi-bootstrap --token 'VALOR'
-    """
-    import os, json as _json
-    from skills.xiaomi_sync import XiaomiSyncClient
-
-    if not cookies_file and not token:
-        console.print("[red]Debes pasar --cookies-file o --token[/red]")
-        raise SystemExit(1)
-
-    region = region or os.environ.get("XIAOMI_REGION", "cn")
-    email = os.environ.get("XIAOMI_EMAIL", "")
-    password = os.environ.get("XIAOMI_PASSWORD", "")
-    phone_device_id = os.environ.get("XIAOMI_DEVICE_ID")
-    client = XiaomiSyncClient(email, password, region=region, device_id=phone_device_id)
-    device_id = client._get_or_create_device_id()
-
-    if cookies_file:
-        # Load all browser cookies and inject them into the exchange
-        raw = _json.loads(Path(cookies_file).read_text())
-        # Cookie-Editor exports as a list of objects with name/value/domain/path
-        if isinstance(raw, list):
-            cookies = {c["name"]: c["value"] for c in raw if "name" in c and "value" in c}
-        else:
-            cookies = raw  # plain dict
-        console.print(f"[cyan]Cargando {len(cookies)} cookies del navegador...[/cyan]")
-        svc = cookies.get("serviceToken") or cookies.get("passToken") or ""
-        if not svc:
-            console.print("[red]No se encontró serviceToken ni passToken en el archivo.[/red]")
-            raise SystemExit(1)
-        try:
-            client._exchange_with_all_cookies(cookies, device_id)
-        except Exception as e:
-            console.print(f"[red]❌ {e}[/red]")
-            raise SystemExit(1)
-    else:
-        console.print("[cyan]Usando token individual...[/cyan]")
-        try:
-            client._exchange_service_token_for_app_token(token, device_id)
-        except Exception as e:
-            console.print(f"[red]❌ {e}[/red]")
-            raise SystemExit(1)
-
-    client._save_token()
-    console.print(f"[green]✅ Token guardado. user_id={client.user_id}[/green]")
-    console.print("Ahora corre [yellow]bash actualizar_xiaomi.sh[/yellow] normalmente.")
 
 
 @cli.command("sincronizar-xiaomi")
@@ -605,16 +542,12 @@ def sincronizar_xiaomi(persona, region, dias, dry_run, forzar_login):
     email = os.environ.get("XIAOMI_EMAIL", "")
     password = os.environ.get("XIAOMI_PASSWORD", "")
     region = region or os.environ.get("XIAOMI_REGION", "cn")
-    device_id = os.environ.get("XIAOMI_DEVICE_ID")  # real Android ID from the phone
 
     if not email or not password:
         console.print("[red]Falta XIAOMI_EMAIL o XIAOMI_PASSWORD en .env[/red]")
         raise SystemExit(1)
 
-    if device_id:
-        console.print(f"  [dim]Usando device_id del teléfono: {device_id}[/dim]")
-
-    client = XiaomiSyncClient(email, password, region=region, device_id=device_id)
+    client = XiaomiSyncClient(email, password, region=region)
 
     with console.status("[cyan]Autenticando con Xiaomi...", spinner="dots"):
         try:
@@ -717,6 +650,70 @@ def importar_smartscale(archivo, persona, dry_run):
         "Reconstruye el sitio para ver las métricas:\n"
         "  [yellow]bash actualizar_site.sh[/yellow]",
         title="[cyan]⚖️  Xiaomi Home importado[/cyan]",
+        border_style="cyan",
+    ))
+
+
+@cli.command("importar-xiaomi-zip")
+@click.argument("archivo")
+@click.option("--persona", "-p", default="ATM",
+              type=click.Choice(["ATM", "IOB"], case_sensitive=False),
+              help="Persona a quien pertenecen los datos (default: ATM)")
+@click.option("--dry-run", is_flag=True, default=False,
+              help="Muestra qué se importaría sin guardar en la base de datos")
+def importar_xiaomi_zip(archivo, persona, dry_run):
+    """Importa composición corporal desde el ZIP de exportación de Xiaomi.
+
+    ARCHIVO es la ruta al ZIP descargado desde Mi Fitness o la cuenta Xiaomi.
+
+    Cómo obtener el ZIP:
+      1. Abre Mi Fitness → Yo → Configuración → Privacidad → Exportar datos
+      2. Descarga el ZIP y pásalo como argumento.
+    """
+    from skills.xiaomi_importer import parse_zip, import_to_db
+
+    zip_path = Path(archivo)
+    if not zip_path.exists():
+        console.print(f"[red]❌ Archivo no encontrado: {archivo}[/red]")
+        raise SystemExit(1)
+
+    with console.status("[cyan]Leyendo ZIP...", spinner="dots"):
+        records = parse_zip(str(zip_path))
+
+    if not records:
+        console.print("[yellow]No se encontraron registros de composición corporal en el ZIP.[/yellow]")
+        console.print("[dim]El ZIP debe contener archivos como BODY_WEIGHT.json, body_record.csv, etc.[/dim]")
+        return
+
+    # Deduplicate by date (keep latest reading per date)
+    by_date = {}
+    for r in records:
+        if r.get("date"):
+            by_date[r["date"]] = r
+    unique = sorted(by_date.values(), key=lambda r: r["date"])
+
+    if dry_run:
+        console.print(f"\n[yellow]Vista previa — {len(unique)} registros únicos para [bold]{persona}[/bold]:[/yellow]\n")
+        for r in unique[-10:]:
+            parts = [f"[bold]{r['date']}[/bold]", f"{r['weight_kg']} kg"]
+            if r.get("body_fat_pct"): parts.append(f"grasa {r['body_fat_pct']}%")
+            if r.get("muscle_mass_kg"): parts.append(f"músculo {r['muscle_mass_kg']} kg")
+            console.print("  " + "  ·  ".join(parts))
+        if len(unique) > 10:
+            console.print(f"  [dim]... ({len(unique)} total, mostrando últimos 10)[/dim]")
+        console.print("\n[dim]Ejecuta sin --dry-run para importar.[/dim]")
+        return
+
+    saved = import_to_db(unique, person=persona)
+
+    console.print(Panel(
+        f"[green]✅ {saved} medición(es) importadas para [bold]{persona}[/bold][/green]\n\n"
+        f"Archivo       : [bold]{zip_path.name}[/bold]\n"
+        f"Registros     : [bold]{len(records)}[/bold] raw → [bold]{len(unique)}[/bold] únicos\n"
+        f"Guardados     : [bold]{saved}[/bold]\n\n"
+        "Reconstruye el sitio para ver las métricas:\n"
+        "  [yellow]bash actualizar_site.sh[/yellow]",
+        title="[cyan]⚖️  ZIP Xiaomi importado[/cyan]",
         border_style="cyan",
     ))
 

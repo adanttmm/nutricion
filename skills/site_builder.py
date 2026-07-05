@@ -955,6 +955,7 @@ class SiteBuilderSkill(BaseSkill):
     <button onclick="tab('compras',this)" class="tab-btn">🛒 Compras</button>
     <button onclick="tab('prep',this)" class="tab-btn">🍳 Meal Prep</button>
     <button onclick="tab('recprev',this)" class="tab-btn">📖 Recetas __PREV_RECIPES_LABEL__</button>
+    <button id="btn-tab-valoraciones" onclick="tab('valoraciones',this)" class="tab-btn">⭐ Valoraciones</button>
     <button onclick="tab('tracking',this)" class="tab-btn">📈 Seguimiento</button>
   </div>
 </header>
@@ -997,20 +998,15 @@ class SiteBuilderSkill(BaseSkill):
     <div id="fav-section" class="card">
       <div class="card-pad">
         <div class="flex items-center justify-between mb-3">
-          <span class="sec-label">⭐ Valoraciones</span>
-          <span id="autosave-status" style="font-size:.72rem;color:#9ca3af">
-            <button id="autosave-btn" onclick="setupAutoSave()"
-              class="badge badge-teal" style="cursor:pointer">
-              Conectar carpeta
-            </button>
-          </span>
+          <span class="sec-label">⭐ Favoritos</span>
+          <button onclick="tab('valoraciones', document.getElementById('btn-tab-valoraciones'))"
+            class="badge badge-teal" style="cursor:pointer;font-size:.72rem">
+            Calificar platos →
+          </button>
         </div>
         <div id="fav-list" class="space-y-1"></div>
         <p id="fav-hint" class="text-xs" style="color:#9ca3af;margin-top:.6rem">
-          Califica los platos abriendo cada receta en la pestaña 📅 Semana.<br>
-          Haz clic en <em>Conectar carpeta</em> y selecciona
-          <code>data/ratings/</code> del proyecto para que las valoraciones
-          se guarden automáticamente antes de cada actualización.
+          Aún no hay favoritos. Ve a la pestaña ⭐ Valoraciones para calificar los platos de la semana.
         </p>
       </div>
     </div>
@@ -1079,6 +1075,46 @@ class SiteBuilderSkill(BaseSkill):
     </div>
     <div class="card">
       <div class="card-pad prose max-w-none">__PREV_RECIPES_HTML__</div>
+    </div>
+  </div>
+
+  <!-- ── Valoraciones ───────────────────────────────────── -->
+  <div id="tab-valoraciones" class="tab-pane space-y-3">
+    <div class="sec-banner">
+      <img src="imagenes/tracking.png" alt="">
+      <div class="sec-banner-ov"></div>
+      <div class="sec-banner-text">
+        <div class="sec-banner-title">⭐ Valoraciones</div>
+        <div class="sec-banner-sub">Califica cada plato de la semana</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-pad">
+        <div class="flex items-center justify-between mb-3">
+          <span class="sec-label">Guardar automáticamente</span>
+          <span id="autosave-status" style="font-size:.72rem;color:#9ca3af">
+            <button id="autosave-btn" onclick="setupAutoSave()"
+              class="badge badge-teal" style="cursor:pointer">
+              Conectar carpeta
+            </button>
+          </span>
+        </div>
+        <p class="text-xs" style="color:#9ca3af">
+          Conecta la carpeta <code>data/ratings/</code> del proyecto para guardar
+          valoraciones automáticamente.
+        </p>
+        <div class="flex items-center gap-3 mt-3">
+          <button onclick="exportRatings()" class="badge badge-terra" style="cursor:pointer">
+            ⬇ Exportar valoraciones
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-pad">
+        <span class="sec-label" style="display:block;margin-bottom:.85rem">Platos de esta semana</span>
+        <div id="ratings-tab-list"></div>
+      </div>
     </div>
   </div>
 
@@ -1284,6 +1320,7 @@ function tab(name, btn) {
   btn.classList.add('active');
   if (name === 'compras') initShopChecks();
   if (name === 'tracking') initTracking();
+  if (name === 'valoraciones') initRatingsTab();
 }
 
 // ── Tile gallery ──────────────────────────────────────────────────────────────
@@ -1380,8 +1417,6 @@ function showDay(i, targetSlot) {
           '<details class="recipe-details">' +
             '<summary><span class="arr">▶</span> Ver receta: ' + safe + '</summary>' +
             '<div class="recipe-inner">' +
-              '<div class="recipe-rating-placeholder" data-rkey="' + m.rkey +
-                '" data-title="' + safe + '" data-day="' + d.short + '"></div>' +
               '<div style="margin-bottom:.85rem;padding:.6rem .85rem;background:rgba(74,145,158,.07);' +
                 'border-left:3px solid var(--teal);border-radius:0 .5rem .5rem 0">' +
                 '<div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;' +
@@ -1395,7 +1430,6 @@ function showDay(i, targetSlot) {
     }
   }
   dayContentEl.innerHTML = html;
-  addRatingWidgets();
 
   if (targetSlot && SLOT_EMOJI[targetSlot]) {
     const targetEmoji = SLOT_EMOJI[targetSlot];
@@ -1591,6 +1625,14 @@ function saveRatings() {
   _writeRatingsFile();
 }
 
+function exportRatings() {
+  const blob = new Blob([JSON.stringify(ratings, null, 2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'ratings___WEEK_KEY__.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
 function makePersonRatingRow(key, person, title, dayShort) {
   const pKey = person.toLowerCase();
   const r = (ratings[key] && ratings[key][pKey]) || { stars: 0, tag: '' };
@@ -1640,17 +1682,62 @@ function makePersonRatingRow(key, person, title, dayShort) {
   return row;
 }
 
-function addRatingWidgets() {
-  dayContentEl.querySelectorAll('.recipe-rating-placeholder').forEach(ph => {
-    if (ph.dataset.built) return;
-    ph.dataset.built = '1';
-    const key = ph.dataset.rkey, title = ph.dataset.title, day = ph.dataset.day;
-    if (!ratings[key]) ratings[key] = { title, day };
-    const block = document.createElement('div');
-    block.style.cssText = 'border:1px solid #ede9e3;border-radius:.5rem;overflow:hidden;margin-bottom:.75rem';
+let _ratingsTabInited = false;
+function initRatingsTab() {
+  if (_ratingsTabInited) { _refreshRatingsTab(); return; }
+  _ratingsTabInited = true;
+  const container = document.getElementById('ratings-tab-list');
+  if (!container) return;
+
+  // Collect unique recipes from all days (by rkey, preserving first-seen day)
+  const seen = new Map(); // rkey → {title, days[]}
+  DAYS.forEach(d => {
+    (d.meals || []).forEach(m => {
+      if (!m.rkey || !m.recipe_title) return;
+      if (!seen.has(m.rkey)) seen.set(m.rkey, { title: m.recipe_title, days: [] });
+      const entry = seen.get(m.rkey);
+      if (!entry.days.includes(d.short)) entry.days.push(d.short);
+      if (!ratings[m.rkey]) ratings[m.rkey] = { title: m.recipe_title, day: d.short };
+    });
+  });
+
+  if (!seen.size) {
+    container.innerHTML = '<p class="text-xs" style="color:#9ca3af">No hay recetas disponibles para calificar.</p>';
+    return;
+  }
+
+  const persons = PERSONS.length > 0 ? PERSONS.map(p => p.name) : ['ATM','IOB'];
+  seen.forEach((entry, rkey) => {
+    const safe = entry.title.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const dayLabel = entry.days.join(', ');
+    const wrap = document.createElement('div');
+    wrap.id = 'rating-block-' + rkey;
+    wrap.style.cssText = 'margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #f4f2ee';
+    const head = document.createElement('div');
+    head.style.cssText = 'display:flex;align-items:baseline;gap:.5rem;margin-bottom:.4rem';
+    head.innerHTML = '<span style="font-weight:600;font-size:.9rem;color:#212e53">' + safe + '</span>' +
+      '<span style="font-size:.7rem;color:#9ca3af">' + dayLabel + '</span>';
+    wrap.appendChild(head);
+    const rowsBlock = document.createElement('div');
+    rowsBlock.style.cssText = 'border:1px solid #ede9e3;border-radius:.5rem;overflow:hidden';
+    persons.forEach(name => rowsBlock.appendChild(makePersonRatingRow(rkey, name, entry.title, entry.days[0])));
+    wrap.appendChild(rowsBlock);
+    container.appendChild(wrap);
+  });
+}
+
+function _refreshRatingsTab() {
+  // Re-render stars/tags to reflect current ratings state
+  const container = document.getElementById('ratings-tab-list');
+  if (!container) return;
+  container.querySelectorAll('[id^="rating-block-"]').forEach(wrap => {
+    const rkey = wrap.id.replace('rating-block-','');
+    const entry = ratings[rkey] || {};
     const persons = PERSONS.length > 0 ? PERSONS.map(p => p.name) : ['ATM','IOB'];
-    persons.forEach(name => block.appendChild(makePersonRatingRow(key, name, title, day)));
-    ph.replaceWith(block);
+    const rowsBlock = wrap.querySelector('[style*="border-radius:.5rem"]');
+    if (!rowsBlock) return;
+    rowsBlock.innerHTML = '';
+    persons.forEach(name => rowsBlock.appendChild(makePersonRatingRow(rkey, name, entry.title || rkey, entry.day || '')));
   });
 }
 
