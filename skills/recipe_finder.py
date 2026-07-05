@@ -24,7 +24,7 @@ ESTRUCTURA DE CADA TARJETA — exactamente así, sin secciones adicionales:
 |---|---|---|
 | [nombre ingrediente] | [cantidad cruda] | [cantidad cruda] |
 
-*(una fila por ingrediente con peso en crudo; omitir condimentos "al gusto")*
+*(una fila por ingrediente con peso en CRUDO/SECO antes de cocción — NUNCA pesos cocidos; omitir condimentos "al gusto")*
 
 **Preparación**
 Pasos numerados enunciando ingredientes y cantidades respectivas. Para cada paso que se realiza el fin de semana en el meal prep, antepón exactamente esta nota en cursiva:

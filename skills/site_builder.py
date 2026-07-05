@@ -45,7 +45,7 @@ class SiteBuilderSkill(BaseSkill):
         all_weeks        = self._build_all_weeks_history()
         ratings_hist     = self._load_ratings_history()
         prep_blocks      = self._extract_meal_prep_from_recipes(recipes_md)
-        ingr_totals      = self._parse_menu_ingredient_totals(menu_md)
+        ingr_totals      = self._parse_recipe_ingredient_totals(recipes_md)
         compiled_prep    = self._compile_meal_prep(prep_blocks, ingr_totals)
 
         plan_name    = diet_plan.get("plan_name") or f"Plan Nutricional — {week_date.strftime('%d/%m/%Y')}"
@@ -607,6 +607,116 @@ class SiteBuilderSkill(BaseSkill):
                 totals[key]['atm_g'] += atm_g
             if iob_g:
                 totals[key]['iob_g'] += iob_g
+        return {k: v for k, v in totals.items() if v['atm_g'] > 0 or v['iob_g'] > 0}
+
+    @staticmethod
+    def _parse_recipe_ingredient_totals(recipes_md: str) -> dict:
+        """Parse raw ingredient quantities from recipe ingredient tables.
+
+        Reads the recipes markdown (not the menu), which lists RAW weights.
+        Skips rows where the quantity contains 'cocido/cocida/cocidos' — those are
+        already-prepped components, not raw shopping items.
+        Deduplicates identical recipes across days (same rkey signals same dish).
+        """
+        _COOKED_RE = re.compile(r'\bcocid[ao]s?\b', re.IGNORECASE)
+        _PREP_RE   = re.compile(r'\bsous\s+vide\b|\bprep\b|\bdomingo\b', re.IGNORECASE)
+
+        def _strip_labels(name: str) -> str:
+            """Normalise ingredient name: remove cooking labels and parenthetical notes."""
+            # Remove trailing labels like "(crudo)", "(rinde cocido)", "(secos)", etc.
+            name = re.sub(r'\s*\((?:crudo|crudos|cocido|cocidos|cocida|cocidas|seco|secos|rinde[^)]*|sans[^)]*)\)', '', name, flags=re.IGNORECASE)
+            # Remove inline labels like "cocido", "crudo" at end
+            name = re.sub(r'\s+(crudo|crudos|cocido|cocidos|cocida|cocidas|seco|secos)\s*$', '', name, flags=re.IGNORECASE)
+            return name.strip()
+
+        def _g(text: str):
+            if not text:
+                return None
+            # Skip cooked-quantity annotations
+            if _COOKED_RE.search(text):
+                return None
+            m = re.search(r'(\d+(?:\.\d+)?)\s*g', text)
+            return float(m.group(1)) if m else None
+
+        totals: dict = {}
+        seen_table_keys: set = set()   # (day, recipe_key) — skip exact duplicate tables
+        in_ingr_table = False
+        current_day_key = ''
+        current_recipe_key = ''
+
+        for line in recipes_md.split('\n'):
+            s = line.strip()
+
+            # Track day sections
+            if s.startswith('#') and re.search(r'(LUNES|MARTES|MI[ÉE]RCOLES|JUEVES|VIERNES|S[ÁA]BADO|DOMINGO)', s.upper()):
+                current_day_key = re.sub(r'[^a-z0-9]+', '-', s.lower())[:20]
+                in_ingr_table = False
+                continue
+
+            # Track recipe sections by ### header with meal emoji
+            if s.startswith('### ') and any(e in s for e in _MEAL_EMOJIS):
+                raw_key = re.sub(r'[^a-z0-9]+', '-', s.lower())[:60]
+                current_recipe_key = raw_key
+                in_ingr_table = False
+                continue
+
+            if not s.startswith('|'):
+                in_ingr_table = False
+                continue
+
+            cells = [c.strip() for c in s.strip('|').split('|')]
+
+            # Separator row
+            if all(re.match(r'^[-:]+$', c) for c in cells if c):
+                continue
+
+            # Header row with "Ingrediente"
+            if len(cells) >= 2 and 'Ingrediente' in cells[0]:
+                table_key = f'{current_day_key}|{current_recipe_key}'
+                if table_key in seen_table_keys:
+                    in_ingr_table = False
+                else:
+                    in_ingr_table = True
+                    seen_table_keys.add(table_key)
+                continue
+
+            if not in_ingr_table or len(cells) < 2:
+                continue
+
+            name_raw = cells[0]
+            if 'kcal' in name_raw.lower() or not name_raw or name_raw in ('', '—', '-'):
+                continue
+
+            atm_raw = cells[1] if len(cells) > 1 else ''
+            iob_raw = cells[2] if len(cells) > 2 else ''
+
+            # Skip if ingredient name itself says it's a cooked prep component
+            if _COOKED_RE.search(name_raw) or _PREP_RE.search(name_raw):
+                continue
+            # Skip if ATM quantity is cooked
+            if _COOKED_RE.search(atm_raw):
+                continue
+            # Skip seasonings / condiments with no useful gram value
+            if re.match(r'^c/s', atm_raw.strip(), re.IGNORECASE):
+                continue
+
+            atm_g = _g(atm_raw)
+            iob_g = _g(iob_raw)
+            if atm_g is None and iob_g is None:
+                continue
+
+            name = _strip_labels(re.sub(r'\*\*', '', name_raw).strip())
+            if not name:
+                continue
+
+            key = name.lower().strip()
+            if key not in totals:
+                totals[key] = {'name': name, 'atm_g': 0.0, 'iob_g': 0.0}
+            if atm_g:
+                totals[key]['atm_g'] += atm_g
+            if iob_g:
+                totals[key]['iob_g'] += iob_g
+
         return {k: v for k, v in totals.items() if v['atm_g'] > 0 or v['iob_g'] > 0}
 
     @staticmethod
