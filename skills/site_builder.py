@@ -60,7 +60,7 @@ class SiteBuilderSkill(BaseSkill):
             .replace("__PERSONS__",             json.dumps(self._persons(diet_plan), ensure_ascii=False))
             .replace("__TRACKING__",            json.dumps(tracking, ensure_ascii=False, default=str))
             .replace("__DAYS__",                json.dumps(days_data, ensure_ascii=False))
-            .replace("__SHOPPING_HTML__",       self._md_to_html(shopping_md))
+            .replace("__SHOPPING_HTML__",       self._build_shopping_html(shopping_md))
             .replace("__PREP_HTML__",           compiled_prep)
             .replace("__PREV_RECIPES_HTML__",   self._md_to_html(prev_recipes_md) if prev_recipes_md else "<p style='color:#a0aec0;padding:1.5rem 0;text-align:center'>Sin recetas de semana anterior.</p>")
             .replace("__PREV_RECIPES_LABEL__",  prev_recipes_lbl)
@@ -526,8 +526,13 @@ class SiteBuilderSkill(BaseSkill):
                 current_day = stripped.lstrip('#').strip()
             elif stripped.startswith('### ') and any(e in stripped for e in _SLOT_MAP):
                 current_meal = stripped.lstrip('#').strip()
-            elif re.match(r'^\d+\.\s', stripped) and '🏪' in stripped and 'Prep' in stripped:
-                step_lines = []
+            elif re.match(r'^\d+\.\s', stripped) and '🏪' in stripped:
+                # The prep content may be on the same line (inline) or on following lines
+                # Strip the numbered prefix and the *🏪 Prep ... * italic tag
+                inline = re.sub(r'^\d+\.\s+', '', stripped)
+                inline = re.sub(r'^\*🏪[^*]*\*\.?\s*', '', inline).strip()
+
+                step_lines = [inline] if inline else []
                 j = i + 1
                 while j < len(lines):
                     ns = lines[j].strip()
@@ -535,14 +540,16 @@ class SiteBuilderSkill(BaseSkill):
                             or re.match(r'^\d+\.\s', ns)
                             or ns.startswith('#')
                             or ns.startswith('---')
-                            or ns.startswith('**') and any(k in ns for k in ('Tiempo', 'Emplatado', 'Tip', 'Ingrediente'))):
+                            or (ns.startswith('**') and any(k in ns for k in ('Tiempo', 'Emplatado', 'Tip', 'Ingrediente')))):
                         break
-                    if ns and not ns.startswith('*🏪'):
+                    if ns and not re.match(r'^\*🏪', ns):
                         step_lines.append(ns)
                     j += 1
                 if step_lines:
                     text = re.sub(r'\*\*(.+?)\*\*', r'\1', ' '.join(step_lines))
                     text = re.sub(r'\*(.+?)\*', r'\1', text)
+                    text = text.strip()
+                if text:
                     sig = (current_meal[:40], text[:80])
                     if sig not in seen:
                         seen.add(sig)
@@ -666,6 +673,112 @@ class SiteBuilderSkill(BaseSkill):
                 '<p style="color:#a0aec0;padding:2rem 0;text-align:center">'
                 'Sin recetas disponibles para compilar el prep.</p>'
             )
+        return '\n'.join(out)
+
+    @staticmethod
+    def _build_shopping_html(shopping_md: str) -> str:
+        """Extract the consolidated table from the shopping markdown and render it with store filters."""
+        import html as h
+        if not shopping_md:
+            return "<p style='color:#a0aec0;padding:1.5rem 0;text-align:center'>Sin lista de compras disponible.</p>"
+
+        # Find the consolidated table: look for the header row (Ingrediente | Cantidad | ...)
+        # then take everything from there to end of table.
+        lines = shopping_md.split('\n')
+        table_start = None
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if not stripped.startswith('|'):
+                continue
+            cells = [c.strip() for c in stripped.strip('|').split('|')]
+            # Header row has columns like "Ingrediente", "Cantidad", "Tienda"
+            lower_cells = [c.lower() for c in cells]
+            if any('ingrediente' in c or 'cantidad' in c or 'tienda' in c for c in lower_cells):
+                table_start = i
+                break   # take the FIRST such header (there should be only one)
+
+        if table_start is None:
+            return SiteBuilderSkill._md_to_html(shopping_md)
+
+        # Collect all lines from the header until the table ends
+        table_end = table_start + 1
+        while table_end < len(lines):
+            s = lines[table_end].strip()
+            if s.startswith('|'):
+                table_end += 1
+            elif not s:
+                # blank line — peek ahead; stop if next non-blank line isn't a table row
+                j = table_end + 1
+                while j < len(lines) and not lines[j].strip():
+                    j += 1
+                if j < len(lines) and lines[j].strip().startswith('|'):
+                    table_end = j + 1
+                else:
+                    break
+            else:
+                break
+
+        table_lines = [l for l in lines[table_start:table_end] if l.strip()]
+
+        # Parse table rows
+        rows = []
+        header = None
+        for line in table_lines:
+            cells = [c.strip() for c in line.strip().strip('|').split('|')]
+            if all(re.match(r'^[-:]+$', c) for c in cells if c):
+                continue  # separator row
+            if header is None:
+                header = cells
+            else:
+                rows.append(cells)
+
+        if not header or not rows:
+            return SiteBuilderSkill._md_to_html(shopping_md)
+
+        # Detect store column index
+        store_idx = next((i for i, hdr in enumerate(header) if 'tienda' in hdr.lower() or 'store' in hdr.lower()), -1)
+
+        # Build filter buttons + table
+        stores = []
+        if store_idx >= 0:
+            for row in rows:
+                s = row[store_idx].strip() if store_idx < len(row) else ''
+                if s and s not in stores:
+                    stores.append(s)
+
+        out = []
+        if stores:
+            out.append('<div class="flex items-center gap-2 mb-3" id="shop-filter-btns">')
+            out.append('<button onclick="shopFilter(\'all\',this)" class="badge badge-teal active-filter" style="cursor:pointer">Todos</button>')
+            for s in stores:
+                slug = re.sub(r'[^a-z0-9]', '', s.lower())
+                out.append(f'<button onclick="shopFilter(\'{slug}\',this)" class="badge badge-sage" style="cursor:pointer">{h.escape(s)}</button>')
+            out.append('</div>')
+
+        out.append('<table class="prose-table shop-tbl" id="shop-main-tbl"><thead><tr>')
+        for col in header:
+            out.append(f'<th>{h.escape(col)}</th>')
+        out.append('</tr></thead><tbody>')
+
+        for row in rows:
+            store_slug = ''
+            if store_idx >= 0 and store_idx < len(row):
+                store_slug = re.sub(r'[^a-z0-9]', '', row[store_idx].lower())
+            out.append(f'<tr data-store="{store_slug}">')
+            for ci, cell in enumerate(row):
+                pad = header[ci] if ci < len(header) else ''
+                # Add checkbox to first column
+                if ci == 0:
+                    out.append(f'<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer">'
+                               f'<input type="checkbox" class="shop-cb"> {h.escape(cell)}</label></td>')
+                else:
+                    out.append(f'<td>{h.escape(cell)}</td>')
+            # Pad missing cells
+            for _ in range(len(header) - len(row)):
+                out.append('<td></td>')
+            out.append('</tr>')
+
+        out.append('</tbody></table>')
         return '\n'.join(out)
 
     @staticmethod
@@ -857,6 +970,7 @@ class SiteBuilderSkill(BaseSkill):
     .badge-teal{background:rgba(74,145,158,.15);color:var(--teal)}
     .badge-terra{background:rgba(206,106,107,.12);color:var(--terra)}
     .badge-sage{background:rgba(190,211,195,.35);color:#3a6652}
+    .active-filter{outline:2px solid currentColor;outline-offset:1px;font-weight:700}
     .badge-blush{background:rgba(235,172,162,.25);color:#9b4a40}
     /* ── Rating ──────────────────────────────────────────── */
     .rating-row{display:flex;align-items:center;gap:.5rem;padding:.35rem .75rem;
@@ -1452,16 +1566,22 @@ function initShopChecks() {
   const section = document.getElementById('html-shopping');
   if (!section) return;
   let tot = 0, chk = 0;
-  section.querySelectorAll('input[type=checkbox]').forEach((cb, i) => {
+  section.querySelectorAll('.shop-cb').forEach((cb, i) => {
     const k = 'shop_' + i;
     cb.checked = !!checks[k];
-    if (cb.checked) chk++;
+    if (cb.checked) {
+      chk++;
+      const tr = cb.closest('tr');
+      if (tr) tr.style.opacity = '0.45';
+    }
     tot++;
     if (!cb.dataset.bound) {
       cb.dataset.bound = '1';
       cb.addEventListener('change', () => {
         checks[k] = cb.checked;
         localStorage.setItem(SHOP_KEY, JSON.stringify(checks));
+        const tr = cb.closest('tr');
+        if (tr) tr.style.opacity = cb.checked ? '0.45' : '';
         updateProgress();
       });
     }
@@ -1471,18 +1591,39 @@ function initShopChecks() {
 
 function updateProgress(tot, chk) {
   if (tot === undefined) {
-    const boxes = document.getElementById('html-shopping').querySelectorAll('input[type=checkbox]');
-    tot = boxes.length; chk = 0;
-    boxes.forEach((cb, i) => { if (checks['shop_' + i]) chk++; });
+    const section = document.getElementById('html-shopping');
+    const boxes = section ? section.querySelectorAll('.shop-cb') : [];
+    const vis = Array.from(boxes).filter(cb => {
+      const tr = cb.closest('tr');
+      return !tr || tr.style.display !== 'none';
+    });
+    tot = vis.length; chk = 0;
+    vis.forEach((cb, i) => { if (cb.checked) chk++; });
   }
   const p = document.getElementById('check-prog');
-  p.textContent = tot ? chk + ' / ' + tot + ' ítems' : '';
-  p.style.color = (chk === tot && tot > 0) ? 'var(--teal)' : '#a0aec0';
+  if (p) {
+    p.textContent = tot ? chk + ' / ' + tot + ' ítems' : '';
+    p.style.color = (chk === tot && tot > 0) ? 'var(--teal)' : '#a0aec0';
+  }
+}
+
+function shopFilter(store, btn) {
+  document.querySelectorAll('#shop-filter-btns button').forEach(b => b.classList.remove('active-filter'));
+  btn.classList.add('active-filter');
+  document.querySelectorAll('#shop-main-tbl tbody tr').forEach(tr => {
+    tr.style.display = (store === 'all' || tr.dataset.store === store) ? '' : 'none';
+  });
+  updateProgress();
 }
 
 function clearChecks() {
   Object.keys(checks).filter(k => k.startsWith('shop_')).forEach(k => delete checks[k]);
   localStorage.setItem(SHOP_KEY, JSON.stringify(checks));
+  const section = document.getElementById('html-shopping');
+  if (section) section.querySelectorAll('.shop-cb').forEach(cb => {
+    cb.checked = false;
+    const tr = cb.closest('tr'); if (tr) tr.style.opacity = '';
+  });
   initShopChecks();
 }
 

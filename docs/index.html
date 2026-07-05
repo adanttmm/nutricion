@@ -183,6 +183,7 @@
     .badge-teal{background:rgba(74,145,158,.15);color:var(--teal)}
     .badge-terra{background:rgba(206,106,107,.12);color:var(--terra)}
     .badge-sage{background:rgba(190,211,195,.35);color:#3a6652}
+    .active-filter{outline:2px solid currentColor;outline-offset:1px;font-weight:700}
     .badge-blush{background:rgba(235,172,162,.25);color:#9b4a40}
     /* ── Rating ──────────────────────────────────────────── */
     .rating-row{display:flex;align-items:center;gap:.5rem;padding:.35rem .75rem;
@@ -369,476 +370,299 @@
     </div>
     <div class="card">
       <div class="card-pad prose max-w-none">
-        <div id="html-shopping"><h1>🛒 Lista de Compras</h1>
-<h2>Semana del 02 de July de 2026</h2>
-
-<p>Voy a consolidar todos los ingredientes del menú completo, calculando cantidades totales por persona y días de uso, antes de generar la tabla.</p>
-
-<hr>
-
-<p><strong>CÁLCULO PREVIO DE CANTIDADES CONSOLIDADAS</strong></p>
-
-<p><em>(2 personas base; 3 personas en comida Mar/Mié/Vie — 3er comensal = porción IOB)</em></p>
-
-<hr>
-
-<p><strong>Aceite de ajonjolí tostado</strong></p>
-<ul class="shop-list">
-<li>Cena B (Jue+Vie+Dom): ATM 5g×3 + IOB 3g×3 = 24g → 100ml</li>
-<li>Soba meal prep: 10g extra → total ~34g → <strong>100ml</strong></li>
-</ul>
-
-<p><strong>Aceite de coco</strong></p>
-<ul class="shop-list">
-<li>Cena A (Lun+Mar+Mié): ATM 5g×3 + IOB 3g×3 = 24g → <strong>50g</strong></li>
-</ul>
-
-<p><strong>Aceite de oliva extra virgen</strong></p>
-<ul class="shop-list">
-<li>Comida A Lun+Jue: ATM 8g×2 + IOB 5g×2 = 26g</li>
-<li>Comida B Mar+Vie: ATM 8g×2 + IOB 5g×2 + 3er 5g×2 = 36g</li>
-<li>Comida C Mié+Sáb+Dom: ATM 8g×3 + IOB 5g×3 = 39g</li>
-<li>Salsa veracruzana prep: 10g</li>
-<li>Salsa chile ancho prep: 5g</li>
-<li>Risotto base prep: 10g</li>
-<li>Champiñones prep: 5g</li>
-<li>Zanahoria prep: 8g</li>
-<li>Arúgula aderezo: 5g</li>
-<li>Total ~144g → <strong>500ml</strong></li>
-</ul>
-
-<p><strong>Aceitunas kalamata sin hueso</strong></p>
-<ul class="shop-list">
-<li>Comida C (Mié+Sáb+Dom): ATM 25g×3 + IOB 15g×3 = 120g + 3er 15g (Mié) = 135g → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Agua fría</strong></p>
-<ul class="shop-list">
-<li>Colación PM B (Mar+Jue+Sáb+Dom): consumo en el momento; no comprar</li>
-</ul>
-
-<p><strong>Ajo</strong></p>
-<ul class="shop-list">
-<li>Bolsas sous vide res (4 dientes)</li>
-<li>Bolsas sous vide pollo (6 dientes)</li>
-<li>Salsa chile ancho: 2 dientes</li>
-<li>Salsa veracruzana: 3 dientes</li>
-<li>Dal: 3 dientes</li>
-<li>Risotto base: 2 dientes</li>
-<li>Omelette prep: nada adicional</li>
-<li>Total: ~20 dientes → <strong>2 cabezas</strong></li>
-</ul>
-
-<p><strong>Ajonjolí negro tostado</strong> (semillas de ajonjolí para cena B)</p>
-<ul class="shop-list">
-<li>Cena B Jue+Vie+Dom: ATM 5g×3 + IOB 5g×3 = 30g → <strong>50g</strong></li>
-</ul>
-
-<p><strong>Albahaca fresca</strong></p>
-<ul class="shop-list">
-<li>Desayuno B Jue+Vie+Sáb+Dom: varias hojas ×4 días → <strong>1 mata</strong></li>
-</ul>
-
-<p><strong>Alcaparras</strong></p>
-<ul class="shop-list">
-<li>Comida C Mié+Sáb+Dom: ATM 15g×3 + IOB 15g×3 = 90g + 3er 15g (Mié) = 105g → <strong>150g jar</strong></li>
-</ul>
-
-<p><strong>Arroz arborio</strong></p>
-<ul class="shop-list">
-<li>Comida B Mar+Vie: 336g crudo (ver cálculo meal prep) → <strong>400g</strong></li>
-</ul>
-
-<p><strong>Arroz basmati integral</strong></p>
-<ul class="shop-list">
-<li>Cena A Lun+Mar+Mié: 273g crudo → <strong>500g</strong></li>
-</ul>
-
-<p><strong>Arroz blanco (grano largo)</strong></p>
-<ul class="shop-list">
-<li>Comida A Lun+Jue complemento: 104g crudo → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Arúgula fresca</strong></p>
-<ul class="shop-list">
-<li>Comida A Lun+Jue: ATM 30g×2 + IOB 30g×2 = 120g → <strong>150g</strong></li>
-</ul>
-
-<p><strong>Atún aleta amarilla en bistec (fresco)</strong></p>
-<ul class="shop-list">
-<li>Comida C Mié+Sáb+Dom: ATM 280g + IOB 170g + 3er 170g (Mié) = 620g; ATM 280g+220g + IOB 170g+155g (Sáb+Dom distintos gramajes en recetas) → usando datos del menú: Mié: 280+170+170=620g; Sáb: 220+140=360g; Dom: 220+155=375g → total ~1,355g → <strong>1,400g</strong></li>
-</ul>
-
-<p><strong>Avena en hojuela</strong></p>
-<ul class="shop-list">
-<li>Colación PM A Lun+Mié+Vie: ATM 20g×3 + IOB 8g×3 = 84g → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Betabel</strong> (para hummus de betabel casero en wraps)</p>
-<ul class="shop-list">
-<li>Colación AM A Lun+Mar+Mié+Jue: 200g betabel para el hummus → <strong>300g</strong></li>
-</ul>
-
-<p><em>Nota: el menú menciona &quot;hummus de betabel (City Market)&quot; como opción lista, pero el recetario indica elaborarlo con betabel fresco+garbanzo+tahini. Se incluye betabel fresco y garbanzo para elaborarlo casero, conforme al recetario.</em></p>
-
-<p><strong>Camote naranja</strong></p>
-<ul class="shop-list">
-<li>Comida A Lun+Jue: 1,144g crudo → <strong>1.5 kg</strong></li>
-</ul>
-
-<p><strong>Caldo de pollo bajo sodio (Kirkland)</strong></p>
-<ul class="shop-list">
-<li>Dal cena A: 1.4L</li>
-<li>Risotto: 800ml</li>
-<li>Salsa chile ancho: 150ml</li>
-<li>Couscous prep: 500ml</li>
-<li>Comida B Risotto recalentar: 100ml×4 porciones = 400ml</li>
-<li>Total ~3.25L → <strong>4 L (2 cartones 946ml o 1 caja grande)</strong></li>
-</ul>
-
-<p><strong>Cebolla blanca</strong></p>
-<ul class="shop-list">
-<li>Salsa veracruzana: ½ cebolla (~100g)</li>
-<li>Risotto base: ½ cebolla (~80g)</li>
-<li>Dal: 150g</li>
-<li>Salsa chile ancho: 80g</li>
-<li>Total ~410g → <strong>500g (4-5 piezas)</strong></li>
-</ul>
-
-<p><strong>Cebollín fresco</strong></p>
-<ul class="shop-list">
-<li>Cena B Jue+Vie+Dom: ATM 10g×3 + IOB 10g×3 = 60g → <strong>1 manojo</strong></li>
-</ul>
-
-<p><strong>Champiñones cremini</strong></p>
-<ul class="shop-list">
-<li>Comida B Mar+Vie: 500g para saltear total → <strong>500g</strong></li>
-</ul>
-
-<p><strong>Chile ancho seco</strong></p>
-<ul class="shop-list">
-<li>Salsa chile ancho (Comida A): 3 piezas (se prepara una vez, rinde Lun+Jue) → <strong>6 piezas</strong> (margen)</li>
-</ul>
-
-<p><em>Nota: chile ancho seco figura en lista Costco del menú. Sin embargo, según criterio de tienda, chiles secos especiales → City Market. Chile ancho es común, pero el menú original lo asignó a Costco. Se mantiene Costco pues es chile común.</em></p>
-
-<p><strong>Chile güero en escabeche</strong></p>
-<ul class="shop-list">
-<li>Comida C Mié+Sáb+Dom: 20g×3 porciones ATM+IOB+3er = se usa en la salsa veracruzana compartida; en receta dom: 1 pieza; salsa total: 60g → <strong>1 lata/frasco 200g</strong></li>
-</ul>
-
-<p><strong>Chile morita seco</strong></p>
-<ul class="shop-list">
-<li>Salsa chile ancho (mención en menú: &quot;salsa de chile ancho y morita&quot;) → <strong>4 piezas</strong></li>
-</ul>
-
-<p><strong>Cúrcuma en polvo</strong></p>
-<ul class="shop-list">
-<li>Dal Cena A: 2 cdtas×3 días = 6g total prep</li>
-<li>Colación PM A batido (algunos días en polvo): Mié receta usa polvo → 2g×2 = 4g</li>
-<li>Total ~10g → <strong>50g</strong> (especiero)</li>
-</ul>
-
-<p><strong>Cúrcuma fresca</strong></p>
-<ul class="shop-list">
-<li>Colación PM A Lun (rallada): 3g+3g = 6g; batido de Lun usa fresca</li>
-<li>Según recetario Lun usa fresca; Mié usa polvo → 6g fresca → <strong>30g</strong> (en City Market por &quot;hierbas/ingredientes premium frescos&quot;)</li>
-</ul>
-
-<p><strong>Edamames sin vaina congelados</strong></p>
-<ul class="shop-list">
-<li>Cena B Jue+Vie+Dom: ATM 80g×3 + IOB 50g×3 = 390g → <strong>500g</strong></li>
-</ul>
-
-<p><strong>Espinaca baby</strong></p>
-<ul class="shop-list">
-<li>Colación AM A Lun+Mar+Mié+Jue: ATM 30g×4 + IOB 30g×4 = 240g → <strong>300g</strong></li>
-</ul>
-
-<p><strong>Fideos soba integral</strong></p>
-<ul class="shop-list">
-<li>Cena B Jue+Vie+Dom: 327g crudo (del meal prep) → <strong>400g</strong></li>
-</ul>
-
-<p><strong>Filete/sirloin de res magro</strong></p>
-<ul class="shop-list">
-<li>Comida A Lun+Jue: ATM 260g×2 + IOB 155g×2 = 830g → <strong>1 kg</strong></li>
-</ul>
-
-<p><strong>Fresas frescas</strong></p>
-<ul class="shop-list">
-<li>Colación AM B Vie+Sáb+Dom: ATM (100g+100g+120g) + IOB (60g+60g+75g) = 515g → <strong>600g</strong></li>
-</ul>
-
-<p><strong>Galletas de arroz integral</strong></p>
-<ul class="shop-list">
-<li>Colación PM B Mar+Jue+Sáb+Dom: ATM 40g×4 + IOB 30g×3 + IOB 18g+24g (Sáb+Dom distintos gramajes) → simplificando: ATM ~160g + IOB ~120g = 280g → <strong>2 paquetes</strong></li>
-</ul>
-
-<p><strong>Garbanzo cocido/en lata</strong> (para hummus de betabel casero)</p>
-<ul class="shop-list">
-<li>150g garbanzo → <strong>1 lata 400g</strong></li>
-</ul>
-
-<p><strong>Granola baja azúcar</strong></p>
-<ul class="shop-list">
-<li>Desayuno A Lun+Mar+Mié: ATM 45g×3 + IOB 28g×3 = 219g → <strong>250g</strong></li>
-</ul>
-
-<p><strong>Huevo entero L</strong></p>
-<ul class="shop-list">
-<li>Desayuno B Jue: ATM 3 + IOB 2 = 5</li>
-<li>Desayuno B Vie: ATM 3 + IOB 2 = 5 (receta Vie)</li>
-<li>Desayuno B Sáb: ATM 3 + IOB 2 = 5</li>
-<li>Desayuno B Dom: ATM 4 + IOB 3 = 7</li>
-<li>Total: 22 huevos enteros</li>
-<li>Claras adicionales Jue: ATM 2 + IOB 1 = 3; Vie: ATM 3 + IOB 2 = 5; Sáb: ATM 3 + IOB 2 = 5; Dom: ATM 2 + IOB 1 = 3 → 16 claras adicionales ≈ 16 huevos extra (se usan claras, se desechan yemas o se reservan)</li>
-<li>Total huevos necesarios: 22 enteros + 16 para claras = <strong>38 huevos → 1 cartón 30 + 1 cartón 12, o 2 cartones 30 (Costco)</strong></li>
-</ul>
-
-<p><strong>Jengibre fresco</strong></p>
-<ul class="shop-list">
-<li>Dal cena A: 5g×3 días = 15g</li>
-<li>Batido PM A Mié: 5g</li>
-<li>Salmón bolsas sous vide: 5g×6 bolsas = 30g (Jue/Vie/Dom)</li>
-<li>Salsa ponzu/soba recetas: 5g×3 días</li>
-<li>Total ~60g → <strong>100g</strong></li>
-</ul>
-
-<p><strong>Jitomate bola</strong></p>
-<ul class="shop-list">
-<li>Salsa veracruzana (Comida C): 600g para el prep; Dom receta: 300g+220g extra → total ya cubierto en 600g prep + Dom 300g = <strong>1.2 kg → 8 piezas aprox.</strong></li>
-</ul>
-
-<p><strong>Jitomate cherry</strong></p>
-<ul class="shop-list">
-<li>Desayuno B Jue+Vie+Sáb+Dom: ATM 80g×4 + IOB 80g×4 = 640g → <strong>700g</strong></li>
-</ul>
-
-<p><strong>Jitomate deshidratado en aceite</strong></p>
-<ul class="shop-list">
-<li>Desayuno B Jue+Vie+Sáb+Dom: ATM 20g×4 + IOB 12g×4 = 128g; recetas Vie/Sáb: 30g×2 (ATM) + 18g×2 (IOB) = 96g extra → consolidado: ~224g → <strong>250g jar</strong></li>
-</ul>
-
-<p><strong>Laurel seco</strong></p>
-<ul class="shop-list">
-<li>Bolsas sous vide pollo: 6 hojas</li>
-<li>Salsa veracruzana: 2 hojas</li>
-<li>Arroz prep: 1 hoja</li>
-<li>Total: ~9 hojas → <strong>1 frasco especiero</strong></li>
-</ul>
-
-<p><strong>Leche de almendra sin azúcar</strong></p>
-<ul class="shop-list">
-<li>Colación PM A Lun+Mié+Vie: ATM 250ml×3 + IOB 150ml×3 = 1,200ml</li>
-<li>Colación PM B Mar+Jue+Sáb+Dom: ATM 150ml×4 + IOB 90ml×4 = 960ml (receta Jue usa 150ml, sáb 80ml, dom 150ml — variedades en recetario; usar promedio 150ml)</li>
-<li>Total ~2,160ml → <strong>2.5 L (2 cartones)</strong></li>
-</ul>
-
-<p><strong>Leche de coco light (Tetrapak/lata)</strong></p>
-<ul class="shop-list">
-<li>Desayuno A Lun+Mar+Mié: ATM 180ml×3 + IOB 110ml×3 = 870ml</li>
-<li>Cena A Lun+Mar+Mié: ATM 80ml×3 + IOB 50ml×3 = 390ml</li>
-<li>Total: 1,260ml → <strong>4 tetrapak 400ml o 3 latas 400ml</strong></li>
-</ul>
-
-<p><strong>Leche descremada</strong></p>
-<ul class="shop-list">
-<li>Desayuno B Jue: ATM 20ml + IOB 12ml = 32ml</li>
-<li>Desayuno B Vie: (huevos batidos sin leche explícita en receta; Jue prep: 32ml×2 frascos = 64ml)</li>
-<li>Puré de camote: 40ml</li>
-<li>Total ~130ml → <strong>250ml</strong></li>
-</ul>
-
-<p><strong>Lentejas rojas (coral)</strong></p>
-<ul class="shop-list">
-<li>Cena A Lun+Mar+Mié: 348g crudo → <strong>400g</strong></li>
-</ul>
-
-<p><strong>Limón amarillo</strong></p>
-<ul class="shop-list">
-<li>Couscous prep: ralladura 2 piezas</li>
-<li>Wrap col AM A: jugo ½×4 días = 2 piezas</li>
-<li>Cena A servir: ½×3 días = 1.5 piezas</li>
-<li>Comida A arúgula: ½×2 días = 1 pieza</li>
-<li>Comida C servir: rodaja+ralladura ×3 días = 3 piezas</li>
-<li>Total ~10 piezas → <strong>1 red 1 kg (Costco)</strong></li>
-</ul>
-
-<p><strong>Mango ataulfo</strong></p>
-<ul class="shop-list">
-<li>Desayuno A Lun+Mar+Mié: ATM 120g×3 + IOB 75g×3 = 585g → ~4-5 mangos → <strong>5 piezas</strong></li>
-</ul>
-
-<p><strong>Mantequilla de almendra natural</strong></p>
-<ul class="shop-list">
-<li>Colación PM B Mar+Jue+Sáb+Dom: ATM 16g×4 + IOB 10g×4 = 104g; recetas Jue: 40g+25g=65g; Sáb: 32g+20g=52g; Dom: 32g+20g=52g → recetas dan mayor detalle, consolidar: ~250g total → <strong>400g</strong></li>
-</ul>
-
-<p><strong>Mantequilla sin sal</strong></p>
-<ul class="shop-list">
-<li>Omelette Desayuno B Jue+Vie+Sáb+Dom: ATM 5g o 8g×4 = 32g + IOB 5g×4 = 52g</li>
-<li>Risotto mantecatura: 15g×2 días = 30g (ATM) + 10g×2 = 20g (IOB) + 3er = ~70g</li>
-<li>Puré camote: 15g (del recetario Jue)</li>
-<li>Total ~170g → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Miel de agave</strong></p>
-<ul class="shop-list">
-<li>Desayuno A Lun+Mar+Mié: ATM 8g×3 + IOB 5g×3 = 39g</li>
-<li>Colación PM A Lun+Mié+Vie: ATM 10g×3 + IOB 5g×3 = 45g</li>
-<li>Colación AM B Vie+Sáb+Dom: ATM 10g×3 + IOB 6g×3 = 48g</li>
-<li>Total ~132g → <strong>250ml</strong></li>
-</ul>
-
-<p><strong>Mirin</strong></p>
-<ul class="shop-list">
-<li>Cena B Jue+Vie+Dom: ATM 10ml×3 + IOB 6ml×3 = 48ml; Vie receta: 20ml+12ml = 32ml; Dom: 15ml+10ml = 25ml → consolidado ~100ml → <strong>200ml</strong></li>
-</ul>
-
-<p><strong>Miso blanco (shiro miso)</strong></p>
-<ul class="shop-list">
-<li>Cena B Jue+Vie+Dom: ATM 15g×3 + IOB 9g×3 = 72g; recetas Vie: 25g+15g=40g; Dom: 20g+14g=34g → mayor cantidad en recetarios → ~140g → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Muslos de pollo sin piel</strong></p>
-<ul class="shop-list">
-<li>Comida B Mar+Vie: ATM 250g×2 + IOB 150g×2 + 3er 150g×2 = 1,100g → <strong>1.2 kg</strong></li>
-</ul>
-
-<p><strong>Pan naan</strong></p>
-<ul class="shop-list">
-<li>Cena A Lun+Mar+Mié: ATM 1 pieza (50g)×3 = 150g → <strong>1 paquete</strong></li>
-</ul>
-
-<p><strong>Parmesano reggiano rallado</strong></p>
-<ul class="shop-list">
-<li>Comida B Mar+Vie: ATM 15g×2 + IOB 9g×2 + 3er 9g×2 = 66g; receta Vie: 30g+18g = 48g extra → total ~100g → <strong>150g</strong></li>
-</ul>
-
-<p><strong>Pechuga de pollo (para dal)</strong></p>
-<ul class="shop-list">
-<li>Cena A Lun+Mar+Mié: ATM 120g×3 + IOB 73g×3 = 579g cocido → crudo ~720g → <strong>800g</strong></li>
-</ul>
-
-<p><strong>Pechuga de pavo ahumado rebanado</strong></p>
-<ul class="shop-list">
-<li>Colación AM A Lun+Mar+Mié+Jue: ATM 80g×4 + IOB 48g×4 = 512g → <strong>600g</strong></li>
-</ul>
-
-<p><strong>Pepino persa</strong></p>
-<ul class="shop-list">
-<li>Colación AM A Lun+Mar+Mié+Jue: ATM 40g×4 + IOB 40g×4 = 320g → <strong>4-5 piezas</strong></li>
-</ul>
-
-<p><strong>Perejil fresco</strong></p>
-<ul class="shop-list">
-<li>Couscous prep: 20g</li>
-<li>Comida C Sáb+Dom recetas: 10g+10g = 20g</li>
-<li>Total 40g → <strong>1 manojo</strong></li>
-</ul>
-
-<p><strong>Piña (congelada en trozos)</strong></p>
-<ul class="shop-list">
-<li>Colación PM A Lun+Mié+Vie: ATM 100g×3 + IOB 60g×3 = 480g → <strong>500g</strong></li>
-</ul>
-
-<p><strong>Plátano dominico/maduro</strong></p>
-<ul class="shop-list">
-<li>Colación PM B Mar+Jue+Sáb+Dom: ATM 80g×4 + IOB 50g×4 = 520g → ~6-7 plátanos → <strong>1 racimo</strong></li>
-<li>Batido Mié (colación): ATM 80g + IOB 50g (congelado) = 130g → ya incluido en piña congelada y plátano congelado</li>
-</ul>
-
-<p><strong>Proteína en polvo vainilla (whey)</strong></p>
-<ul class="shop-list">
-<li>Desayuno A Lun+Mar+Mié: ATM 35g×3 + IOB 25g×3 = 180g</li>
-<li>Colación PM A Lun+Mié+Vie: ATM 35g×3 + IOB 25g×3 = 180g</li>
-<li>Colación PM B Mar+Jue+Sáb+Dom: ATM 25g×4 + IOB 20g×4 = 180g</li>
-<li>Colación AM B Vie+Sáb+Dom: ATM 15g×3 + IOB 10g×3 = 75g</li>
-<li>Total: ~615g → <strong>1 kg</strong></li>
-</ul>
-
-<p><strong>Queso de cabra fresco</strong></p>
-<ul class="shop-list">
-<li>Desayuno B Jue+Vie+Sáb+Dom: ATM 35g-40g×4 + IOB 20g-25g×4 = ~260g → <strong>300g</strong></li>
-</ul>
-
-<p><strong>Sake seco</strong></p>
-<ul class="shop-list">
-<li>Cena B Vie receta: 15ml+10ml = 25ml → <strong>100ml</strong></li>
-</ul>
-
-<p><strong>Salmón atlántico sin piel</strong></p>
-<ul class="shop-list">
-<li>Cena B Jue+Vie+Dom: ATM 230g×3 + IOB 140g×3 = 1,110g; recetas Vie: 220g+140g; Dom: 200g+130g → consolidando: ~1,100g → <strong>1.2 kg</strong></li>
-</ul>
-
-<p><strong>Salsa ponzu</strong></p>
-<ul class="shop-list">
-<li>Cena B Jue: ATM 20ml + IOB 20ml = 40ml</li>
-<li>Cena B Vie+Dom recetas: +20ml+15ml+10ml+7ml = ~52ml</li>
-<li>Total ~92ml → <strong>200ml</strong></li>
-</ul>
-
-<p><strong>Semillas de chía</strong></p>
-<ul class="shop-list">
-<li>Desayuno A Lun+Mar+Mié: ATM 35g×3 + IOB 22g×3 = 171g → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Semillas de girasol tostadas sin sal</strong></p>
-<ul class="shop-list">
-<li>Colación AM B Vie+Sáb+Dom: ATM 20g×3 + IOB 12g×3 = 96g → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Shiitake frescos</strong></p>
-<ul class="shop-list">
-<li>Comida B Mar+Vie: 200g para prep → <strong>200g</strong></li>
-</ul>
-
-<p><strong>Sirloin de res</strong> → ya calculado arriba (filete/sirloin)</p>
-
-<p><strong>Tahini</strong> (para hummus betabel casero)</p>
-<ul class="shop-list">
-<li>30g para el hummus → <strong>1 frasco pequeño 200g</strong></li>
-</ul>
-
-<p><strong>Tomate cherry</strong> → ver jitomate cherry</p>
-
-<p><strong>Tomillo fresco</strong></p>
-<ul class="shop-list">
-<li>Bolsas sous vide res Lun+Jue: 4 ramas → <strong>1 manojo</strong></li>
-</ul>
-
-<p><strong>Tortilla integral (La Tortilla Factory)</strong></p>
-<ul class="shop-list">
-<li>Colación AM A Lun+Mar+Mié+Jue: ATM 2×4=8 + IOB 1×4=4 = 12 piezas</li>
-<li>Cena A Lun+Mar+Mié IOB: 1×3=3 piezas</li>
-<li>Total: 15 piezas → <strong>2 paquetes</strong></li>
-</ul>
-
-<p><strong>Tostadas de centeno integral (Wasa)</strong></p>
-<ul class="shop-list">
-<li>Desayuno B Jue: ATM 3 + IOB 2 = 5 piezas</li>
-<li>Desayuno B Vie (receta usa tortilla integral, no Wasa en esa versión — pero menú base dice Wasa): mantener para Jue+Sáb = conservadoramente Jue+Sáb+Dom: 5×3=15 piezas → <strong>1 paquete</strong></li>
-</ul>
-
-<p><strong>Vino blanco seco</strong></p>
-<ul class="shop-list">
-<li>Risotto base prep: 100ml</li>
-<li>Comida C recetas: 60ml×2 = 120ml</li>
-<li>Total ~220ml → <strong>1 botella pequeña 375ml</strong></li>
-</ul>
-
-<p><strong>Yogurt griego natural 0%</strong></p>
-<ul class="shop-list">
-<li>Colación AM B Vie+Sáb+Dom: ATM 250g×3 + IOB 150g×3 = 1,200g → <strong>1.5 kg</strong></li>
-</ul>
-
-<hr>
-
-<p>Ahora genero la tabla ordenada A→Z:</p>
-
-<table class="prose-table"><thead><tr><th>Ingrediente</th><th>Cantidad</th><th>Receta</th><th>Día</th><th>Tienda</th></tr></thead><tbody><tr><td>Aceite de ajonjolí tostado</td><td>100 ml</td><td>Salmón miso-soba</td><td>Jue+Vie+Dom</td><td>City Market</td></tr><tr><td>Aceite de coco</td><td>50 g</td><td>Sopa lentejas coral (dal)</td><td>Lun+Mar+Mié</td><td>Costco</td></tr><tr><td>Aceite de oliva extra virgen</td><td>500 ml</td><td>Filete res sous vide · Risotto pollo · Estofado atún · Salsa veracruzana (prep) · Salsa chile ancho (prep) · Champiñones (prep) · Zanahoria rostizada (prep)</td><td>Lun+Mar+Mié+Jue+Vie+Sáb+Dom</td><td>Costco</td></tr><tr><td>Aceitunas kalamata sin hueso</td><td>200 g</td><td>Estofado atún veracruzano</td><td>Mié+Sáb+Dom</td><td>City Market</td></tr><tr><td>Ajo (cabezas)</td><td>2 cabezas</td><td>Bolsas sous vide res · Bolsas sous vide pollo · Salsa chile ancho · Salsa veracruzana · Dal lentejas · Risotto base</td><td>Lun+Mar+Mié+Jue+Vie</td><td>Costco</td></tr><tr><td>Ajonjolí negro tostado</td><td>50 g</td><td>Salmón miso-soba</td><td>Jue+Vie+Dom</td><td>Costco</td></tr><tr><td>Albahaca fresca</td><td>1 mata</td><td>Omelette francés queso de cabra</td><td>Jue+Vie+Sáb+Dom</td><td>City Market</td></tr><tr><td>Alcaparras</td><td>150 g</td><td>Estofado atún veracruzano</td><td>Mié+Sáb+Dom</td><td>City Market</td></tr><tr><td>Arroz arborio</td><td>400 g</td><td>Risotto pollo champiñones</td><td>Mar+Vie</td><td>City Market</td></tr><tr><td>Arroz basmati integral</td><td>500 g</td><td>Sopa lentejas coral (acompañamiento)</td><td>Lun+Mar+Mié</td><td>Costco</td></tr><tr><td>Arroz blanco grano largo</td><td>200 g</td><td>Filete res sous vide (acompañamiento)</td><td>Lun+Jue</td><td>Costco</td></tr><tr><td>Arúgula fresca</td><td>150 g</td><td>Filete res sous vide</td><td>Lun+Jue</td><td>City Market</td></tr><tr><td>Atún aleta amarilla en bistec (fresco)</td><td>1.4 kg</td><td>Estofado atún veracruzano</td><td>Mié+Sáb+Dom</td><td>City Market</td></tr><tr><td>Avena en hojuela</td><td>200 g</td><td>Batido tropical proteína (colación PM gym)</td><td>Lun+Mié+Vie</td><td>Costco</td></tr><tr><td>Betabel fresco</td><td>300 g</td><td>Hummus de betabel (colación AM wraps)</td><td>Lun+Mar+Mié+Jue</td><td>City Market</td></tr><tr><td>Camote naranja</td><td>1.5 kg</td><td>Filete res sous vide (puré rústico)</td><td>Lun+Jue</td><td>Costco</td></tr><tr><td>Caldo de pollo bajo sodio Kirkland</td><td>4 L</td><td>Dal lentejas · Risotto pollo · Salsa chile ancho · Couscous (prep)</td><td>Lun+Mar+Mié+Jue+Vie</td><td>Costco</td></tr><tr><td>Cebolla blanca</td><td>500 g</td><td>Dal lentejas · Salsa veracruzana · Risotto base · Salsa chile ancho</td><td>Lun+Mar+Mié+Jue+Vie+Sáb+Dom</td><td>Costco</td></tr><tr><td>Cebollín fresco</td><td>1 manojo</td><td>Salmón miso-soba</td><td>Jue+Vie+Dom</td><td>City Market</td></tr><tr><td>Champiñones cremini frescos</td><td>500 g</td><td>Risotto pollo champiñones</td><td>Mar+Vie</td><td>Costco</td></tr><tr><td>Chile ancho seco</td><td>6 piezas</td><td>Salsa chile ancho (comida A)</td><td>Lun+Jue</td><td>Costco</td></tr><tr><td>Chile güero en escabeche</td><td>1 frasco 200 g</td><td>Estofado atún veracruzano</td><td>Mié+Sáb+Dom</td><td>Costco</td></tr><tr><td>Chile morita seco</td><td>4 piezas</td><td>Salsa chile ancho (comida A)</td><td>Lun+Jue</td><td>City Market</td></tr><tr><td>Couscous</td><td>400 g</td><td>Estofado atún veracruzano</td><td>Mié+Sáb+Dom</td><td>City Market</td></tr><tr><td>Cúrcuma en polvo</td><td>50 g</td><td>Dal lentejas · Batido tropical proteína</td><td>Lun+Mar+Mié+Jue+Vie</td><td>Costco</td></tr><tr><td>Cúrcuma fresca</td><td>30 g</td><td>Batido tropical proteína (colación PM gym)</td><td>Lun</td><td>City Market</td></tr><tr><td>Edamames sin vaina congelados</td><td>500 g</td><td>Salmón miso-soba</td><td>Jue+Vie+Dom</td><td>Costco</td></tr><tr><td>Espinaca baby</td><td>300 g</td><td>Wrap pavo ahumado hummus betabel</td><td>Lun+Mar+Mié+Jue</td><td>Costco</td></tr><tr><td>Fideos soba integral</td><td>400 g</td><td>Salmón miso-soba</td><td>Jue+Vie+Dom</td><td>City Market</td></tr><tr><td>Filete/sirloin de res magro</td><td>1 kg</td><td>Filete res sous vide</td><td>Lun+Jue</td><td>City Market</td></tr><tr><td>Fresas frescas</td><td>600 g</td><td>Yogurt griego fresas girasol (colación AM B)</td><td>Vie+Sáb+Dom</td><td>Costco</td></tr><tr><td>Galletas de arroz integral</td><td>2 paquetes</td><td>Colación PM galletas almendra plátano</td><td>Mar+Jue+Sáb+Dom</td><td>Costco</td></tr><tr><td>Garbanzo cocido (lata)</td><td>1 lata 400 g</td><td>Hummus de betabel (colación AM wraps)</td><td>Lun+Mar+Mié+Jue</td><td>Costco</td></tr><tr><td>Granola baja azúcar</td><td>250 g</td><td>Pudín chía leche coco mango</td><td>Lun+Mar+Mié</td><td>Costco</td></tr><tr><td>Huevo entero L</td><td>2 cartones (30 u c/u)</td><td>Omelette francés queso de cabra</td><td>Jue+Vie+Sáb+Dom</td><td>Costco</td></tr><tr><td>Jengibre fresco</td><td>100 g</td><td>Dal lentejas · Batido tropical · Bolsas sous vide salmón</td><td>Lun+Mar+Mié+Jue+Vie+Dom</td><td>City Market</td></tr><tr><td>Jitomate bola</td><td>1.5 kg</td><td>Salsa veracruzana (prep Comida C)</td><td>Mié+Sáb+Dom</td><td>Costco</td></tr><tr><td>Jitomate cherry</td><td>700 g</td><td>Omelette francés (acompañamiento)</td><td>Jue+Vie+Sáb+Dom</td><td>Costco</td></tr><tr><td>Jitomate deshidratado en aceite</td><td>250 g jar</td><td>Omelette francés queso de cabra</td><td>Jue+Vie+Sáb+Dom</td><td>City Market</td></tr><tr><td>Laurel seco</td><td>1 frasco</td><td>Bolsas sous vide pollo ·</td></tr></tbody></table></div>
+        <div id="html-shopping"><div class="flex items-center gap-2 mb-3" id="shop-filter-btns">
+<button onclick="shopFilter('all',this)" class="badge badge-teal active-filter" style="cursor:pointer">Todos</button>
+<button onclick="shopFilter('citymarket',this)" class="badge badge-sage" style="cursor:pointer">City Market</button>
+<button onclick="shopFilter('costco',this)" class="badge badge-sage" style="cursor:pointer">Costco</button>
+</div>
+<table class="prose-table shop-tbl" id="shop-main-tbl"><thead><tr>
+<th>Ingrediente</th>
+<th>Cantidad</th>
+<th>Receta</th>
+<th>Día</th>
+<th>Tienda</th>
+</tr></thead><tbody>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Aceite de ajonjolí tostado</label></td>
+<td>100 ml</td>
+<td>Salmón miso-soba</td>
+<td>Jue+Vie+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Aceite de coco</label></td>
+<td>50 g</td>
+<td>Sopa lentejas coral (dal)</td>
+<td>Lun+Mar+Mié</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Aceite de oliva extra virgen</label></td>
+<td>500 ml</td>
+<td>Filete res sous vide · Risotto pollo · Estofado atún · Salsa veracruzana (prep) · Salsa chile ancho (prep) · Champiñones (prep) · Zanahoria rostizada (prep)</td>
+<td>Lun+Mar+Mié+Jue+Vie+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Aceitunas kalamata sin hueso</label></td>
+<td>200 g</td>
+<td>Estofado atún veracruzano</td>
+<td>Mié+Sáb+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Ajo (cabezas)</label></td>
+<td>2 cabezas</td>
+<td>Bolsas sous vide res · Bolsas sous vide pollo · Salsa chile ancho · Salsa veracruzana · Dal lentejas · Risotto base</td>
+<td>Lun+Mar+Mié+Jue+Vie</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Ajonjolí negro tostado</label></td>
+<td>50 g</td>
+<td>Salmón miso-soba</td>
+<td>Jue+Vie+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Albahaca fresca</label></td>
+<td>1 mata</td>
+<td>Omelette francés queso de cabra</td>
+<td>Jue+Vie+Sáb+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Alcaparras</label></td>
+<td>150 g</td>
+<td>Estofado atún veracruzano</td>
+<td>Mié+Sáb+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Arroz arborio</label></td>
+<td>400 g</td>
+<td>Risotto pollo champiñones</td>
+<td>Mar+Vie</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Arroz basmati integral</label></td>
+<td>500 g</td>
+<td>Sopa lentejas coral (acompañamiento)</td>
+<td>Lun+Mar+Mié</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Arroz blanco grano largo</label></td>
+<td>200 g</td>
+<td>Filete res sous vide (acompañamiento)</td>
+<td>Lun+Jue</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Arúgula fresca</label></td>
+<td>150 g</td>
+<td>Filete res sous vide</td>
+<td>Lun+Jue</td>
+<td>City Market</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Atún aleta amarilla en bistec (fresco)</label></td>
+<td>1.4 kg</td>
+<td>Estofado atún veracruzano</td>
+<td>Mié+Sáb+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Avena en hojuela</label></td>
+<td>200 g</td>
+<td>Batido tropical proteína (colación PM gym)</td>
+<td>Lun+Mié+Vie</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Betabel fresco</label></td>
+<td>300 g</td>
+<td>Hummus de betabel (colación AM wraps)</td>
+<td>Lun+Mar+Mié+Jue</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Camote naranja</label></td>
+<td>1.5 kg</td>
+<td>Filete res sous vide (puré rústico)</td>
+<td>Lun+Jue</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Caldo de pollo bajo sodio Kirkland</label></td>
+<td>4 L</td>
+<td>Dal lentejas · Risotto pollo · Salsa chile ancho · Couscous (prep)</td>
+<td>Lun+Mar+Mié+Jue+Vie</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Cebolla blanca</label></td>
+<td>500 g</td>
+<td>Dal lentejas · Salsa veracruzana · Risotto base · Salsa chile ancho</td>
+<td>Lun+Mar+Mié+Jue+Vie+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Cebollín fresco</label></td>
+<td>1 manojo</td>
+<td>Salmón miso-soba</td>
+<td>Jue+Vie+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Champiñones cremini frescos</label></td>
+<td>500 g</td>
+<td>Risotto pollo champiñones</td>
+<td>Mar+Vie</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Chile ancho seco</label></td>
+<td>6 piezas</td>
+<td>Salsa chile ancho (comida A)</td>
+<td>Lun+Jue</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Chile güero en escabeche</label></td>
+<td>1 frasco 200 g</td>
+<td>Estofado atún veracruzano</td>
+<td>Mié+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Chile morita seco</label></td>
+<td>4 piezas</td>
+<td>Salsa chile ancho (comida A)</td>
+<td>Lun+Jue</td>
+<td>City Market</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Couscous</label></td>
+<td>400 g</td>
+<td>Estofado atún veracruzano</td>
+<td>Mié+Sáb+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Cúrcuma en polvo</label></td>
+<td>50 g</td>
+<td>Dal lentejas · Batido tropical proteína</td>
+<td>Lun+Mar+Mié+Jue+Vie</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Cúrcuma fresca</label></td>
+<td>30 g</td>
+<td>Batido tropical proteína (colación PM gym)</td>
+<td>Lun</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Edamames sin vaina congelados</label></td>
+<td>500 g</td>
+<td>Salmón miso-soba</td>
+<td>Jue+Vie+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Espinaca baby</label></td>
+<td>300 g</td>
+<td>Wrap pavo ahumado hummus betabel</td>
+<td>Lun+Mar+Mié+Jue</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Fideos soba integral</label></td>
+<td>400 g</td>
+<td>Salmón miso-soba</td>
+<td>Jue+Vie+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Filete/sirloin de res magro</label></td>
+<td>1 kg</td>
+<td>Filete res sous vide</td>
+<td>Lun+Jue</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Fresas frescas</label></td>
+<td>600 g</td>
+<td>Yogurt griego fresas girasol (colación AM B)</td>
+<td>Vie+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Galletas de arroz integral</label></td>
+<td>2 paquetes</td>
+<td>Colación PM galletas almendra plátano</td>
+<td>Mar+Jue+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Garbanzo cocido (lata)</label></td>
+<td>1 lata 400 g</td>
+<td>Hummus de betabel (colación AM wraps)</td>
+<td>Lun+Mar+Mié+Jue</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Granola baja azúcar</label></td>
+<td>250 g</td>
+<td>Pudín chía leche coco mango</td>
+<td>Lun+Mar+Mié</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Huevo entero L</label></td>
+<td>2 cartones (30 u c/u)</td>
+<td>Omelette francés queso de cabra</td>
+<td>Jue+Vie+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Jengibre fresco</label></td>
+<td>100 g</td>
+<td>Dal lentejas · Batido tropical · Bolsas sous vide salmón</td>
+<td>Lun+Mar+Mié+Jue+Vie+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Jitomate bola</label></td>
+<td>1.5 kg</td>
+<td>Salsa veracruzana (prep Comida C)</td>
+<td>Mié+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="costco">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Jitomate cherry</label></td>
+<td>700 g</td>
+<td>Omelette francés (acompañamiento)</td>
+<td>Jue+Vie+Sáb+Dom</td>
+<td>Costco</td>
+</tr>
+<tr data-store="citymarket">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Jitomate deshidratado en aceite</label></td>
+<td>250 g jar</td>
+<td>Omelette francés queso de cabra</td>
+<td>Jue+Vie+Sáb+Dom</td>
+<td>City Market</td>
+</tr>
+<tr data-store="">
+<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" class="shop-cb"> Laurel seco</label></td>
+<td>1 frasco</td>
+<td>Bolsas sous vide pollo ·</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table></div>
       </div>
     </div>
   </div>
@@ -913,7 +737,49 @@
 <tr><td>Tostadas de centeno integral (Wasa)</td><td>45g</td><td>30g</td></tr>
 <tr><td>Yogurt griego natural 0% (Fage/Lala Pro)</td><td>250g</td><td>150g</td></tr>
 <tr><td>Zanahoria rostizada</td><td>80g</td><td>50g</td></tr>
-</tbody></table></div>
+</tbody></table>
+<h2 style="color:var(--navy);font-size:1rem;font-weight:700;margin:1.75rem 0 .4rem">🏪 Pasos de Prep del Fin de Semana</h2><p style="font-size:.78rem;color:#718096;margin-bottom:.85rem">Extraído de las recetas — pasos marcados 🏪. Duplicados entre días eliminados.</p>
+<div style="margin-bottom:1.1rem"><h3 style="font-size:.82rem;color:var(--teal);font-weight:700;padding:.3rem 0;border-bottom:1px solid var(--teal-20);margin-bottom:.45rem">Desayuno</h3>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Omelette Enrollado Estilo Francés con Queso de Cabra, Jitomate Deshidratado y Albahaca Fresca</span>Pre-porcionar queso de cabra y jitomates deshidratados escurridos en pequeños contenedores individuales (ATM y IOB por separado). Opcional: pre-mezclar huevos con leche en frascos sellados — hasta 3 días en refrigeración, agitar antes de usar.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Pudín de Chía con Leche de Coco, Mango Ataulfo y Granola Artesanal</span>En frasco mason individual, disolver la proteína en polvo con la leche de coco usando varilla hasta eliminar grumos. Incorporar la chía y agave; revolver 2 min. Refrigerar mínimo 8h o hasta que gelatinice completamente (consistencia de tapioca firme).</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Pudín de Chía con Leche de Coco, Mango Ataulfo y Granola Artesanal</span>Mezclar chía con leche de coco y proteína en polvo en frasco de vidrio. Revolver vigorosamente para evitar grumos. Reposar 10 min, revolver de nuevo, tapar y refrigerar mínimo 8 h.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Pudín de Chía con Leche de Coco, Mango Ataulfo y Granola Artesanal</span>Cortar mango en cubos de 1.5 cm. Guardar en contenedor separado refrigerado.</div>
+</div>
+<div style="margin-bottom:1.1rem"><h3 style="font-size:.82rem;color:var(--teal);font-weight:700;padding:.3rem 0;border-bottom:1px solid var(--teal-20);margin-bottom:.45rem">Colación AM</h3>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Wrap Mini de Pavo Ahumado, Espinaca Baby y Hummus de Betabel en Tortilla Integral</span>Extender el hummus de betabel sobre cada tortilla integral dejando 2 cm libres en los bordes. Distribuir el pavo ahumado en rebanadas superpuestas, la espinaca baby y el pepino en juliana fina. Enrollar firme presionando el relleno hacia el centro; envolver en papel film tensando los extremos como caramelo. Refrigerar hasta el momento de consumir.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Wrap Mini de Pavo Ahumado, Espinaca Baby y Hummus de Betabel en Tortilla Integral</span>Preparar hummus de betabel: rostizar 200g de betabel a 200°C/40 min envuelto en papel aluminio. Enfriar, pelar, procesar con 150g de garbanzo cocido, 30g de tahini, 1 diente de ajo, 30ml de aceite de oliva, jugo de 1 limón y sal. Textura debe ser terciopelo — ajustar con agua fría cuchara a cuchara. Guardar en frasco hermético.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Wrap Mini de Pavo Ahumado, Espinaca Baby y Hummus de Betabel en Tortilla Integral</span>Extender hummus de betabel (ATM: 60g / IOB: 35g) sobre tortilla integral dejando 2 cm de borde. Colocar pavo ahumado, espinaca baby y bastones de pepino. Enrollar firme, presionando mientras ruedas. Envolver en papel film tensado. Refrigerar.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Yogurt Griego Natural con Fresas, Semillas de Girasol Tostadas y Miel de Agave</span>Tostar semillas de girasol en sartén seca a fuego medio 3-4 min hasta dorado uniforme. Enfriar sobre papel absorbente. Guardar en frasco hermético.</div>
+</div>
+<div style="margin-bottom:1.1rem"><h3 style="font-size:.82rem;color:var(--teal);font-weight:700;padding:.3rem 0;border-bottom:1px solid var(--teal-20);margin-bottom:.45rem">Comida</h3>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Estofado de Atún Aleta Amarilla con Jitomate, Aceitunas Kalamata, Alcaparras y Couscous al Limón</span>Elaborar salsa veracruzana: en sartén caliente con aceite de oliva, acitronar cebolla y ajo hasta transparente (~4 min). Agregar jitomate en cubos, subir fuego a medio-alto, cocinar 8 min hasta que suelte líquido y concentre. Incorporar aceitunas kalamata, alcaparras, chile güero en escabeche y laurel. Ajustar sal. Cocinar 5 min más. Enfriar completamente y guardar en frasco hermético.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Estofado de Atún Aleta Amarilla con Jitomate, Aceitunas Kalamata, Alcaparras y Couscous al Limón</span>Hidratar couscous: hervir agua con sal (proporción 1:1.5 couscous/agua), verter sobre couscous en tazón, cubrir con film 5 min. Esponjar con tenedor, incorporar ralladura y jugo de limón amarillo, perejil picado y un hilo de aceite de oliva. Enfriar y guardar en contenedor.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Estofado de Atún Aleta Amarilla con Jitomate, Aceitunas Kalamata, Alcaparras y Couscous al Limón</span>Elaborar la salsa veracruzana: sofreír cebolla en juliana y ajo fileteado en aceite de oliva a fuego medio hasta transparentes (~5 min). Agregar jitomate picado grueso, aceitunas partidas a la mitad, alcaparras escurridas y chile güero en rajas. Cocinar 12-15 min a fuego bajo hasta que el jitomate pierda acidez y la salsa espese. Ajustar sal. Guardar en frasco hermético refrigerado.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Estofado de Atún Aleta Amarilla con Jitomate, Aceitunas Kalamata, Alcaparras y Couscous al Limón</span>Hidratar couscous: verter caldo caliente sobre el couscous en proporción 1:1.2 en contenedor hermético, tapar y dejar reposar 5 min. Esponjar con tenedor, agregar ralladura de limón y perejil picado fino. Guardar refrigerado.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Res Sous Vide con Puré Rústico de Camote Naranja, Salsa de Chile Ancho y Arúgula Fresca</span>Sellar al vacío cada filete en bolsa individual con 1 diente de ajo aplastado, 2 ramas de tomillo y 3g de aceite de oliva. Etiquetar y refrigerar.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Res Sous Vide con Puré Rústico de Camote Naranja, Salsa de Chile Ancho y Arúgula Fresca</span>Puré de camote: cocer el camote en agua con sal hasta que ceda completamente a la puntilla. Machacar en caliente con leche descremada caliente (20ml), sal y pimienta negra. No sobre-trabajar para conservar textura rústica. Enfriar y refrigerar en contenedor hermético.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Res Sous Vide con Puré Rústico de Camote Naranja, Salsa de Chile Ancho y Arúgula Fresca</span>Salsa de chile ancho: remojar 3 chiles ancho desvenados en agua caliente 20 min. Licuar con ajo asado, caldo de pollo, comino y sal. Pasar por colador y reducir en sartén a fuego medio hasta napper (coat the spoon). Refrigerar en frasco.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Res Sous Vide con Puré Rústico de Camote Naranja, Salsa de Chile Ancho y Arúgula Fresca</span>Sellar filetes al vacío (bolsa zip con método de desplazamiento de agua) con sal, pimienta y rama de tomillo. Etiquetar con nombre y fecha. Refrigerar — aguantan hasta 4 días crudos marinando.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Res Sous Vide con Puré Rústico de Camote Naranja, Salsa de Chile Ancho y Arúgula Fresca</span>Elaborar salsa de chile ancho: tostar chiles en comal seco 20 segundos por lado, desvenar y remojar 15 min en agua caliente. Licuar con ajo rostizado, cebolla acitronada, caldo de res, sal y una pizca de comino. Colar y reducir en sartén 8 min a fuego medio hasta napar la cuchara. Guardar en frasco.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Res Sous Vide con Puré Rústico de Camote Naranja, Salsa de Chile Ancho y Arúgula Fresca</span>Rostizar camote a 200°C/50 min hasta que la piel ceda y el centro esté completamente tierno. Pelar en caliente, machacar con tenedor (no licuar — rústico), incorporar mantequilla, nuez moscada y sal. Enfriar y guardar.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Muslos de Pollo Confitados Sous Vide sobre Risotto de Arroz con Champiñones Mixtos y Parmesano</span>Sellar al vacío cada muslo de pollo sin piel en bolsa individual con 1 diente de ajo aplastado, 1 hoja de laurel y 3g de aceite de oliva. Etiquetar con nombre y temperatura. Refrigerar.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Muslos de Pollo Confitados Sous Vide sobre Risotto de Arroz con Champiñones Mixtos y Parmesano</span>Risotto base: en sartén amplia, sudar chalota finamente picada en aceite de oliva. Agregar arroz arborio crudo y nacarar 2 min. Incorporar el caldo caliente en adiciones de 80ml revolviendo constantemente hasta absorción. Cocinar hasta que el arroz tenga aún un punto de firmeza (al dente 80%). Extender en charola para frenar cocción rápido. Refrigerar. Nota: el risotto terminará su cocción al regenerar el martes.</div>
+</div>
+<div style="margin-bottom:1.1rem"><h3 style="font-size:.82rem;color:var(--teal);font-weight:700;padding:.3rem 0;border-bottom:1px solid var(--teal-20);margin-bottom:.45rem">Colación PM</h3>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Batido Tropical de Proteína de Vainilla con Piña, Cúrcuma y Leche de Almendra</span>Congelar plátano en rodajas en bolsa zip. Tener piña ya cortada en cubos en contenedor refrigerado.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Galletas de Arroz con Mantequilla de Almendra, Plátano en Rodajas y Proteína de Suero Batida</span>Pre-porcionar mantequilla de almendra en recipientes pequeños tapados. Conservar galletas en bolsa zip para mantener crujiente.</div>
+</div>
+<div style="margin-bottom:1.1rem"><h3 style="font-size:.82rem;color:var(--teal);font-weight:700;padding:.3rem 0;border-bottom:1px solid var(--teal-20);margin-bottom:.45rem">Cena</h3>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Salmón Atlántico Sous Vide con Salsa de Miso Dulce, Edamames Saltados y Fideos Soba Integrales</span>Mezclar miso blanco con mirin y jengibre rallado hasta pasta homogénea. Dividir en porciones (ATM: miso 15g+mirin 10ml / IOB: 9g+6ml). Sellar salmón en bolsas individuales con la mezcla de miso — sin sal adicional, el miso ya salará la carne. Refrigerar hasta el jueves.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Salmón Atlántico Sous Vide con Salsa de Miso Dulce, Edamames Saltados y Fideos Soba Integrales</span>Cocer soba: hervir agua sin sal (el soba integral ya es salado), cocinar 7-8 min, enjuagar con agua fría para cortar cocción y retirar almidón. Escurrir, mezclar con unas gotas de aceite de ajonjolí para evitar que se pegue. Guardar en contenedor.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Filete de Salmón Atlántico Sous Vide con Salsa de Miso Dulce, Edamames Saltados y Fideos Soba Integrales</span>Mezclar miso blanco, mirin y ponzu hasta glaze homogéneo. Porcionar salmón, agregar glaze de miso, sellar en bolsa al vacío o con método de desplazamiento de agua. Refrigerar si se usa en los próximos 2 días; congelar para viernes/domingo.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Sopa de Lentejas Coral con Zanahoria, Cúrcuma y Leche de Coco, acompañada de Arroz Basmati Integral</span>En olla mediana, calentar el aceite de coco a fuego medio-alto. Templar 1 cdta de comino en semilla + 1 cdta de cúrcuma en polvo + jengibre fresco rallado (5g) hasta florecer el aroma, 60 segundos. Agregar las lentejas rojas crudas enjuagadas (rendirán ~2.5x en cocción), la zanahoria en cubos medianos y caldo de verduras o pollo bajo sodio suficiente para cubrir 4 cm arriba. Cocinar 25-30 min a fuego medio hasta que las lentejas se deshagan completamente. Incorporar la leche de coco light y la pechuga de pollo ya cocida y desmenuzada. Rectificar sal. Enfriar y refrigerar.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Sopa de Lentejas Coral con Zanahoria, Cúrcuma y Leche de Coco, acompañada de Arroz Basmati Integral</span>Zanahoria rostizada: cortar en rodajas, mezclar con aceite de oliva, sal y comino. Rostizar a 200°C por 20 min hasta caramelizar. Refrigerar separada o incorporar al dal.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Sopa de Lentejas Coral con Zanahoria, Cúrcuma y Leche de Coco, acompañada de Arroz Basmati Integral</span>Arroz basmati integral: cocinar con proporción 1:2 en agua con sal. Enfriar y refrigerar en contenedor hermético.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Sopa de Lentejas Coral con Zanahoria, Cúrcuma y Leche de Coco, acompañada de Arroz Basmati Integral</span>Arroz basmati integral: cocinar con proporción 1:2.5 en agua con sal y hoja de laurel. Enfriar y refrigerar en contenedor hermético.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Sopa de Lentejas Coral con Zanahoria, Cúrcuma y Leche de Coco, acompañada de Arroz Basmati Integral</span>En olla a presión: calentar aceite de coco, acitronar cebolla y ajo 3 min. Agregar cúrcuma, comino y jengibre — tostar especias 60 segundos hasta que aromaticen. Añadir lentejas coral enjuagadas, zanahoria, caldo de verduras. Cerrar olla, cocinar 12 min a presión. Despresurizar, incorporar leche de coco, procesar parcialmente con licuadora de inmersión (dejar textura rústica, no crema total). Ajustar sal. Enfriar y guardar en frasco o contenedor hermético.</div>
+<div style="margin-bottom:.5rem;padding:.55rem .75rem;background:var(--sage-20);border-radius:.4rem;font-size:.82rem;line-height:1.55"><span style="font-size:.7rem;color:#718096;display:block;margin-bottom:.2rem">Sopa de Lentejas Coral con Zanahoria, Cúrcuma y Leche de Coco, acompañada de Arroz Basmati Integral</span>Cocer arroz basmati integral en proporción 1:2.5 agua/arroz, 35-40 min a fuego bajo tapado. Enfriar completamente, guardar en contenedor.</div>
+</div></div>
     </div>
   </div>
 
@@ -2305,16 +2171,22 @@ function initShopChecks() {
   const section = document.getElementById('html-shopping');
   if (!section) return;
   let tot = 0, chk = 0;
-  section.querySelectorAll('input[type=checkbox]').forEach((cb, i) => {
+  section.querySelectorAll('.shop-cb').forEach((cb, i) => {
     const k = 'shop_' + i;
     cb.checked = !!checks[k];
-    if (cb.checked) chk++;
+    if (cb.checked) {
+      chk++;
+      const tr = cb.closest('tr');
+      if (tr) tr.style.opacity = '0.45';
+    }
     tot++;
     if (!cb.dataset.bound) {
       cb.dataset.bound = '1';
       cb.addEventListener('change', () => {
         checks[k] = cb.checked;
         localStorage.setItem(SHOP_KEY, JSON.stringify(checks));
+        const tr = cb.closest('tr');
+        if (tr) tr.style.opacity = cb.checked ? '0.45' : '';
         updateProgress();
       });
     }
@@ -2324,18 +2196,39 @@ function initShopChecks() {
 
 function updateProgress(tot, chk) {
   if (tot === undefined) {
-    const boxes = document.getElementById('html-shopping').querySelectorAll('input[type=checkbox]');
-    tot = boxes.length; chk = 0;
-    boxes.forEach((cb, i) => { if (checks['shop_' + i]) chk++; });
+    const section = document.getElementById('html-shopping');
+    const boxes = section ? section.querySelectorAll('.shop-cb') : [];
+    const vis = Array.from(boxes).filter(cb => {
+      const tr = cb.closest('tr');
+      return !tr || tr.style.display !== 'none';
+    });
+    tot = vis.length; chk = 0;
+    vis.forEach((cb, i) => { if (cb.checked) chk++; });
   }
   const p = document.getElementById('check-prog');
-  p.textContent = tot ? chk + ' / ' + tot + ' ítems' : '';
-  p.style.color = (chk === tot && tot > 0) ? 'var(--teal)' : '#a0aec0';
+  if (p) {
+    p.textContent = tot ? chk + ' / ' + tot + ' ítems' : '';
+    p.style.color = (chk === tot && tot > 0) ? 'var(--teal)' : '#a0aec0';
+  }
+}
+
+function shopFilter(store, btn) {
+  document.querySelectorAll('#shop-filter-btns button').forEach(b => b.classList.remove('active-filter'));
+  btn.classList.add('active-filter');
+  document.querySelectorAll('#shop-main-tbl tbody tr').forEach(tr => {
+    tr.style.display = (store === 'all' || tr.dataset.store === store) ? '' : 'none';
+  });
+  updateProgress();
 }
 
 function clearChecks() {
   Object.keys(checks).filter(k => k.startsWith('shop_')).forEach(k => delete checks[k]);
   localStorage.setItem(SHOP_KEY, JSON.stringify(checks));
+  const section = document.getElementById('html-shopping');
+  if (section) section.querySelectorAll('.shop-cb').forEach(cb => {
+    cb.checked = false;
+    const tr = cb.closest('tr'); if (tr) tr.style.opacity = '';
+  });
   initShopChecks();
 }
 
