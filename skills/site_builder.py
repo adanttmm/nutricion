@@ -44,9 +44,11 @@ class SiteBuilderSkill(BaseSkill):
         ingr_hist        = self._update_ingredient_history(shopping_md, week_key)
         all_weeks        = self._build_all_weeks_history()
         ratings_hist     = self._load_ratings_history()
+        meal_prep_md     = self._load_latest("outputs/meal_prep", "meal_prep_*.md")
         prep_blocks      = self._extract_meal_prep_from_recipes(recipes_md)
         ingr_totals      = self._parse_recipe_ingredient_totals(recipes_md)
-        compiled_prep    = self._compile_meal_prep(prep_blocks, ingr_totals)
+        saturday_prep    = self._extract_saturday_prep(meal_prep_md) if meal_prep_md else ''
+        compiled_prep    = self._compile_meal_prep(prep_blocks, ingr_totals, saturday_prep)
 
         plan_name    = diet_plan.get("plan_name") or f"Plan Nutricional — {week_date.strftime('%d/%m/%Y')}"
         nutritionist = diet_plan.get("nutritionist") or ""
@@ -346,6 +348,49 @@ class SiteBuilderSkill(BaseSkill):
         return sections
 
     @staticmethod
+    def _strip_kcal_table(body: str) -> str:
+        """Remove the kcal·P·C·G nutrition summary rows from a menu meal section."""
+        out = []
+        lines = body.split('\n')
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            s = line.strip()
+            # Skip the 2-row nutrition table: header "| | 🧔 ATM | 👤 IOB |" + separator + data row
+            if s.startswith('|') and 'ATM' in s and 'IOB' in s and 'kcal' not in s.lower():
+                # Peek ahead: if next non-separator row has "kcal", skip this whole block
+                j = i + 1
+                while j < len(lines) and re.match(r'^\s*\|[-: |]+\|\s*$', lines[j]):
+                    j += 1
+                if j < len(lines) and 'kcal' in lines[j].lower():
+                    # Skip header + separator(s) + data row(s) until table ends
+                    while i < len(lines) and lines[i].strip().startswith('|'):
+                        i += 1
+                    continue
+            out.append(line)
+            i += 1
+        return '\n'.join(out)
+
+    @staticmethod
+    def _extract_ingredient_table_md(rec_body: str) -> str:
+        """Extract just the ingredient table markdown from a recipe body."""
+        lines = rec_body.split('\n')
+        in_table = False
+        table_lines: list = []
+        for line in lines:
+            s = line.strip()
+            if not in_table:
+                if s.startswith('|') and 'Ingrediente' in s:
+                    in_table = True
+                    table_lines.append(line)
+            else:
+                if s.startswith('|'):
+                    table_lines.append(line)
+                else:
+                    break
+        return '\n'.join(table_lines) if len(table_lines) > 2 else ''
+
+    @staticmethod
     def _build_meals(menu_secs: list, rec_secs: list) -> list:
         """Match menu and recipe sections by emoji, pre-render both to HTML."""
         rec_by_emoji: dict = {}
@@ -359,15 +404,20 @@ class SiteBuilderSkill(BaseSkill):
         for hdr, body in menu_secs:
             emoji = next((e for e in _MEAL_EMOJIS if e in hdr), None)
             label = hdr.lstrip('#').strip()
-            menu_html = SiteBuilderSkill._md_to_html(body)
+            # Strip the kcal/macro totals table from the menu description
+            clean_body = SiteBuilderSkill._strip_kcal_table(body)
+            menu_html = SiteBuilderSkill._md_to_html(clean_body)
 
             rec = rec_by_emoji.get(emoji) if emoji else None
             recipe_html = ''
+            ingr_table_html = ''
             recipe_title = ''
             rkey_val = ''
             if rec:
                 rec_hdr, rec_body = rec
                 recipe_html = SiteBuilderSkill._md_to_html(rec_body)
+                ingr_table_md = SiteBuilderSkill._extract_ingredient_table_md(rec_body)
+                ingr_table_html = SiteBuilderSkill._md_to_html(ingr_table_md) if ingr_table_md else ''
                 recipe_title = rec_hdr.lstrip('#').strip()
                 r = recipe_title.lower()
                 for src, dst in [('á','a'),('à','a'),('ä','a'),('â','a'),
@@ -379,12 +429,13 @@ class SiteBuilderSkill(BaseSkill):
                 rkey_val = re.sub(r'[^a-z0-9]+', '-', r).strip('-')
 
             meals.append({
-                'emoji':        emoji or '',
-                'label':        label,
-                'menu_html':    menu_html,
-                'recipe_title': recipe_title,
-                'recipe_html':  recipe_html,
-                'rkey':         rkey_val,
+                'emoji':           emoji or '',
+                'label':           label,
+                'menu_html':       menu_html,
+                'ingr_table_html': ingr_table_html,
+                'recipe_title':    recipe_title,
+                'recipe_html':     recipe_html,
+                'rkey':            rkey_val,
             })
         return meals
 
@@ -720,10 +771,41 @@ class SiteBuilderSkill(BaseSkill):
         return {k: v for k, v in totals.items() if v['atm_g'] > 0 or v['iob_g'] > 0}
 
     @staticmethod
-    def _compile_meal_prep(prep_blocks: list, ingredient_totals: dict) -> str:
+    def _extract_saturday_prep(meal_prep_md: str) -> str:
+        """Extract the Saturday section (marinados / sous vide / remojo) from the meal_prep markdown."""
+        lines = meal_prep_md.split('\n')
+        in_sat = False
+        sat_lines: list = []
+        for line in lines:
+            s = line.strip()
+            # Start on a ## Sábado heading
+            if re.match(r'^#{1,3} .*[sS][áa]bado', s):
+                in_sat = True
+                sat_lines.append(line)
+                continue
+            if in_sat:
+                # Stop at the next same-level or higher heading (## or #)
+                if re.match(r'^#{1,2} ', s) and not re.match(r'^#{1,3} .*[sS][áa]bado', s):
+                    break
+                sat_lines.append(line)
+        return '\n'.join(sat_lines).strip()
+
+    @staticmethod
+    def _compile_meal_prep(prep_blocks: list, ingredient_totals: dict, saturday_prep: str = '') -> str:
         """Build meal prep HTML: ingredient totals table + extracted prep steps."""
         import html as h
         out = []
+
+        # 0. Saturday prep (soaking, marinating, sous vide sealing)
+        if saturday_prep:
+            out.append(
+                '<h2 style="color:var(--navy);font-size:1rem;font-weight:700;margin-bottom:.5rem">'
+                '🌙 Sábado por la Tarde — Marinados y Preparación Previa</h2>'
+            )
+            out.append('<div class="prose max-w-none" style="font-size:.85rem">')
+            out.append(SiteBuilderSkill._md_to_html(saturday_prep))
+            out.append('</div>')
+            out.append('<hr style="margin:1.25rem 0;border-color:var(--teal-20)">')
 
         # 1. Ingredient totals table
         if ingredient_totals:
@@ -1633,20 +1715,23 @@ function showDay(i, targetSlot) {
         '<div class="meal-card" data-emoji="' + (m.emoji || '') + '">' +
           '<div class="meal-card-header">' + m.label + '</div>' +
           '<div class="meal-card-body prose max-w-none">' + m.menu_html + '</div>';
+      if (m.ingr_table_html) {
+        html +=
+          '<div style="margin:.35rem 0 .5rem;padding:.5rem .75rem .4rem;' +
+            'background:rgba(74,145,158,.07);border-left:3px solid var(--teal);border-radius:0 .5rem .5rem 0">' +
+            '<div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;' +
+              'color:var(--teal);margin-bottom:.3rem">🥩 Ingredientes (crudo)</div>' +
+            '<div class="prose max-w-none" style="font-size:.8rem">' + m.ingr_table_html + '</div>' +
+          '</div>';
+      }
       if (m.recipe_html) {
         const safe = m.recipe_title
           .replace(/&/g,'&amp;').replace(/</g,'&lt;')
           .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         html +=
           '<details class="recipe-details">' +
-            '<summary><span class="arr">▶</span> Ver receta: ' + safe + '</summary>' +
+            '<summary><span class="arr">▶</span> Ver receta completa</summary>' +
             '<div class="recipe-inner">' +
-              '<div style="margin-bottom:.85rem;padding:.6rem .85rem;background:rgba(74,145,158,.07);' +
-                'border-left:3px solid var(--teal);border-radius:0 .5rem .5rem 0">' +
-                '<div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;' +
-                  'color:var(--teal);margin-bottom:.35rem">📊 Cantidades a servir (cocinado)</div>' +
-                '<div class="prose max-w-none" style="font-size:.8rem">' + m.menu_html + '</div>' +
-              '</div>' +
               m.recipe_html +
             '</div></details>';
       }
