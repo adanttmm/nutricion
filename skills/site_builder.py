@@ -661,6 +661,58 @@ class SiteBuilderSkill(BaseSkill):
         return {k: v for k, v in totals.items() if v['atm_g'] > 0 or v['iob_g'] > 0}
 
     @staticmethod
+    @staticmethod
+    def _canonical_ingr_key(name: str) -> str:
+        """Normalise an ingredient name to a canonical key for deduplication.
+
+        Strips parenthetical notes and trailing state/preparation/variety adjectives
+        that don't distinguish the ingredient (e.g. "maduro", "congelado", "en cubos",
+        "dominico"). Preserves meaningful compound modifiers ("en polvo", "integral",
+        "negro") that identify a different product.
+        """
+        # Lowercase + accent-normalise for comparison only
+        s = name.lower()
+        for a, b in [('á','a'),('é','e'),('í','i'),('ó','o'),('ú','u'),('ñ','n')]:
+            s = s.replace(a, b)
+        # Strip parenthetical notes
+        s = re.sub(r'\s*\([^)]*\)', '', s)
+        # Strip everything after a comma (e.g. "en salmuera, enjuagadas")
+        s = s.split(',')[0]
+        # Normalize plural adjectives at end: integrales → integral, naturales → natural
+        s = re.sub(r'\b(\w+[aeiou]l)es\b', r'\1', s)
+        # Strip "en X" / "sin X" / compound terminal phrases (keep in sync with _EN_PHRASE_RE below)
+        s = re.sub(
+            r'\s+(?:en\s+(?:brunoise|cubos|juliana|bastones|rodajas|trozos|bistec|rebanadas|filetes|dados|escabeche|salmuera|aceite)'
+            r'|sin\s+vaina'
+            r'|shiro\s+miso)\s*$',
+            '', s)
+        # Iteratively strip terminal state/variety adjectives (keep in sync with _TERM_PAT below)
+        _K_TERM_RE = re.compile(
+            r'\s+(?:maduro|madura|maduros|maduras'
+            r'|fresco|fresca|frescos|frescas'
+            r'|entero|entera|enteros|enteras'
+            r'|congelado|congelada|congelados|congeladas'
+            r'|picado|picada|picados|picadas'
+            r'|rallado|rallada|rallados|ralladas'
+            r'|tostado|tostada|tostados|tostadas'
+            r'|salteado|salteada|salteados|salteadas'
+            r'|rostizado|rostizada|rostizados|rostizadas'
+            r'|deshidratado|deshidratada|deshidratados|deshidratadas'
+            r'|escurrido|escurridos|enjuagados'
+            r'|dominico|dominicos|tabasco|manila'
+            r'|magro|magra|fino|fina'
+            r'|shiro'
+            r'|\bl\b|\bm\b)$'  # egg size L/M
+        )
+        # Normalize plural nouns: jitomates → jitomate
+        s = re.sub(r'\b(\w+t)es\b', r'\1e', s)
+        prev = None
+        while prev != s:
+            prev = s
+            s = _K_TERM_RE.sub('', s).strip()
+        return re.sub(r'\s+', ' ', s).strip()
+
+    @staticmethod
     def _parse_recipe_ingredient_totals(recipes_md: str) -> dict:
         """Parse raw ingredient quantities from recipe ingredient tables.
 
@@ -668,15 +720,55 @@ class SiteBuilderSkill(BaseSkill):
         Skips rows where the quantity contains 'cocido/cocida/cocidos' — those are
         already-prepped components, not raw shopping items.
         Deduplicates identical recipes across days (same rkey signals same dish).
+        Groups ingredient name variants under a canonical key; display name is the
+        shortest variant seen so users get a clean, concise label.
         """
         _COOKED_RE = re.compile(r'\bcocid[ao]s?\b', re.IGNORECASE)
         _PREP_RE   = re.compile(r'\bsous\s+vide\b|\bprep\b|\bdomingo\b', re.IGNORECASE)
 
+        # Terminal adjectives to strip when building display name or canonical key
+        _TERM_PAT = (
+            r'(?:maduro|madura|maduros|maduras'
+            r'|fresco|fresca|frescos|frescas'
+            r'|entero|entera|enteros|enteras'
+            r'|congelado|congelada|congelados|congeladas'
+            r'|picado|picada|picados|picadas'
+            r'|rallado|rallada|rallados|ralladas'
+            r'|tostado|tostada|tostados|tostadas'
+            r'|salteado|salteada|salteados|salteadas'
+            r'|rostizado|rostizada|rostizados|rostizadas'
+            r'|deshidratado|deshidratada|deshidratados|deshidratadas'
+            r'|escurrido|escurridos|enjuagados'
+            r'|dominico|dominicos|tabasco|manila'
+            r'|magro|magra|fino|fina'
+            r'|shiro'
+            r'|\bl\b|\bm\b)'
+        )
+        _TERM_RE = re.compile(r'\s+' + _TERM_PAT + r'\s*$', re.IGNORECASE)
+        _EN_PHRASE_RE = re.compile(
+            r'\s+(?:en\s+(?:brunoise|cubos|juliana|bastones|rodajas|trozos|bistec|rebanadas|filetes|dados|escabeche|salmuera|aceite)'
+            r'|sin\s+vaina'
+            r'|shiro\s+miso)\s*$',
+            re.IGNORECASE)
+
+        def _clean_name(raw: str) -> str:
+            """Strip prep/state qualifiers from an ingredient name for display (keeps accents/case)."""
+            s = re.sub(r'\s*\([^)]*\)', '', raw).strip()   # remove parentheticals
+            s = s.split(',')[0].strip()                      # remove after comma
+            s = _EN_PHRASE_RE.sub('', s)                    # strip "en X" cut phrases
+            # Normalize plural adjectives: integrales → integral
+            s = re.sub(r'\b(\w+[aeiou]l)es\b', r'\1', s, flags=re.IGNORECASE)
+            # Normalize plural nouns like "jitomates" → "jitomate"
+            s = re.sub(r'\b(\w+t)es\b', r'\1e', s, flags=re.IGNORECASE)
+            prev = None
+            while prev != s:
+                prev = s
+                s = _TERM_RE.sub('', s).strip()
+            return re.sub(r'\s+', ' ', s).strip() or raw.split('(')[0].strip()
+
         def _strip_labels(name: str) -> str:
-            """Normalise ingredient name: remove cooking labels and parenthetical notes."""
-            # Remove trailing labels like "(crudo)", "(rinde cocido)", "(secos)", etc.
+            """Remove raw/cooked quantity labels from ingredient name."""
             name = re.sub(r'\s*\((?:crudo|crudos|cocido|cocidos|cocida|cocidas|seco|secos|rinde[^)]*|sans[^)]*)\)', '', name, flags=re.IGNORECASE)
-            # Remove inline labels like "cocido", "crudo" at end
             name = re.sub(r'\s+(crudo|crudos|cocido|cocidos|cocida|cocidas|seco|secos)\s*$', '', name, flags=re.IGNORECASE)
             return name.strip()
 
@@ -760,9 +852,16 @@ class SiteBuilderSkill(BaseSkill):
             if not name:
                 continue
 
-            key = name.lower().strip()
+            key = SiteBuilderSkill._canonical_ingr_key(name)
+            if not key:
+                continue
+            display = _clean_name(name)  # state/prep-qualifier-free display name
             if key not in totals:
-                totals[key] = {'name': name, 'atm_g': 0.0, 'iob_g': 0.0}
+                totals[key] = {'name': display, 'atm_g': 0.0, 'iob_g': 0.0}
+            else:
+                # Keep the shortest cleaned display name
+                if len(display) < len(totals[key]['name']):
+                    totals[key]['name'] = display
             if atm_g:
                 totals[key]['atm_g'] += atm_g
             if iob_g:

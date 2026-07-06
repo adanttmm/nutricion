@@ -46,7 +46,8 @@ Agregar link de referencia.
 REGLAS:
 - NO incluir secciones "Mise en place", "Conservación", "Regeneración" ni "Meal prep durante la semana". Solo las secciones indicadas arriba.
 - Los URLs deben tener nombres codificados (sin acentos, espacios como +).
-- Si el mismo platillo aparece varios días, genera la tarjeta completa cada vez — nunca referencies otro día."""
+- Si el mismo platillo aparece varios días, genera la tarjeta completa IDÉNTICA cada vez (mismos ingredientes, mismas cantidades, mismo nombre de cada ingrediente, mismos pasos) — nunca referencies otro día ni cambies los nombres de ingredientes entre días.
+- CONSISTENCIA DE NOMBRES: usa exactamente el mismo nombre para cada ingrediente en todas las tarjetas de la semana. No escribas "plátano dominico" un día y "plátano maduro" otro — elige un nombre y úsalo siempre. Lo mismo para proteína en polvo, tortilla integral, champiñones, etc."""
 
     def generate_for_menu(self, menu_path: str, week_date: date = None) -> Path:
         if week_date is None:
