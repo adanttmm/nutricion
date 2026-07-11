@@ -14,6 +14,7 @@ ESTILO: Gourmet amateur, rápido, eficiente, fit y hogareño. Técnicas profesio
 EQUIPO: horno convencional, estufa de gas, sartén de hierro, olla de presión, licuadora, procesador, batidora, maquina helados, big green egg, ahumados y rostiados.
 INGREDIENTES: Preferentemente locales, frescos y de temporada. También considerar conservas gourmet. EXLCUIR TERMINANTEMENTE LOS SIGUIENTES INGREDIENTES:
     - Tajin
+    - Coco seco
 IDIOMA: Español mexicano.
 
 ESTRUCTURA DE CADA TARJETA — exactamente así, sin secciones adicionales:

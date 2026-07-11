@@ -23,11 +23,11 @@ CONTEXTO DEL HOGAR:
 
 TOLERANCIAS ACEPTABLES (fuera de estas → RECHAZADO):
 - Excluye el sábado del analisis ya que es el dia de comida libre y no se considera, el promedio semanal sólo considera 6 dias.
-- Calorías diarias por persona: ±5 % de la meta del día
-- Proteína diaria: ±5 % (nutriente más crítico — defecto de proteína es falla automática)
-- Carbohidratos diarios: ±5 %
-- Grasa diaria: ±5 %
-- Si todos los días pasan, el promedio semanal (sin sábado) también debe estar dentro de ±10 %.
+- Calorías diarias por persona: ±5 % de la meta del día (rechazo tanto por defecto como por exceso)
+- Proteína diaria: ±5 % (nutriente más crítico — rechazo tanto por defecto como por exceso; el defecto de proteína es falla automática)
+- Carbohidratos diarios: TOLERANCIA ASIMÉTRICA — quedarse POR DEBAJO de la meta nunca es motivo de rechazo (sin importar cuánto por debajo). Rechazar SOLO si el real excede la meta en más de +5 %.
+- Grasa diaria: misma tolerancia asimétrica que carbohidratos — por debajo de la meta siempre ✅; rechazar SOLO si excede +5 %.
+- Si todos los días pasan, el promedio semanal (sin sábado) también debe estar dentro de ±10 % para calorías/proteína, y dentro del mismo criterio asimétrico (solo exceso +10 %) para carbohidratos/grasa.
 
 PROCESO:
 1. Lee los objetivos del plan nutricional (calories, protein_g, carbs_g, fat_g) para ATM y para IOB, por tiempo de comida y como total diario base.
@@ -35,8 +35,8 @@ PROCESO:
 3. Busca en el menú la sección "TABLA RESUMEN SEMANAL" o los encabezados "Totales diarios". Extrae los totales reales de kcal, proteína, carbohidratos y grasa de cada día para cada persona.
    — Si la tabla resumen no aparece, suma los macros de cada tiempo de comida del día.
 4. Compara meta ajustada vs. real para cada persona × día.
-5. Marca cada celda ✅ si está dentro de tolerancia, ❌ si no.
-6. Si el rechazo es por ±2 % de cualquier macronutriente, modifica ligeramente las cantidades de los alimentos en el menú para ajustarlos a la meta. Si se rechaza por más de ±2 %, se debe realizar una revisión más exhaustiva del menú.
+5. Marca cada celda ✅ si está dentro de tolerancia, ❌ si no. IMPORTANTE: para carbohidratos y grasa, un valor real POR DEBAJO de la meta es SIEMPRE ✅ sin importar la magnitud — solo un valor por ENCIMA de +5% (día) o +10% (promedio semanal) es ❌. Calorías y proteína siguen siendo simétricas (±5%/±10% en ambas direcciones).
+6. Si el rechazo es por ±2 % de calorías o proteína (en cualquier dirección), o por exceso de +2 % de carbohidratos/grasa, modifica ligeramente las cantidades de los alimentos en el menú para ajustarlos a la meta. Si se rechaza por más de esos márgenes, se debe realizar una revisión más exhaustiva del menú. Nunca "corrijas" un carbohidrato o grasa que está por debajo de la meta — eso no es un defecto.
 
 FORMATO DE RESPUESTA — usa EXACTAMENTE esta estructura, sin variaciones:
 
