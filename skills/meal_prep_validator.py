@@ -58,4 +58,4 @@ PLAN DE MEAL PREP A AUDITAR:
 
 Genera el reporte de auditoría completo."""
 
-        return self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=4000)
+        return self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=16000)

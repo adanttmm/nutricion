@@ -36,6 +36,7 @@ PROCESO:
    — Si la tabla resumen no aparece, suma los macros de cada tiempo de comida del día.
 4. Compara meta ajustada vs. real para cada persona × día.
 5. Marca cada celda ✅ si está dentro de tolerancia, ❌ si no.
+6. Si el rechazo es por ±2 % de cualquier macronutriente, modifica ligeramente las cantidades de los alimentos en el menú para ajustarlos a la meta. Si se rechaza por más de ±2 %, se debe realizar una revisión más exhaustiva del menú.
 
 FORMATO DE RESPUESTA — usa EXACTAMENTE esta estructura, sin variaciones:
 
@@ -78,7 +79,7 @@ Veredicto final: APROBADO / RECHAZADO — [una línea explicando el principal ha
             "Genera el reporte completo siguiendo el formato indicado."
         )
 
-        raw = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=4000)
+        raw = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=16000)
         return self._parse_result(raw)
 
     @staticmethod

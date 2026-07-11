@@ -372,23 +372,36 @@ class SiteBuilderSkill(BaseSkill):
         return '\n'.join(out)
 
     @staticmethod
-    def _extract_ingredient_table_md(rec_body: str) -> str:
-        """Extract just the ingredient table markdown from a recipe body."""
-        lines = rec_body.split('\n')
+    def _extract_menu_serving_table_md(body: str) -> str:
+        """Extract per-ingredient SERVING (cooked, as-eaten) quantity rows from a menu
+        meal section, excluding the kcal/macro summary row. These come from the menu's
+        own ATM/IOB table, which tracks portions against the nutritionist's macro
+        targets (always cooked/as-served weights) — as opposed to the recipe card's
+        ingredient table, which lists raw/dry pre-cooking weights."""
+        lines = body.split('\n')
+        header_lines: list = []
+        ingr_lines: list = []
         in_table = False
-        table_lines: list = []
         for line in lines:
             s = line.strip()
             if not in_table:
-                if s.startswith('|') and 'Ingrediente' in s:
+                if s.startswith('|') and 'ATM' in s and 'IOB' in s and 'kcal' not in s.lower():
                     in_table = True
-                    table_lines.append(line)
+                    header_lines.append(line)
             else:
-                if s.startswith('|'):
-                    table_lines.append(line)
-                else:
+                if not s.startswith('|'):
                     break
-        return '\n'.join(table_lines) if len(table_lines) > 2 else ''
+                if re.match(r'^\s*\|[-: |]+\|\s*$', s):
+                    header_lines.append(line)
+                    continue
+                if 'kcal' in s.lower():
+                    continue  # skip the kcal · P · C · G totals row
+                ingr_lines.append(line)
+        if not ingr_lines:
+            return ''
+        if header_lines:
+            header_lines[0] = re.sub(r'^\|\s*\|', '| Ingrediente |', header_lines[0], count=1)
+        return '\n'.join(header_lines + ingr_lines)
 
     @staticmethod
     def _build_meals(menu_secs: list, rec_secs: list) -> list:
@@ -408,16 +421,20 @@ class SiteBuilderSkill(BaseSkill):
             clean_body = SiteBuilderSkill._strip_kcal_table(body)
             menu_html = SiteBuilderSkill._md_to_html(clean_body)
 
+            # Serving (cooked, as-eaten) ingredient quantities come from the menu's own
+            # ATM/IOB table — shown inline in the meal card.
+            serving_table_md = SiteBuilderSkill._extract_menu_serving_table_md(body)
+            ingr_table_html = SiteBuilderSkill._md_to_html(serving_table_md) if serving_table_md else ''
+
             rec = rec_by_emoji.get(emoji) if emoji else None
             recipe_html = ''
-            ingr_table_html = ''
             recipe_title = ''
             rkey_val = ''
             if rec:
                 rec_hdr, rec_body = rec
+                # Recipe card ingredient table is raw/dry pre-cooking weights — shown
+                # as-is inside "Ver receta completa", never mixed with the served table above.
                 recipe_html = SiteBuilderSkill._md_to_html(rec_body)
-                ingr_table_md = SiteBuilderSkill._extract_ingredient_table_md(rec_body)
-                ingr_table_html = SiteBuilderSkill._md_to_html(ingr_table_md) if ingr_table_md else ''
                 recipe_title = rec_hdr.lstrip('#').strip()
                 r = recipe_title.lower()
                 for src, dst in [('á','a'),('à','a'),('ä','a'),('â','a'),
@@ -1819,7 +1836,7 @@ function showDay(i, targetSlot) {
           '<div style="margin:.35rem 0 .5rem;padding:.5rem .75rem .4rem;' +
             'background:rgba(74,145,158,.07);border-left:3px solid var(--teal);border-radius:0 .5rem .5rem 0">' +
             '<div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;' +
-              'color:var(--teal);margin-bottom:.3rem">🥩 Ingredientes (crudo)</div>' +
+              'color:var(--teal);margin-bottom:.3rem">🍽️ Ingredientes (porción servida, cocido)</div>' +
             '<div class="prose max-w-none" style="font-size:.8rem">' + m.ingr_table_html + '</div>' +
           '</div>';
       }
@@ -1831,6 +1848,8 @@ function showDay(i, targetSlot) {
           '<details class="recipe-details">' +
             '<summary><span class="arr">▶</span> Ver receta completa</summary>' +
             '<div class="recipe-inner">' +
+              '<div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;' +
+                'color:var(--terra);margin-bottom:.3rem">🥩 Cantidades en crudo, para preparar</div>' +
               m.recipe_html +
             '</div></details>';
       }

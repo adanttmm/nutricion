@@ -133,7 +133,7 @@ INSTRUCCIONES ESPECIALES:
 - El menú repite comidas (lun=jue, mar=vie, mié=sáb) — preparar UNA SOLA VEZ por par repetido.
 - Sé muy específico con temperaturas, tiempos y técnicas en cada bloque del cronograma."""
 
-        content = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=10000)
+        content = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=16000)
 
         header = f"# 🏪 Plan de Meal Prep\n## Semana del {week_date.strftime('%d de %B de %Y')}\n\n"
         filename = f"meal_prep_{week_date.strftime('%Y-%m-%d')}.md"

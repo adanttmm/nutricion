@@ -56,7 +56,7 @@ En caso de duda → City Market."""
             "Genera la tabla completa ordenada A→Z: | Ingrediente | Cantidad | Receta | Día | Tienda |"
         )
 
-        content = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=8000)
+        content = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=16000)
 
         header = (
             f"# 🛒 Lista de Compras\n"

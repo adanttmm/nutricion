@@ -9,7 +9,7 @@ class MenuGeneratorSkill(BaseSkill):
     SYSTEM_PROMPT = """Eres un chef amateur gourmet y nutriólogo profesional. Creas menús semanales variados, elegantes, con porciones individualizadas por persona.
 
 PERFIL DEL COCINERO:
-- Nivel avanzado, cómodo con técnicas profesionales (confitado, reducciones, emulsiones, fermentados, braseado, sellado a fuego alto, cocción al vapor, horneado a baja temperatura, helados, ahumado, rostizado, carbón).
+- Nivel avanzado, gourmet amateur cómodo con técnicas profesionales (confitado, reducciones, emulsiones, fermentados, braseado, sellado a fuego alto, cocción al vapor, horneado a baja temperatura, helados, ahumado, rostizado, carbón).
 - Equipamiento completo incluye: horno, 4+ quemadores, procesador, batidora, sartenes de hierro y antiadherente, vaporera, CIRCULADOR SOUS VIDE (disponible para cualquier platillo), MÁQUINA DE PASTA (para pasta fresca artesanal), Maquina de helados.
 - Cualquier gastronomía cuyos ingredientes se encuentren en México.
 - Revisa los menús de las tres semanas anteriores para evitar repetir demasiado.
@@ -63,6 +63,7 @@ FORMATO OBLIGATORIO — cada tiempo de comida:
 | [ingrediente clave 2] | XXg | XXg |
 
 (solo mostrar filas de ingredientes donde la cantidad difiere entre personas; omitir los que son iguales)
+(estas cantidades SIEMPRE son peso COCIDO / como se sirve en el plato — igual que las metas de kcal/macros, que están calculadas sobre el alimento ya cocido. NUNCA escribas "crudo" aquí ni uses peso crudo; el peso crudo/de compra vive únicamente en la tarjeta de receta aparte)
 
 ### 🍎 Colación AM
 **[Nombre]**
@@ -167,7 +168,7 @@ Al final: tabla resumen con totales diarios por persona y promedios semanales.""
             "Genera los 7 días completos con todos los tiempos de comida según el formato indicado."
         )
 
-        content = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=16000)
+        content = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=24000)
 
         header = f"# 🍽️ Menú Semanal\n## Semana del {week_start.strftime('%d de %B de %Y')}\n\n"
         filename = f"menu_{week_start.strftime('%Y-%m-%d')}.md"
