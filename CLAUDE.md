@@ -114,6 +114,6 @@ The parser always picks the **most recent** file per person (by date in filename
 - Cooks for **2 people** all meals; **3rd person at lunch Mon/Wed/Fri**
 - **1 cheat meal/week** (Saturday dinner by default)
 - Gourmet style, all cuisines, advanced technique
-- Gym 3×/week (Mon/Wed/Fri), trekking 45 min daily, salsa 2×/week (Tue/Thu)
+- Gym 2×/week (Mon/Wed/Fri), trekking 45 min daily, salsa dancing 2×/week (Tue/Thu)
 - Gym days +150 kcal, salsa days +100 kcal (applied to colación PM)
 - Primary shopping: **Costco** (Interlomas / Santa Fe); specialty at **City Market Santa Fe**
