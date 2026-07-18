@@ -62,9 +62,6 @@ if [ "$SIN_PUSH" = false ]; then
   echo "▶ [3/3] Publicando en GitHub Pages..."
   git add docs/
   git add outputs/recipes/ outputs/menus/
-  # Also commit ratings data so history is stored in GitHub
-  [ -f data/ratings_history.json ] && git add data/ratings_history.json
-  [ -d data/ratings ] && git add data/ratings/
   if git diff --cached --quiet; then
     echo "  Sin cambios — nada que publicar."
     _record_step "2. Publicar (git push)" "—" "⏭"
