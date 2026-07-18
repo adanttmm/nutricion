@@ -18,6 +18,14 @@ _MEAL_EMOJIS = ['🌅', '🍎', '🍽', '🌿', '🌙', '🎉']
 _MACRO_RE = re.compile(
     r'\| \*\*kcal · P · C · G\*\* \| \*\*(\d+) · (\d+)g · (\d+)g · (\d+)g\*\*.*?\| \*\*(\d+) · (\d+)g · (\d+)g · (\d+)g\*\*'
 )
+# Maps each meal-slot emoji to the snake_case meal_type vocabulary used by
+# `python main.py registrar` / the tracker DB, so menu-derived and manually
+# logged rows share the same meal_type values.
+_MEAL_TYPE_MAP = {
+    '🌅': 'desayuno', '🍎': 'colacion_am', '🍽': 'comida',
+    '🌿': 'colacion_pm', '🌙': 'cena', '🎉': 'cena',
+}
+_DOW_ORDER = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO']
 
 
 class SiteBuilderSkill(BaseSkill):
@@ -31,6 +39,7 @@ class SiteBuilderSkill(BaseSkill):
         (docs_dir / ".nojekyll").touch()
 
         self._copy_images(docs_dir)
+        self._persist_menu_tracking()
 
         diet_plan        = self._load_latest_diet_plan()
         menu_md          = self._load_latest("outputs/menus",     "menu_*.md")
@@ -48,7 +57,8 @@ class SiteBuilderSkill(BaseSkill):
         prep_blocks      = self._extract_meal_prep_from_recipes(recipes_md)
         ingr_totals      = self._parse_recipe_ingredient_totals(recipes_md)
         saturday_prep    = self._extract_saturday_prep(meal_prep_md) if meal_prep_md else ''
-        compiled_prep    = self._compile_meal_prep(prep_blocks, ingr_totals, saturday_prep)
+        sunday_prep      = self._extract_sunday_prep(meal_prep_md) if meal_prep_md else ''
+        compiled_prep    = self._compile_meal_prep(prep_blocks, ingr_totals, saturday_prep, sunday_prep)
 
         plan_name    = diet_plan.get("plan_name") or f"Plan Nutricional — {week_date.strftime('%d/%m/%Y')}"
         nutritionist = diet_plan.get("nutritionist") or ""
@@ -293,6 +303,114 @@ class SiteBuilderSkill(BaseSkill):
             iob['fat_g']     += int(m.group(8))
         return atm, iob
 
+    @staticmethod
+    def _parse_day_meals(day_md: str) -> list:
+        """Parse one day's menu markdown section into per-meal entries: dish name,
+        ATM/IOB macros, and each ingredient's ATM/IOB gram quantity — the same
+        table format _parse_menu_ingredient_totals sums across the whole week,
+        but kept here as individual per-meal rows for DB persistence."""
+        def _g(text: str):
+            m = re.search(r'(\d+(?:\.\d+)?)\s*g\b', text)
+            return float(m.group(1)) if m else None
+
+        lines = day_md.split('\n')
+        meals: list = []
+        current_meal_type = None
+        macro_row_done = False
+        i = 0
+        while i < len(lines):
+            s = lines[i].strip()
+            if s.startswith('### '):
+                emoji = next((e for e in _MEAL_TYPE_MAP if e in s), None)
+                current_meal_type = _MEAL_TYPE_MAP.get(emoji)
+                macro_row_done = False
+                dish = None
+                j = i + 1
+                while j < len(lines) and not lines[j].strip():
+                    j += 1
+                if (current_meal_type and j < len(lines)
+                        and lines[j].strip().startswith('**') and not lines[j].strip().startswith('|')):
+                    dish = lines[j].strip().strip('*')
+                if current_meal_type:
+                    meals.append({'meal_type': current_meal_type, 'dish': dish,
+                                   'atm': None, 'iob': None, 'ingredients': []})
+                i += 1
+                continue
+            if current_meal_type and s.startswith('|'):
+                cells = [c.strip() for c in s.strip('|').split('|')]
+                if all(re.match(r'^[-:]+$', c) for c in cells if c.strip()):
+                    i += 1
+                    continue
+                if not macro_row_done and cells and 'kcal' in cells[0].lower():
+                    mm = re.search(r'(\d+)\s*·\s*(\d+)g\s*·\s*(\d+)g\s*·\s*(\d+)g', cells[1]) if len(cells) > 1 else None
+                    mm2 = re.search(r'(\d+)\s*·\s*(\d+)g\s*·\s*(\d+)g\s*·\s*(\d+)g', cells[2]) if len(cells) > 2 else None
+                    if mm:
+                        meals[-1]['atm'] = {'calories': int(mm.group(1)), 'protein_g': int(mm.group(2)),
+                                             'carbs_g': int(mm.group(3)), 'fat_g': int(mm.group(4))}
+                    if mm2:
+                        meals[-1]['iob'] = {'calories': int(mm2.group(1)), 'protein_g': int(mm2.group(2)),
+                                              'carbs_g': int(mm2.group(3)), 'fat_g': int(mm2.group(4))}
+                    macro_row_done = True
+                    i += 1
+                    continue
+                if macro_row_done and len(cells) >= 2:
+                    name = re.sub(r'[🏪🌊]', '', cells[0])
+                    name = re.sub(r'\*\*', '', name).strip()
+                    if name and name not in ('', '—', '-'):
+                        atm_g = _g(cells[1]) if len(cells) > 1 else None
+                        iob_g = _g(cells[2]) if len(cells) > 2 else None
+                        if atm_g or iob_g:
+                            meals[-1]['ingredients'].append({'name': name, 'atm_g': atm_g, 'iob_g': iob_g})
+            i += 1
+        return meals
+
+    def _persist_menu_tracking(self) -> None:
+        """Persist per-day planned nutrition + ingredient quantities from every
+        outputs/menus/menu_*.md into the tracking DB (meals.source='planned' +
+        daily_ingredients). Idempotent — safe to re-run on every site build."""
+        try:
+            from tracker.daily_log import DailyLog
+        except Exception:
+            return
+        try:
+            log = DailyLog()
+        except Exception:
+            return
+        try:
+            for f in sorted(Path("outputs/menus").glob("menu_*.md")):
+                m = re.search(r'menu_(\d{4}-\d{2}-\d{2})\.md', f.name)
+                if not m:
+                    continue
+                try:
+                    week_start = date.fromisoformat(m.group(1))
+                    menu_md = f.read_text(encoding='utf-8')
+                except Exception:
+                    continue
+                for day_m in _DAY_RE.finditer(menu_md):
+                    norm = day_m.group(1).upper().replace('É', 'E').replace('Á', 'A')
+                    idx = next((i for i, d in enumerate(_DOW_ORDER) if d == norm), None)
+                    if idx is None:
+                        continue
+                    next_m = _DAY_RE.search(menu_md, day_m.end())
+                    section = menu_md[day_m.start(): next_m.start() if next_m else len(menu_md)]
+                    day_date = week_start + timedelta(days=idx)
+                    for meal in self._parse_day_meals(section):
+                        for person, macros in (('ATM', meal['atm']), ('IOB', meal['iob'])):
+                            if not macros:
+                                continue
+                            log.replace_planned_meal(
+                                day_date, person, meal['meal_type'], meal['dish'] or meal['meal_type'],
+                                macros['calories'], macros['protein_g'], macros['carbs_g'], macros['fat_g'],
+                            )
+                            key = 'atm_g' if person == 'ATM' else 'iob_g'
+                            ingredients = [
+                                {'name': ing['name'], 'quantity_g': ing[key]}
+                                for ing in meal['ingredients'] if ing.get(key)
+                            ]
+                            log.replace_daily_ingredients(day_date, person, meal['meal_type'], ingredients)
+        finally:
+            log.close()
+
     def _build_all_weeks_history(self) -> list:
         """Load every menu_*.md and return flat list of {week_key, days[]} for the JS history chart."""
         _DOW = ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO','DOMINGO']
@@ -521,10 +639,6 @@ class SiteBuilderSkill(BaseSkill):
             week_start = today - timedelta(days=today.weekday())
             result = {
                 "weekly":            log.get_weekly_data(week_start),
-                "weight_history_atm": log.get_weight_history(90, person='ATM'),
-                "weight_history_iob": log.get_weight_history(90, person='IOB'),
-                "body_comp_atm":     log.get_body_composition_history(90, person='ATM'),
-                "body_comp_iob":     log.get_body_composition_history(90, person='IOB'),
                 "today":             log.get_daily_summary(today),
             }
             log.close()
@@ -695,11 +809,15 @@ class SiteBuilderSkill(BaseSkill):
         s = re.sub(r'\s*\([^)]*\)', '', s)
         # Strip everything after a comma (e.g. "en salmuera, enjuagadas")
         s = s.split(',')[0]
+        # Strip a leading "filete(s) de X" cut-descriptor prefix so it matches the
+        # same ingredient named the other way round ("X filete") — e.g. "filete de
+        # salmón" / "salmón filete" / "salmón" must all resolve to one key.
+        s = re.sub(r'^filetes?\s+de\s+', '', s)
         # Normalize plural adjectives at end: integrales → integral, naturales → natural
         s = re.sub(r'\b(\w+[aeiou]l)es\b', r'\1', s)
         # Strip "en X" / "sin X" / compound terminal phrases (keep in sync with _EN_PHRASE_RE below)
         s = re.sub(
-            r'\s+(?:en\s+(?:brunoise|cubos|juliana|bastones|rodajas|trozos|bistec|rebanadas|filetes|dados|escabeche|salmuera|aceite)'
+            r'\s+(?:en\s+(?:brunoise|cubos|juliana|bastones|rodajas|tiras|trozos|bistec|rebanadas|filetes|dados|escabeche|salmuera|aceite)'
             r'|sin\s+vaina'
             r'|shiro\s+miso)\s*$',
             '', s)
@@ -709,15 +827,18 @@ class SiteBuilderSkill(BaseSkill):
             r'|fresco|fresca|frescos|frescas'
             r'|entero|entera|enteros|enteras'
             r'|congelado|congelada|congelados|congeladas'
+            r'|crudo|cruda|crudos|crudas'
             r'|picado|picada|picados|picadas'
             r'|rallado|rallada|rallados|ralladas'
             r'|tostado|tostada|tostados|tostadas'
             r'|salteado|salteada|salteados|salteadas'
             r'|rostizado|rostizada|rostizados|rostizadas'
             r'|deshidratado|deshidratada|deshidratados|deshidratadas'
+            r'|batido|batida|batidos|batidas'
             r'|escurrido|escurridos|enjuagados'
             r'|dominico|dominicos|tabasco|manila'
             r'|magro|magra|fino|fina'
+            r'|filete|filetes'
             r'|shiro'
             r'|\bl\b|\bm\b)$'  # egg size L/M
         )
@@ -727,7 +848,15 @@ class SiteBuilderSkill(BaseSkill):
         while prev != s:
             prev = s
             s = _K_TERM_RE.sub('', s).strip()
-        return re.sub(r'\s+', ' ', s).strip()
+        s = re.sub(r'\s+', ' ', s).strip()
+        # Known synonym collapses where a generic stripping rule would be unsafe to
+        # apply everywhere (e.g. "vainilla" is a meaningful flavor elsewhere, but here
+        # it's the same protein powder the household uses throughout the week's menu).
+        _SYNONYMS = {
+            'proteina vainilla': 'proteina en polvo',
+            'proteina vainilla en polvo': 'proteina en polvo',
+        }
+        return _SYNONYMS.get(s, s)
 
     @staticmethod
     def _parse_recipe_ingredient_totals(recipes_md: str) -> dict:
@@ -744,26 +873,30 @@ class SiteBuilderSkill(BaseSkill):
         _PREP_RE   = re.compile(r'\bsous\s+vide\b|\bprep\b|\bdomingo\b', re.IGNORECASE)
 
         # Terminal adjectives to strip when building display name or canonical key
+        # (keep in sync with _K_TERM_RE in _canonical_ingr_key)
         _TERM_PAT = (
             r'(?:maduro|madura|maduros|maduras'
             r'|fresco|fresca|frescos|frescas'
             r'|entero|entera|enteros|enteras'
             r'|congelado|congelada|congelados|congeladas'
+            r'|crudo|cruda|crudos|crudas'
             r'|picado|picada|picados|picadas'
             r'|rallado|rallada|rallados|ralladas'
             r'|tostado|tostada|tostados|tostadas'
             r'|salteado|salteada|salteados|salteadas'
             r'|rostizado|rostizada|rostizados|rostizadas'
             r'|deshidratado|deshidratada|deshidratados|deshidratadas'
+            r'|batido|batida|batidos|batidas'
             r'|escurrido|escurridos|enjuagados'
             r'|dominico|dominicos|tabasco|manila'
             r'|magro|magra|fino|fina'
+            r'|filete|filetes'
             r'|shiro'
             r'|\bl\b|\bm\b)'
         )
         _TERM_RE = re.compile(r'\s+' + _TERM_PAT + r'\s*$', re.IGNORECASE)
         _EN_PHRASE_RE = re.compile(
-            r'\s+(?:en\s+(?:brunoise|cubos|juliana|bastones|rodajas|trozos|bistec|rebanadas|filetes|dados|escabeche|salmuera|aceite)'
+            r'\s+(?:en\s+(?:brunoise|cubos|juliana|bastones|rodajas|tiras|trozos|bistec|rebanadas|filetes|dados|escabeche|salmuera|aceite)'
             r'|sin\s+vaina'
             r'|shiro\s+miso)\s*$',
             re.IGNORECASE)
@@ -894,20 +1027,45 @@ class SiteBuilderSkill(BaseSkill):
         sat_lines: list = []
         for line in lines:
             s = line.strip()
-            # Start on a ## Sábado heading
-            if re.match(r'^#{1,3} .*[sS][áa]bado', s):
+            # Start on a ## Sábado heading (level 1-2 only — a level-3 subheading
+            # elsewhere may mention "sábado"/"domingo" in prose without being the section)
+            if re.match(r'^#{1,2} .*[sS][áa]bado', s):
                 in_sat = True
                 sat_lines.append(line)
                 continue
             if in_sat:
                 # Stop at the next same-level or higher heading (## or #)
-                if re.match(r'^#{1,2} ', s) and not re.match(r'^#{1,3} .*[sS][áa]bado', s):
+                if re.match(r'^#{1,2} ', s) and not re.match(r'^#{1,2} .*[sS][áa]bado', s):
                     break
                 sat_lines.append(line)
         return '\n'.join(sat_lines).strip()
 
     @staticmethod
-    def _compile_meal_prep(prep_blocks: list, ingredient_totals: dict, saturday_prep: str = '') -> str:
+    def _extract_sunday_prep(meal_prep_md: str) -> str:
+        """Extract the Sunday cooking session (Turnos 1-5, with consolidated per-step
+        quantities) from the meal_prep markdown — stops before the Sous Vide calendar
+        / daily assembly guide sections that follow it."""
+        lines = meal_prep_md.split('\n')
+        in_sun = False
+        sun_lines: list = []
+        for line in lines:
+            s = line.strip()
+            # Start on a ## Domingo heading (level 1-2 only — a level-3 subheading
+            # earlier in the doc, e.g. "cuánto sellar el domingo", mentions the word
+            # in prose without being the actual Sunday section)
+            if re.match(r'^#{1,2} .*[dD]omingo', s):
+                in_sun = True
+                sun_lines.append(line)
+                continue
+            if in_sun:
+                # Stop at the next same-level or higher heading (## or #)
+                if re.match(r'^#{1,2} ', s) and not re.match(r'^#{1,2} .*[dD]omingo', s):
+                    break
+                sun_lines.append(line)
+        return '\n'.join(sun_lines).strip()
+
+    @staticmethod
+    def _compile_meal_prep(prep_blocks: list, ingredient_totals: dict, saturday_prep: str = '', sunday_prep: str = '') -> str:
         """Build meal prep HTML: ingredient totals table + extracted prep steps."""
         import html as h
         out = []
@@ -920,6 +1078,17 @@ class SiteBuilderSkill(BaseSkill):
             )
             out.append('<div class="prose max-w-none" style="font-size:.85rem">')
             out.append(SiteBuilderSkill._md_to_html(saturday_prep))
+            out.append('</div>')
+            out.append('<hr style="margin:1.25rem 0;border-color:var(--teal-20)">')
+
+        # 0b. Sunday cooking session — turnos with consolidated per-step quantities
+        if sunday_prep:
+            out.append(
+                '<h2 style="color:var(--navy);font-size:1rem;font-weight:700;margin-bottom:.5rem">'
+                '🍳 Domingo — Sesión Principal (cantidades por paso)</h2>'
+            )
+            out.append('<div class="prose max-w-none" style="font-size:.85rem">')
+            out.append(SiteBuilderSkill._md_to_html(sunday_prep))
             out.append('</div>')
             out.append('<hr style="margin:1.25rem 0;border-color:var(--teal-20)">')
 
@@ -1045,6 +1214,9 @@ class SiteBuilderSkill(BaseSkill):
 
         # Detect store column index
         store_idx = next((i for i, hdr in enumerate(header) if 'tienda' in hdr.lower() or 'store' in hdr.lower()), -1)
+        tipo_idx = next((i for i, hdr in enumerate(header) if hdr.lower().strip() == 'tipo'), -1)
+        necesario_idx = next((i for i, hdr in enumerate(header) if 'necesario' in hdr.lower()), -1)
+        comprar_idx = next((i for i, hdr in enumerate(header) if 'comprar' in hdr.lower()), -1)
 
         # Build filter buttons + table
         stores = []
@@ -1074,11 +1246,17 @@ class SiteBuilderSkill(BaseSkill):
                 store_slug = re.sub(r'[^a-z0-9]', '', row[store_idx].lower())
             out.append(f'<tr data-store="{store_slug}">')
             for ci, cell in enumerate(row):
-                pad = header[ci] if ci < len(header) else ''
                 # Add checkbox to first column
                 if ci == 0:
                     out.append(f'<td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer">'
                                f'<input type="checkbox" class="shop-cb"> {h.escape(cell)}</label></td>')
+                elif ci == tipo_idx:
+                    t = cell.strip().lower()
+                    badge_cls = 'badge-terra' if t.startswith('perece') else 'badge-sage' if t.startswith('despensa') else 'badge-teal'
+                    out.append(f'<td><span class="badge {badge_cls}">{h.escape(cell)}</span></td>')
+                elif ci == comprar_idx and necesario_idx >= 0:
+                    # "Comprar" is the actionable number at the store — emphasize it over "Necesario"
+                    out.append(f'<td class="shop-comprar">{h.escape(cell)}</td>')
                 else:
                     out.append(f'<td>{h.escape(cell)}</td>')
             # Pad missing cells
@@ -1087,7 +1265,26 @@ class SiteBuilderSkill(BaseSkill):
             out.append('</tr>')
 
         out.append('</tbody></table>')
+
+        surplus_html = SiteBuilderSkill._build_surplus_box(lines, table_end)
+        if surplus_html:
+            out.append(surplus_html)
+
         return '\n'.join(out)
+
+    @staticmethod
+    def _build_surplus_box(lines: list, table_end: int) -> str:
+        """Render the trailing '## Posibles sobras' section (if the model included one) as a callout."""
+        rest = lines[table_end:]
+        start = next((i for i, l in enumerate(rest) if l.strip().startswith('#') and 'sobra' in l.lower()), None)
+        if start is None:
+            return ''
+        end = next((i for i, l in enumerate(rest[start + 1:], start + 1) if l.strip().startswith('#')), len(rest))
+        section_md = '\n'.join(rest[start:end]).strip()
+        if not section_md:
+            return ''
+        body_html = SiteBuilderSkill._md_to_html(section_md)
+        return f'<div class="shop-surplus-box">{body_html}</div>'
 
     @staticmethod
     def _js(text: str) -> str:
@@ -1239,6 +1436,13 @@ class SiteBuilderSkill(BaseSkill):
       font-size:.82rem;vertical-align:top}
     .prose-table tr:hover td{background:rgba(74,145,158,.05)}
     .prose-table tr:last-child td{border-bottom:none}
+    .prose-table td.shop-comprar{color:var(--navy);font-weight:700}
+    .shop-surplus-box{border-left:3px solid var(--terra);background:rgba(206,106,107,.08);
+      padding:.7rem 1rem;margin-top:1rem;border-radius:0 .6rem .6rem 0}
+    .shop-surplus-box h2{font-size:.85rem;font-weight:700;color:var(--terra);margin:0 0 .4rem}
+    .shop-surplus-box ul{padding-left:1.2rem;margin:.2rem 0}
+    .shop-surplus-box li{font-size:.82rem;line-height:1.55;margin:.25rem 0}
+    .shop-surplus-box strong{color:var(--navy)}
     /* ── Prose (meal body / recipe body) ─────────────────── */
     .prose table{width:100%;border-collapse:collapse}
     .prose th{background:rgba(74,145,158,.1);padding:5px 8px;text-align:left;
@@ -1294,23 +1498,6 @@ class SiteBuilderSkill(BaseSkill):
     .tag-btn.active-rep{background:var(--teal-10);border-color:var(--teal);
       color:var(--teal)}
     .tag-btn.active-no{background:#f3f4f6;border-color:#d1d5db;opacity:.6}
-    /* ── Body composition ────────────────────────────────── */
-    .bc-hero-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-bottom:1.1rem}
-    .bc-hero{background:var(--navy-08);border-radius:.75rem;padding:.85rem 1rem}
-    .bc-hero-label{font-size:.6rem;font-weight:700;text-transform:uppercase;
-      letter-spacing:.07em;color:#a0aec0;margin-bottom:.2rem}
-    .bc-hero-val{font-size:1.45rem;font-weight:700;color:var(--navy);line-height:1;margin-bottom:.3rem}
-    .bc-hero-unit{font-size:.72rem;color:#718096;font-weight:400}
-    .bc-delta{font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:.3rem;display:inline-block}
-    .bc-delta-good{background:rgba(190,211,195,.4);color:#2d6a4f}
-    .bc-delta-bad{background:rgba(206,106,107,.12);color:var(--terra)}
-    .bc-delta-neu{background:var(--navy-08);color:#a0aec0}
-    .bc-sec-row{display:flex;align-items:center;justify-content:space-between;padding:.38rem 0;
-      border-bottom:1px solid var(--navy-08);font-size:.78rem}
-    .bc-sec-row:last-child{border-bottom:none}
-    .bc-sec-name{color:#4a5568}
-    .bc-sec-right{display:flex;align-items:center;gap:.45rem}
-    .bc-sec-val{font-weight:700;color:var(--navy)}
     /* ── Tracking controls ───────────────────────────────── */
     .ctrl-select{font-family:inherit;font-size:.78rem;padding:.32rem .55rem;
       border:1.5px solid #e2ddd6;border-radius:.5rem;background:#fff;
@@ -1553,50 +1740,6 @@ class SiteBuilderSkill(BaseSkill):
 
     <div class="sm-grid-2" id="person-cards"></div>
 
-    <!-- 0. Body composition (from Xiaomi scale) -->
-    <div class="card" id="body-comp-card" style="display:none">
-      <div class="card-pad">
-        <div class="flex items-center justify-between mb-3">
-          <span class="sec-label">⚖️ Composición Corporal</span>
-          <div style="display:flex;gap:.25rem" id="bc-person-tabs">
-            <button class="toggle-btn active" onclick="setBcPerson('atm',this)">ATM</button>
-            <button class="toggle-btn" onclick="setBcPerson('iob',this)">IOB</button>
-          </div>
-        </div>
-        <p id="bc-date-label" style="font-size:.7rem;color:#a0aec0;margin:-.5rem 0 .9rem"></p>
-        <!-- Layer 1: Hero metrics -->
-        <div id="bc-hero" class="bc-hero-grid"></div>
-        <!-- Layer 2: Body composition stacked bar -->
-        <div style="margin-bottom:1.1rem">
-          <span class="sec-label" style="display:block;margin-bottom:.55rem">Distribución corporal</span>
-          <canvas id="chart-bc-comp" height="52"></canvas>
-        </div>
-        <!-- Layer 3: Trend chart -->
-        <div class="flex items-center justify-between mb-2">
-          <span class="sec-label">Tendencia</span>
-          <select id="bc-metric" class="ctrl-select" onchange="updateBcChart()">
-            <option value="weight_kg">Peso (kg)</option>
-            <option value="body_fat_pct">Grasa corporal (%)</option>
-            <option value="muscle_mass_kg">Masa muscular (kg)</option>
-            <option value="visceral_fat">Grasa visceral</option>
-            <option value="lean_mass_kg">Masa magra (kg)</option>
-            <option value="water_pct">Agua (%)</option>
-            <option value="protein_pct">Proteína (%)</option>
-            <option value="bmr">TMB (kcal)</option>
-            <option value="metabolic_age">Edad metabólica</option>
-            <option value="bmi">IMC</option>
-            <option value="bone_mass_kg">Masa ósea (kg)</option>
-            <option value="subcutaneous_fat_pct">G. subcutánea (%)</option>
-            <option value="skeletal_muscle_pct">Músculo esq. (%)</option>
-            <option value="fat_mass_kg">Masa grasa (kg)</option>
-          </select>
-        </div>
-        <canvas id="chart-bc-trend" height="110"></canvas>
-        <!-- Layer 4: Secondary metrics -->
-        <div id="bc-secondary"></div>
-      </div>
-    </div>
-
     <!-- 1. Nutrient trend chart -->
     <div class="card">
       <div class="card-pad">
@@ -1663,36 +1806,6 @@ class SiteBuilderSkill(BaseSkill):
       </div>
     </div>
 
-    <!-- 5. Weight trend -->
-    <div class="card">
-      <div class="card-pad">
-        <div class="flex items-center justify-between mb-3">
-          <span class="sec-label">📉 Tendencia de Peso</span>
-          <div style="display:flex;gap:.25rem" id="weight-trend-tabs">
-            <button class="toggle-btn active" onclick="setWeightTrendPerson('atm',this)">ATM</button>
-            <button class="toggle-btn" onclick="setWeightTrendPerson('iob',this)">IOB</button>
-          </div>
-        </div>
-        <!-- Manual weight entry -->
-        <div id="weight-entry-form" style="background:rgba(74,145,158,.07);border-radius:.6rem;padding:.75rem .9rem;margin-bottom:1rem">
-          <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin-bottom:.6rem">➕ Registrar peso</div>
-          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-            <input type="date" id="wi-date" style="font-size:.78rem;padding:.3rem .5rem;border:1px solid #cbd5e0;border-radius:.4rem;background:#fff;color:#2d3748">
-            <input type="number" id="wi-atm" placeholder="ATM kg" step="0.1" min="30" max="200"
-              style="width:80px;font-size:.78rem;padding:.3rem .5rem;border:1px solid #cbd5e0;border-radius:.4rem;background:#fff;color:#2d3748">
-            <input type="number" id="wi-iob" placeholder="IOB kg" step="0.1" min="30" max="200"
-              style="width:80px;font-size:.78rem;padding:.3rem .5rem;border:1px solid #cbd5e0;border-radius:.4rem;background:#fff;color:#2d3748">
-            <button onclick="logWeight()" style="font-size:.75rem;padding:.3rem .75rem;background:var(--teal);color:#fff;border:none;border-radius:.4rem;cursor:pointer;font-weight:600">Guardar</button>
-          </div>
-          <div id="wi-msg" style="font-size:.7rem;color:var(--teal);margin-top:.4rem;display:none"></div>
-        </div>
-        <div id="weight-chart-empty" style="display:none;padding:1.5rem 0;text-align:center;color:#a0aec0">
-          <p class="text-sm">Sin datos de peso — ingresa mediciones arriba o sincroniza con Xiaomi.</p>
-        </div>
-        <canvas id="chart-weight" height="140"></canvas>
-      </div>
-    </div>
-
   </div>
 
 </main>
@@ -1723,16 +1836,13 @@ function _lsGet(key, fallback) {
 }
 let checks  = _lsGet(SHOP_KEY,   {});
 let ratings = _lsGet(RATING_KEY, {});
-let weights = _lsGet('nw_weights', {atm:[],iob:[]});
 let curDay  = 0;
 let _trackingInited = false;
-let _weightTrendPerson = 'atm';
 let _rankPerson        = 'avg';
 let _trendChart        = null;
 let _trendHistChart    = null;
 let _trendView         = 'week';
 let _trendRange        = 2;
-let _wChart            = null;
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 function tab(name, btn) {
@@ -2270,12 +2380,10 @@ sortShopLists();
 function initTracking() {
   if (_trackingInited) return;
   _trackingInited = true;
-  initBodyComp();
   _waitChart(initTrendChart);
   _waitChart(initMacroChart);
   initWordCloud();
   renderRankings();
-  _waitChart(updateWeightChart);
 }
 function _waitChart(fn) {
   if (typeof Chart === 'undefined') { setTimeout(() => _waitChart(fn), 180); return; }
@@ -2521,289 +2629,6 @@ function renderRankings() {
   }).join('');
 }
 
-// ── 5. Weight trend chart ─────────────────────────────────────────────────────
-// Set default date in the weight entry form
-(function() {
-  const el = document.getElementById('wi-date');
-  if (el) el.value = new Date().toISOString().slice(0,10);
-})();
-
-function logWeight() {
-  const d   = document.getElementById('wi-date').value;
-  const atm = parseFloat(document.getElementById('wi-atm').value);
-  const iob = parseFloat(document.getElementById('wi-iob').value);
-  const msg = document.getElementById('wi-msg');
-  if (!d) { msg.textContent = 'Selecciona una fecha.'; msg.style.display=''; return; }
-  if (!atm && !iob) { msg.textContent = 'Ingresa al menos un peso.'; msg.style.display=''; return; }
-  if (atm) {
-    weights.atm = weights.atm.filter(e => e.date !== d);
-    weights.atm.push({ date: d, kg: atm });
-  }
-  if (iob) {
-    weights.iob = weights.iob.filter(e => e.date !== d);
-    weights.iob.push({ date: d, kg: iob });
-  }
-  localStorage.setItem('nw_weights', JSON.stringify(weights));
-  document.getElementById('wi-atm').value = '';
-  document.getElementById('wi-iob').value = '';
-  msg.textContent = '✅ Guardado — ' + d + (atm ? '  ATM: ' + atm + 'kg' : '') + (iob ? '  IOB: ' + iob + 'kg' : '');
-  msg.style.display = '';
-  updateWeightChart();
-}
-
-function setWeightTrendPerson(p, btn) {
-  _weightTrendPerson = p;
-  document.querySelectorAll('#weight-trend-tabs .toggle-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  updateWeightChart();
-}
-
-function _mergedWeightData(person) {
-  const sqlKey  = 'weight_history_' + person;
-  const fromDB  = (TRACKING[sqlKey] || []).map(e => ({ date:e.date, kg:e.weight_kg }));
-  const fromLoc = weights[person] || [];
-  const map = {};
-  fromDB.forEach(e  => { map[e.date] = e.kg; });
-  fromLoc.forEach(e => { map[e.date] = e.kg; });  // local takes priority
-  return Object.entries(map).sort((a,b)=>a[0].localeCompare(b[0])).map(([date,kg])=>({date,kg}));
-}
-
-function updateWeightChart() {
-  const data   = _mergedWeightData(_weightTrendPerson);
-  const empty  = document.getElementById('weight-chart-empty');
-  const canvas = document.getElementById('chart-weight');
-  if (!data.length) {
-    if (empty)  empty.style.display = 'block';
-    if (canvas) canvas.style.display = 'none';
-    if (_wChart) { _wChart.destroy(); _wChart = null; }
-    return;
-  }
-  if (empty)  empty.style.display = 'none';
-  if (canvas) canvas.style.display = '';
-  const labels  = data.map(d => d.date.slice(5));
-  const kgs     = data.map(d => d.kg);
-  const plabel  = _weightTrendPerson.toUpperCase();
-  if (_wChart) {
-    _wChart.data.labels = labels;
-    _wChart.data.datasets[0].data = kgs;
-    _wChart.data.datasets[0].label = `Peso ${plabel} (kg)`;
-    _wChart.update();
-    return;
-  }
-  if (typeof Chart === 'undefined') { setTimeout(updateWeightChart, 180); return; }
-  _wChart = new Chart(canvas, {
-    type:'line',
-    data:{ labels, datasets:[{
-      label:`Peso ${plabel} (kg)`, data:kgs,
-      borderColor:'#ce6a6b', backgroundColor:'rgba(206,106,107,.08)',
-      fill:true, tension:0.3, pointRadius:4, pointBackgroundColor:'#ce6a6b'
-    }]},
-    options:{ responsive:true,
-      plugins:{ title:{display:false}, legend:{display:false} },
-      scales:{ y:{beginAtZero:false} } }
-  });
-}
-
-// ── 0. Body composition (Xiaomi scale) ───────────────────────────────────────
-let _bcPerson    = 'atm';
-let _bcChart     = null;
-let _bcCompChart = null;
-
-const _BC_META = {
-  weight_kg:            { label:'Peso',              unit:'kg',   icon:'⚖️'  },
-  body_fat_pct:         { label:'Grasa corporal',    unit:'%',    icon:'🫧'  },
-  muscle_mass_kg:       { label:'Músculo',           unit:'kg',   icon:'💪'  },
-  lean_mass_kg:         { label:'Masa magra',        unit:'kg',   icon:'🏋️' },
-  bone_mass_kg:         { label:'Masa ósea',         unit:'kg',   icon:'🦴'  },
-  water_pct:            { label:'Agua',              unit:'%',    icon:'💧'  },
-  protein_pct:          { label:'Proteína',          unit:'%',    icon:'🥩'  },
-  bmr:                  { label:'TMB',               unit:'kcal', icon:'🔥'  },
-  visceral_fat:         { label:'Grasa visceral',    unit:'',     icon:'🫀'  },
-  metabolic_age:        { label:'Edad metabólica',   unit:'años', icon:'🧬'  },
-  bmi:                  { label:'IMC',               unit:'',     icon:'📊'  },
-  fat_mass_kg:          { label:'Masa grasa',        unit:'kg',   icon:'📉'  },
-  subcutaneous_fat_pct: { label:'G. subcutánea',     unit:'%',    icon:'📍'  },
-  skeletal_muscle_pct:  { label:'Músculo esq.',      unit:'%',    icon:'🦵'  },
-};
-
-// 'up_good' = higher is better, 'down_good' = lower is better, 'neutral' = context
-const _BC_DIR = {
-  weight_kg:'neutral', bmi:'down_good', body_fat_pct:'down_good',
-  fat_mass_kg:'down_good', muscle_mass_kg:'up_good', lean_mass_kg:'up_good',
-  bone_mass_kg:'up_good', water_pct:'up_good', protein_pct:'up_good',
-  bmr:'up_good', visceral_fat:'down_good', metabolic_age:'down_good',
-  subcutaneous_fat_pct:'down_good', skeletal_muscle_pct:'up_good',
-};
-
-function _bcSortedHist(person) {
-  return (TRACKING['body_comp_' + person] || [])
-    .slice().sort((a,b) => (a.date||'').localeCompare(b.date||''));
-}
-
-function _bcDeltaBadge(metric, curr, prev) {
-  if (prev == null || curr == null) return '';
-  const diff = curr - prev;
-  if (Math.abs(diff) < 0.05) return '<span class="bc-delta bc-delta-neu">→</span>';
-  const dir    = _BC_DIR[metric] || 'neutral';
-  const isGood = dir === 'neutral' ? null : dir === 'up_good' ? diff > 0 : diff < 0;
-  const cls    = isGood === null ? 'bc-delta-neu' : isGood ? 'bc-delta-good' : 'bc-delta-bad';
-  const arrow  = diff > 0 ? '↑' : '↓';
-  const sign   = diff > 0 ? '+' : '';
-  const fmt    = Math.abs(diff) < 10 ? diff.toFixed(1) : String(Math.round(diff));
-  return `<span class="bc-delta ${cls}">${arrow} ${sign}${fmt}</span>`;
-}
-
-function initBodyComp() {
-  const hasAtm = _bcSortedHist('atm').length > 0;
-  const hasIob = _bcSortedHist('iob').length > 0;
-  if (!hasAtm && !hasIob) return;
-  document.getElementById('body-comp-card').style.display = '';
-  if (!hasIob) document.querySelector('#bc-person-tabs button:last-child')?.style.setProperty('display','none');
-  if (!hasAtm) {
-    _bcPerson = 'iob';
-    document.querySelector('#bc-person-tabs button:first-child')?.classList.remove('active');
-    document.querySelector('#bc-person-tabs button:last-child')?.classList.add('active');
-  }
-  _renderAllBc();
-  _waitChart(updateBcChart);
-}
-
-function setBcPerson(person, btn) {
-  _bcPerson = person;
-  document.querySelectorAll('#bc-person-tabs .toggle-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  if (_bcCompChart) { _bcCompChart.destroy(); _bcCompChart = null; }
-  if (_bcChart)     { _bcChart.destroy();     _bcChart     = null; }
-  _renderAllBc();
-  _waitChart(updateBcChart);
-}
-
-function _renderAllBc() {
-  const hist   = _bcSortedHist(_bcPerson);
-  if (!hist.length) return;
-  const latest = hist[hist.length - 1];
-  const prev   = hist.length > 1 ? hist[hist.length - 2] : null;
-  const lbl    = document.getElementById('bc-date-label');
-  if (lbl) lbl.textContent = 'Última lectura: ' + latest.date;
-  _renderBcHero(latest, prev);
-  _waitChart(() => _renderBcCompBar(latest));
-  _renderBcSecondary(latest, prev);
-}
-
-// Layer 1 — four hero metric cards
-const _BC_HERO_KEYS = ['weight_kg', 'body_fat_pct', 'muscle_mass_kg', 'visceral_fat'];
-
-function _renderBcHero(latest, prev) {
-  const grid = document.getElementById('bc-hero');
-  if (!grid) return;
-  grid.innerHTML = _BC_HERO_KEYS.map(k => {
-    if (latest[k] == null) return '';
-    const m     = _BC_META[k];
-    const val   = latest[k].toFixed(1);
-    const delta = _bcDeltaBadge(k, latest[k], prev?.[k]);
-    return `<div class="bc-hero">
-      <div class="bc-hero-label">${m.label}</div>
-      <div class="bc-hero-val">${val}<span class="bc-hero-unit"> ${m.unit}</span></div>
-      ${delta}
-    </div>`;
-  }).join('');
-}
-
-// Layer 2 — horizontal stacked composition bar
-function _renderBcCompBar(latest) {
-  const canvas = document.getElementById('chart-bc-comp');
-  if (!canvas) return;
-  const fat    = latest.body_fat_pct || 0;
-  let   muscle = latest.skeletal_muscle_pct;
-  if (muscle == null && latest.muscle_mass_kg && latest.weight_kg)
-    muscle = (latest.muscle_mass_kg / latest.weight_kg) * 100;
-  muscle      = muscle || 0;
-  const water = latest.water_pct || 0;
-  const rest  = Math.max(0, 100 - fat - muscle - water);
-  const datasets = [
-    { label:'Grasa',   data:[fat],    backgroundColor:'#ce6a6b' },
-    { label:'Músculo', data:[muscle], backgroundColor:'#4a919e' },
-    { label:'Agua',    data:[water],  backgroundColor:'#bed3c3' },
-    { label:'Otro',    data:[rest],   backgroundColor:'#ebaca2' },
-  ].filter(d => d.data[0] > 0.5);
-  if (_bcCompChart) { _bcCompChart.data.datasets = datasets; _bcCompChart.update(); return; }
-  _bcCompChart = new Chart(canvas, {
-    type: 'bar',
-    data: { labels: [''], datasets },
-    options: {
-      indexAxis: 'y', responsive: true,
-      scales: {
-        x: { stacked:true, display:false, max:100 },
-        y: { stacked:true, display:false }
-      },
-      plugins: {
-        legend: { position:'bottom', labels:{ font:{size:10}, padding:10, boxWidth:12 } },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x.toFixed(1)}%` } }
-      }
-    }
-  });
-}
-
-// Layer 4 — secondary metrics list
-const _BC_SECONDARY = [
-  'bmi','lean_mass_kg','bone_mass_kg','water_pct','protein_pct',
-  'bmr','metabolic_age','fat_mass_kg','subcutaneous_fat_pct','skeletal_muscle_pct'
-];
-
-function _renderBcSecondary(latest, prev) {
-  const el = document.getElementById('bc-secondary');
-  if (!el) return;
-  const rows = _BC_SECONDARY.filter(k => latest[k] != null).map(k => {
-    const m     = _BC_META[k];
-    const val   = latest[k].toFixed(1);
-    const delta = _bcDeltaBadge(k, latest[k], prev?.[k]);
-    return `<div class="bc-sec-row">
-      <span class="bc-sec-name">${m.icon} ${m.label}</span>
-      <div class="bc-sec-right">
-        <span class="bc-sec-val">${val}<span style="font-weight:400;color:#718096;font-size:.72rem"> ${m.unit}</span></span>
-        ${delta}
-      </div>
-    </div>`;
-  });
-  if (!rows.length) { el.style.display = 'none'; return; }
-  el.innerHTML = `<div style="margin-top:.85rem;border-top:1px solid var(--navy-08);padding-top:.6rem">
-    <span class="sec-label" style="display:block;margin-bottom:.4rem">Métricas adicionales</span>
-    ${rows.join('')}
-  </div>`;
-}
-
-// Layer 3 — trend line chart
-function updateBcChart() {
-  if (typeof Chart === 'undefined') { setTimeout(updateBcChart, 180); return; }
-  const metric = document.getElementById('bc-metric')?.value || 'weight_kg';
-  const hist   = _bcSortedHist(_bcPerson).filter(r => r[metric] != null);
-  const canvas = document.getElementById('chart-bc-trend');
-  if (!canvas) return;
-  const m      = _BC_META[metric] || { label:metric, unit:'' };
-  const labels = hist.map(r => r.date ? r.date.slice(5) : '');
-  const vals   = hist.map(r => r[metric]);
-  const dir    = _BC_DIR[metric] || 'neutral';
-  const color  = dir === 'down_good' ? '#ce6a6b' : dir === 'up_good' ? '#4a919e' : '#bed3c3';
-  if (_bcChart) {
-    _bcChart.data.labels = labels;
-    _bcChart.data.datasets[0].data   = vals;
-    _bcChart.data.datasets[0].label  = `${m.label}${m.unit ? ' (' + m.unit + ')' : ''}`;
-    _bcChart.data.datasets[0].borderColor        = color;
-    _bcChart.data.datasets[0].pointBackgroundColor = color;
-    _bcChart.data.datasets[0].backgroundColor    = color + '14';
-    _bcChart.update();
-    return;
-  }
-  _bcChart = new Chart(canvas, {
-    type: 'line',
-    data: { labels, datasets: [{ label:`${m.label}${m.unit ? ' (' + m.unit + ')' : ''}`,
-      data:vals, borderColor:color, backgroundColor:color+'14',
-      fill:true, tension:0.3, pointRadius:3, pointBackgroundColor:color }] },
-    options: { responsive:true,
-      plugins:{ legend:{display:false} },
-      scales:{ y:{beginAtZero:false} } }
-  });
-}
 </script>
 </body>
 </html>"""

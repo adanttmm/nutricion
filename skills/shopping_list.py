@@ -7,21 +7,31 @@ class ShoppingListSkill(BaseSkill):
 
     SYSTEM_PROMPT = """Eres un experto en cocina gourmet amateur y supermercados de Ciudad de México.
 
-TU TAREA: Generar la lista de compras semanal como una sola tabla Markdown, ordenada ESTRICTAMENTE ALFABÉTICO por nombre de ingrediente (A→Z).
+TU TAREA: Generar la lista de compras semanal como una sola tabla Markdown, ordenada ESTRICTAMENTE ALFABÉTICO por nombre de ingrediente (A→Z). El objetivo es una lista AJUSTADA — comprar lo que realmente se necesita, sin sobrantes silenciosos.
 
 COLUMNAS EXACTAS:
-| Ingrediente | Cantidad | Receta | Día | Tienda |
+| Ingrediente | Tipo | Necesario | Comprar | Uso | Tienda |
 
 REGLAS:
 1. Una fila por ingrediente, consolidando TODOS sus usos en la semana.
 2. Ordenar A→Z por Ingrediente, sin excepción.
-3. Cantidad: en la unidad correcta (g, kg, piezas, ml). Redondear hacia arriba a presentación comercial. Incluir TODOS los días y nombre de recetas de uso en renglones separados.
-4. Receta: nombre corto del platillo.
-5. Día: abreviar Lun/Mar/Mié/Jue/Vie/Sáb/Dom. Varios días: "Lun+Jue".
-6. Tienda: "Costco" o "City Market" según disponibilidad real.
-7. Incluir ABSOLUTAMENTE TODOS los ingredientes: proteínas principales, granos, verduras, lácteos, especias, ingredientes de salsas, marinados y preparaciones componente del meal prep.
-8. No omitir ningún ingrediente por ser "básico" — si se necesita esta semana, va en la lista.
-9. No agregar ningún ingrediente que no esté en el menú, recetas o meal prep de la semana.
+3. Tipo: EXACTAMENTE "Perecedero" (proteínas frescas, lácteos, huevo, verduras, frutas, hierbas frescas — se echa a perder en días) o "Despensa" (seco, enlatado, congelado, especias, aceites, vinagres, salsas embotelladas — dura semanas o meses).
+4. Necesario: la suma EXACTA de todos los usos de la semana (sin redondear a presentación comercial), en la unidad correcta (g, kg, piezas, ml). Este número sale de sumar cada uso real en el menú/recetas/meal prep — no adivines ni agregues margen aquí.
+5. Comprar: la cantidad que realmente hay que comprar.
+   - Despensa: redondear hacia arriba a la presentación comercial estándar más cercana (dura, no hay urgencia en ajustar).
+   - Perecedero: redondear ÚNICAMENTE a la unidad mínima real disponible (pieza, manojo, paquete chico, 50g). El excedente de Comprar sobre Necesario NO debe superar 15%, salvo que la unidad mínima de venta obligue a más — en ese caso es obligatorio listar el ingrediente en "Posibles sobras" al final.
+   - Nunca agregues margen oculto (evaporación, merma, "por si acaso") dentro de Comprar sin decirlo explícitamente en Uso.
+6. Uso: una sola línea compacta por ingrediente — nombre(s) corto(s) de receta + día(s) abreviado(s) (Lun/Mar/Mié/Jue/Vie/Sáb/Dom, varios días "Lun+Jue"). No repitas por tiempo de comida si el nombre de receta ya lo deja claro.
+7. Tienda: "Costco" o "City Market" según disponibilidad real.
+8. Incluir ABSOLUTAMENTE TODOS los ingredientes: proteínas principales, granos, verduras, lácteos, especias, ingredientes de salsas, marinados y preparaciones componente del meal prep.
+9. No omitir ningún ingrediente por ser "básico" — si se necesita esta semana, va en la lista.
+10. No agregar ningún ingrediente que no esté en el menú, recetas o meal prep de la semana.
+
+DESPUÉS DE LA TABLA, agrega (solo si aplica):
+## 📋 Posibles sobras esta semana
+Lista SOLO los ingredientes Perecederos donde Comprar > Necesario × 1.15 (por unidad mínima de venta). Un renglón por ingrediente:
+- **[Ingrediente]**: sobran ~[cantidad] — [sugerencia concreta de 1 línea: congelar, usar en tal receta de la semana, incorporar a otra comida]
+Si ningún perecedero tiene sobrante relevante, omite esta sección por completo.
 
 CANTIDADES BASE:
 - 2 personas todos los tiempos (ATM + IOB)
@@ -53,7 +63,7 @@ En caso de duda → City Market."""
             "Genera la lista de compras completa para esta semana.\n\n"
             + "\n\n---\n\n".join(sections)
             + "\n\n---\n\n"
-            "Genera la tabla completa ordenada A→Z: | Ingrediente | Cantidad | Receta | Día | Tienda |"
+            "Genera la tabla completa ordenada A→Z: | Ingrediente | Tipo | Necesario | Comprar | Uso | Tienda |"
         )
 
         content = self._call_claude(self.SYSTEM_PROMPT, user_message, max_tokens=16000)

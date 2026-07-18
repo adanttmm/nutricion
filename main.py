@@ -524,75 +524,6 @@ def importar_mifitness(archivo, persona, dry_run):
 
 
 
-@cli.command("sincronizar-xiaomi")
-@click.option("--persona", "-p", default="ATM",
-              type=click.Choice(["ATM", "IOB"], case_sensitive=False))
-@click.option("--region", "-r", default=None,
-              help="Región Xiaomi: cn, us, eu, sg (default: usa XIAOMI_REGION de .env o cn)")
-@click.option("--dias", "-d", default=180, type=int,
-              help="Días de historial a importar (default: 180)")
-@click.option("--dry-run", is_flag=True, default=False)
-@click.option("--forzar-login", is_flag=True, default=False,
-              help="Ignorar token cacheado y re-autenticar")
-def sincronizar_xiaomi(persona, region, dias, dry_run, forzar_login):
-    """Descarga composición corporal desde Mi Fitness cloud (sin Docker)."""
-    import os
-    from skills.xiaomi_sync import XiaomiSyncClient
-
-    email = os.environ.get("XIAOMI_EMAIL", "")
-    password = os.environ.get("XIAOMI_PASSWORD", "")
-    region = region or os.environ.get("XIAOMI_REGION", "cn")
-
-    if not email or not password:
-        console.print("[red]Falta XIAOMI_EMAIL o XIAOMI_PASSWORD en .env[/red]")
-        raise SystemExit(1)
-
-    client = XiaomiSyncClient(email, password, region=region)
-
-    with console.status("[cyan]Autenticando con Xiaomi...", spinner="dots"):
-        try:
-            client.login(force=forzar_login)
-        except ValueError as e:
-            console.print(f"[red]❌ {e}[/red]")
-            raise SystemExit(1)
-
-    console.print(f"  [green]✅[/green] Autenticado (user_id: {client.user_id})")
-
-    with console.status(f"[cyan]Descargando registros ({dias} días)...", spinner="dots"):
-        records = client.get_weight_records(days_back=dias)
-
-    if not records:
-        console.print("[yellow]Sin registros de composición corporal en Mi Fitness.[/yellow]")
-        console.print(f"  [dim]Región: {region} · user_id: {client.user_id}[/dim]")
-        console.print("  Prueba --region cn, --region us o --forzar-login")
-        return
-
-    console.print(f"  [green]✅[/green] {len(records)} registro(s) encontrados")
-
-    if dry_run:
-        console.print("\n[yellow]Vista previa (--dry-run, sin guardar):[/yellow]\n")
-        from skills.smartscale_importer import SmartScaleImporter
-        for rec in records[:10]:
-            console.print(SmartScaleImporter.format_record(rec))
-            console.print()
-        if len(records) > 10:
-            console.print(f"  [dim]... y {len(records) - 10} más[/dim]")
-        return
-
-    from tracker.daily_log import DailyLog
-    log = DailyLog()
-    imported = skipped = 0
-    for rec in records:
-        try:
-            log.log_body_composition(rec, person=persona.upper(), source="xiaomi_cloud")
-            imported += 1
-        except Exception:
-            skipped += 1
-    log.close()
-
-    console.print(f"  [green]✅[/green] {imported} importados · {skipped} duplicados/errores")
-
-
 @cli.command("importar-smartscale")
 @click.argument("archivo", default="-")
 @click.option("--persona", "-p", default="ATM",
@@ -604,7 +535,6 @@ def importar_smartscale(archivo, persona, dry_run):
     """Importa composición corporal desde SmartScaleConnect (Xiaomi Home).
 
     ARCHIVO es la ruta al JSON exportado, o '-' para leer desde stdin.
-    Úsalo junto con actualizar_xiaomi.sh que descarga el JSON vía Docker.
     """
     import sys
     from skills.smartscale_importer import SmartScaleImporter
@@ -763,29 +693,35 @@ def receta(platillo):
 @click.option("--carbs", "-c", default=None, type=float, help="Carbohidratos en gramos")
 @click.option("--grasas", "-g", default=None, type=float, help="Grasas en gramos")
 @click.option("--notas", default=None, help="Notas adicionales")
-def registrar(tiempo, platillo, kcal, proteina, carbs, grasas, notas):
+@click.option("--persona", default="ATM",
+              type=click.Choice(["ATM", "IOB"], case_sensitive=False),
+              help="Persona a quien pertenece el registro (default: ATM)")
+def registrar(tiempo, platillo, kcal, proteina, carbs, grasas, notas, persona):
     """Registra una comida del día en el tracker."""
     from tracker.daily_log import DailyLog
 
     log = DailyLog()
-    log.log_meal(tiempo, platillo, kcal, proteina, carbs, grasas, notas)
+    log.log_meal(tiempo, platillo, kcal, proteina, carbs, grasas, notas, person=persona)
     log.close()
-    console.print(f"[green]✅ Registrado:[/green] [bold]{platillo}[/bold]"
+    console.print(f"[green]✅ Registrado ({persona.upper()}):[/green] [bold]{platillo}[/bold]"
                   + (f" — {kcal:.0f} kcal" if kcal else ""))
 
 
 @cli.command("resumen")
 @click.option("--fecha", "-f", default=None, help="Fecha YYYY-MM-DD (default: hoy)")
-def resumen(fecha):
+@click.option("--persona", default="ATM",
+              type=click.Choice(["ATM", "IOB"], case_sensitive=False),
+              help="Persona a consultar (default: ATM)")
+def resumen(fecha, persona):
     """Muestra el resumen nutricional del día."""
     from tracker.daily_log import DailyLog
 
     log_date = date.fromisoformat(fecha) if fecha else date.today()
     log = DailyLog()
-    summary = log.get_daily_summary(log_date)
+    summary = log.get_daily_summary(log_date, person=persona)
     log.close()
 
-    table = Table(title=f"Resumen · {log_date.strftime('%d/%m/%Y')}", show_lines=True)
+    table = Table(title=f"Resumen {persona.upper()} · {log_date.strftime('%d/%m/%Y')}", show_lines=True)
     table.add_column("Tiempo", style="cyan", min_width=12)
     table.add_column("Platillo", style="white")
     table.add_column("kcal", justify="right", style="yellow")
@@ -904,14 +840,17 @@ def graficas(semana):
 @click.option("--carbs", required=True, type=float, prompt="Carbohidratos meta (g)")
 @click.option("--grasas", required=True, type=float, prompt="Grasas meta (g)")
 @click.option("--plan", default="Plan actual", help="Nombre del plan")
-def configurar_meta(kcal, proteina, carbs, grasas, plan):
+@click.option("--persona", default="ATM",
+              type=click.Choice(["ATM", "IOB"], case_sensitive=False),
+              help="Persona a quien pertenece la meta (default: ATM)")
+def configurar_meta(kcal, proteina, carbs, grasas, plan, persona):
     """Establece las metas nutricionales diarias del tracker para hoy."""
     from tracker.daily_log import DailyLog
 
     log = DailyLog()
-    log.set_daily_goal(kcal, proteina, carbs, grasas, plan)
+    log.set_daily_goal(kcal, proteina, carbs, grasas, plan, person=persona)
     log.close()
-    console.print(f"[green]✅[/green] Meta configurada: {kcal:.0f} kcal · P {proteina:.0f}g · C {carbs:.0f}g · G {grasas:.0f}g")
+    console.print(f"[green]✅[/green] Meta configurada ({persona.upper()}): {kcal:.0f} kcal · P {proteina:.0f}g · C {carbs:.0f}g · G {grasas:.0f}g")
 
 
 if __name__ == "__main__":

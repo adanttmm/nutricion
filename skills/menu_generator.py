@@ -93,7 +93,9 @@ FORMATO OBLIGATORIO — cada tiempo de comida:
 [ajuste de porción]
 
 ---
-Al final: tabla resumen con totales diarios por persona y promedios semanales."""
+Al final: tabla resumen con totales diarios por persona y promedios semanales.
+
+NO incluyas una lista de compras ni resumen de ingredientes a comprar en este documento — eso lo genera un skill aparte con cálculo exacto de cantidades. Termina el documento en la tabla resumen semanal."""
 
     def generate(self, diet_plan_path: str, week_start: date = None, feedback: str = "", ratings_context: str = "", week_notes: str = "") -> Path:
         if week_start is None:

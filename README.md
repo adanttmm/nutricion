@@ -8,8 +8,6 @@ AI-powered weekly meal planner. Reads diet PDFs from your nutritionist, generate
 bash setup.sh
 source venv/bin/activate
 # Add your ANTHROPIC_API_KEY to .env
-# Add Xiaomi credentials to .env if using body composition sync:
-#   XIAOMI_EMAIL, XIAOMI_PASSWORD, XIAOMI_REGION (cn | us | eu | sg)
 ```
 
 ---
@@ -30,16 +28,7 @@ python main.py semana-completa
 ```
 This runs all four generation steps in order: menu → shopping list → recipes → meal prep.
 
-### 3. Sync body composition from Xiaomi Mi Fitness
-```bash
-bash actualizar_xiaomi.sh               # both ATM and IOB
-bash actualizar_xiaomi.sh --atm         # only ATM
-bash actualizar_xiaomi.sh --iob         # only IOB
-bash actualizar_xiaomi.sh --dry-run     # preview without saving
-```
-**Device verification (first time / new device):** Xiaomi will ask you to approve in the browser. Open the URL shown, approve, press Enter — then **run the script a second time**. The device ID is now saved permanently and verification is never asked again.
-
-### 4. Publish the site
+### 3. Publish the site
 ```bash
 bash actualizar_site.sh
 ```
@@ -92,7 +81,7 @@ Use it for: leftover ingredients, schedule changes, missing appliances, dietary 
 
 ---
 
-## Body composition imports (alternative to Xiaomi sync)
+## Body composition imports (manual)
 
 ```bash
 # From a Mi Fitness JSON export file
@@ -111,7 +100,7 @@ The static site (`docs/`) shows:
   - Each recipe card shows cooked quantities (for serving reference)
   - Clicking the recipe shows a raw ingredient table (quantities weighed raw, per person)
 - **Meal prep tab** — weekly raw ingredient totals table + all prep steps extracted from recipes
-- **Trends tab** — weight and body composition history, macro trends
+- **Trends tab** — weight history, macro trends
 - **Ratings** — star ratings saved locally and synced to the DB via `importar-ratings`
 
 ---
@@ -145,7 +134,7 @@ outputs/shopping/    compras_YYYY-MM-DD.md
 outputs/recipes/     recetas_YYYY-MM-DD.md
 outputs/meal_prep/   meal_prep_YYYY-MM-DD.md
 docs/                static site (committed to GitHub)
-data/                SQLite DB + ratings + Xiaomi token cache
+data/                SQLite DB + ratings
 config/parsed_diets/ parsed diet YAMLs
 ```
 
