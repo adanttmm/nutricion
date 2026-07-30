@@ -1371,24 +1371,6 @@ class SiteBuilderSkill(BaseSkill):
       .sec-banner{height:90px}
       .sec-banner-title{font-size:.95rem}
     }
-    /* ── Tile gallery ────────────────────────────────────── */
-    .tile-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.55rem}
-    @media(max-width:860px){.tile-grid{grid-template-columns:repeat(4,1fr)}}
-    @media(max-width:480px){.tile-grid{grid-template-columns:repeat(2,1fr)}}
-    .day-tile{border-radius:.75rem;overflow:hidden;cursor:pointer;
-      transition:transform .15s,box-shadow .15s;
-      aspect-ratio:1;position:relative;display:flex;flex-direction:column;
-      justify-content:flex-end}
-    .day-tile:hover{transform:translateY(-3px);
-      box-shadow:0 8px 24px rgba(33,46,83,.28)}
-    .tile-bg{position:absolute;inset:0}
-    .tile-body{position:relative;z-index:1;padding:.45rem .5rem}
-    .tile-day{font-size:.57rem;font-weight:700;text-transform:uppercase;
-      letter-spacing:.07em;color:rgba(255,255,255,.7);margin-bottom:.15rem}
-    .tile-dish{font-size:.6rem;color:#fff;font-weight:500;line-height:1.25;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.9;
-      display:flex;align-items:center;gap:2px}
-    .tile-em{font-size:.57rem;opacity:.75;flex-shrink:0}
     /* ── Compact week table ──────────────────────────────── */
     .week-tbl{width:100%;border-collapse:collapse;font-size:.76rem}
     .week-tbl th{background:var(--navy);color:#fff;padding:6px 8px;
@@ -1563,9 +1545,9 @@ class SiteBuilderSkill(BaseSkill):
     <button id="btn-tab-semana" onclick="tab('semana',this)" class="tab-btn">📅 Semana</button>
     <button onclick="tab('compras',this)" class="tab-btn">🛒 Compras</button>
     <button onclick="tab('prep',this)" class="tab-btn">🍳 Meal Prep</button>
-    <button onclick="tab('recprev',this)" class="tab-btn">📖 Recetas __PREV_RECIPES_LABEL__</button>
     <button id="btn-tab-valoraciones" onclick="tab('valoraciones',this)" class="tab-btn">⭐ Valoraciones</button>
     <button onclick="tab('tracking',this)" class="tab-btn">📈 Seguimiento</button>
+    <button onclick="tab('recprev',this)" class="tab-btn">📖 Recetas __PREV_RECIPES_LABEL__</button>
   </div>
 </header>
 
@@ -1578,16 +1560,6 @@ class SiteBuilderSkill(BaseSkill):
       <div class="hero-text">
         <div class="hero-title">Menú de la Semana</div>
         <div class="hero-sub">__WEEK_LABEL__ · Cocina gourmet en casa</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-pad" style="padding-bottom:.9rem">
-        <div class="flex items-center justify-between mb-3">
-          <span class="sec-label">Menú semanal</span>
-          <span class="text-xs text-gray-400">Toca un día para ver sus recetas</span>
-        </div>
-        <div class="tile-grid" id="tile-gallery"></div>
       </div>
     </div>
 
@@ -1709,14 +1681,18 @@ class SiteBuilderSkill(BaseSkill):
           </span>
         </div>
         <p class="text-xs" style="color:#9ca3af">
-          Conecta la carpeta <code>data/ratings/</code> del proyecto para guardar
-          valoraciones automáticamente.
+          En esta computadora: conecta la carpeta <code>data/ratings/</code> del proyecto
+          para guardar valoraciones automáticamente, sin pasos manuales.
         </p>
         <div class="flex items-center gap-3 mt-3">
           <button onclick="exportRatings()" class="badge badge-terra" style="cursor:pointer">
-            ⬇ Exportar valoraciones
+            ⬇ Exportar / compartir valoraciones
           </button>
         </div>
+        <p class="text-xs" style="color:#9ca3af;margin-top:.5rem">
+          Desde el celular: este botón abre el menú para compartir el archivo directo a
+          WhatsApp, Notas, Drive, etc. — evita que se pierda en Descargas.
+        </p>
       </div>
     </div>
     <div class="card">
@@ -1750,12 +1726,10 @@ class SiteBuilderSkill(BaseSkill):
               <button id="btn-tv-week" class="toggle-btn active" onclick="setTrendView('week',this)">Esta semana</button>
               <button id="btn-tv-hist" class="toggle-btn" onclick="setTrendView('hist',this)">Historial</button>
             </div>
-            <select id="trend-nutrient" class="ctrl-select" onchange="onTrendNutrientChange()">
-              <option value="calories">Calorías</option>
-              <option value="protein_g">Proteína</option>
-              <option value="carbs_g">Carbohidratos</option>
-              <option value="fat_g">Grasa</option>
-            </select>
+            <div style="display:flex;gap:2px">
+              <button id="btn-tp-atm" class="toggle-btn active" onclick="setTrendPerson('atm',this)">ATM</button>
+              <button id="btn-tp-iob" class="toggle-btn" onclick="setTrendPerson('iob',this)">IOB</button>
+            </div>
           </div>
         </div>
         <div id="trend-range-btns" style="display:none;gap:2px;margin-bottom:.6rem">
@@ -1843,6 +1817,7 @@ let _trendChart        = null;
 let _trendHistChart    = null;
 let _trendView         = 'week';
 let _trendRange        = 2;
+let _trendPerson       = 'atm';
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 function tab(name, btn) {
@@ -1855,39 +1830,8 @@ function tab(name, btn) {
   if (name === 'valoraciones') initRatingsTab();
 }
 
-// ── Tile gallery ──────────────────────────────────────────────────────────────
-const TILE_COLORS = ['#212e53','#3a7a85','#3a6652','#ce6a6b','#2a5070','#9b4a40','#4a919e'];
 const SLOT_EMOJI = {desayuno:'🌅', col_am:'🍎', comida:'🍽', col_pm:'🌿', cena:'🌙'};
 const SLOT_KEYS  = ['desayuno','col_am','comida','col_pm','cena'];
-const gallery    = document.getElementById('tile-gallery');
-
-DAYS.forEach((d, di) => {
-  const tile = document.createElement('div');
-  tile.className = 'day-tile';
-  tile.onclick = () => { document.getElementById('btn-tab-semana').click(); showDay(di); };
-
-  tile.innerHTML = '<div class="tile-bg" style="background:' + TILE_COLORS[di % TILE_COLORS.length] + '"></div>';
-
-  const body = document.createElement('div');
-  body.className = 'tile-body';
-
-  const label = document.createElement('div');
-  label.className = 'tile-day';
-  label.textContent = d.short;
-  body.appendChild(label);
-
-  [{key:'desayuno',em:'🌅'},{key:'comida',em:'🍽'},{key:'cena',em:'🌙'}].forEach(({key,em}) => {
-    const name = d.dishes && d.dishes[key];
-    if (name) {
-      const row = document.createElement('div');
-      row.className = 'tile-dish';
-      row.innerHTML = '<span class="tile-em">' + em + '</span>' + name;
-      body.appendChild(row);
-    }
-  });
-  tile.appendChild(body);
-  gallery.appendChild(tile);
-});
 
 // ── Compact week table ────────────────────────────────────────────────────────
 const tbody = document.getElementById('week-tbody');
@@ -2060,10 +2004,29 @@ function mbar(v, max, col) {
     (colors[col] || col) + '"></div></div>';
 }
 
+function _weekAvgNutrition(personName) {
+  const key = 'nutrition_' + personName.toLowerCase();
+  const vals = DAYS.map(d => d[key]).filter(n => n && n.calories > 0);
+  if (!vals.length) return null;
+  const n = vals.length;
+  const sum = f => vals.reduce((a, d) => a + (d[f] || 0), 0);
+  return {
+    calories:  Math.round(sum('calories') / n),
+    protein_g: Math.round(sum('protein_g') / n),
+    carbs_g:   Math.round(sum('carbs_g') / n),
+    fat_g:     Math.round(sum('fat_g') / n),
+  };
+}
+
+function _menuEst(val) {
+  return '<span style="color:#9ca3af;font-weight:400"> · menú ~' + val + '</span>';
+}
+
 PERSONS.forEach(p => {
   const badge = p.derived
     ? '<span class="badge badge-blush">Derivado</span>'
     : '<span class="badge badge-sage">Prescrito</span>';
+  const est = _weekAvgNutrition(p.name);
   document.getElementById('person-cards').innerHTML +=
     '<div class="person-card">' +
       '<div class="flex items-center justify-between mb-4">' +
@@ -2076,17 +2039,19 @@ PERSONS.forEach(p => {
       '</div>' +
       '<div class="text-center mb-4">' +
         '<div style="font-size:2.4rem;font-weight:700;color:var(--sage)">' + p.calories + '</div>' +
-        '<div class="text-xs" style="color:rgba(255,255,255,.45);margin-top:2px">kcal / día</div>' +
+        '<div class="text-xs" style="color:rgba(255,255,255,.45);margin-top:2px">kcal / día' +
+          (est ? ' · menú ~' + est.calories : '') +
+        '</div>' +
       '</div>' +
       '<div class="text-xs" style="color:rgba(255,255,255,.55)">' +
         '<div class="flex justify-between mb-1"><span>🥩 Proteína</span>' +
-          '<span style="color:#fff;font-weight:600">' + p.protein_g + 'g</span></div>' +
+          '<span style="color:#fff;font-weight:600">' + p.protein_g + 'g' + (est ? _menuEst(est.protein_g + 'g') : '') + '</span></div>' +
         mbar(p.protein_g,300,'blue') +
         '<div class="flex justify-between mb-1"><span>🌾 Carbohidratos</span>' +
-          '<span style="color:#fff;font-weight:600">' + p.carbs_g + 'g</span></div>' +
+          '<span style="color:#fff;font-weight:600">' + p.carbs_g + 'g' + (est ? _menuEst(est.carbs_g + 'g') : '') + '</span></div>' +
         mbar(p.carbs_g,400,'orange') +
         '<div class="flex justify-between mb-1"><span>🥑 Grasas</span>' +
-          '<span style="color:#fff;font-weight:600">' + p.fat_g + 'g</span></div>' +
+          '<span style="color:#fff;font-weight:600">' + p.fat_g + 'g' + (est ? _menuEst(est.fat_g + 'g') : '') + '</span></div>' +
         mbar(p.fat_g,120,'yellow') +
       '</div>' +
     '</div>';
@@ -2189,11 +2154,31 @@ function saveRatings() {
   _writeRatingsFile();
 }
 
-function exportRatings() {
+async function exportRatings() {
+  const filename = 'ratings___WEEK_KEY__.json';
   const blob = new Blob([JSON.stringify(ratings, null, 2)], {type:'application/json'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = 'ratings___WEEK_KEY__.json'; a.click();
+  // Mobile: hand the file to the native share sheet so it lands somewhere you'll
+  // actually see again (WhatsApp-to-self, Notes, Drive, AirDrop) instead of a
+  // Descargas folder nobody checks. Falls back to a plain download everywhere else.
+  if (navigator.canShare) {
+    try {
+      const file = new File([blob], filename, {type:'application/json'});
+      if (navigator.canShare({files:[file]})) {
+        await navigator.share({
+          files: [file],
+          title: 'Valoraciones de la semana',
+          text: 'Coloca este archivo en data/ratings/ y corre: python main.py importar-ratings',
+        });
+        return;
+      }
+    } catch(e) {
+      if (e.name === 'AbortError') return;  // user cancelled the share sheet
+      console.warn('share failed, falling back to download:', e);
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
   URL.revokeObjectURL(url);
 }
 
@@ -2392,13 +2377,14 @@ function _waitChart(fn) {
 }
 
 // ── 1. Nutrient trend chart ───────────────────────────────────────────────────
-const _NUTRIENT_LABELS = {calories:'Calorías (kcal)',protein_g:'Proteína (g)',carbs_g:'Carbohidratos (g)',fat_g:'Grasa (g)'};
-const _NUTRIENT_COLORS = {calories:'#4a919e',protein_g:'#ce6a6b',carbs_g:'#ebaca2',fat_g:'#bed3c3'};
-const _PERSON_KEYS     = {calories:'calories',protein_g:'protein_g',carbs_g:'carbs_g',fat_g:'fat_g'};
+const _MACRO_COLORS     = {protein_g:'#ce6a6b', carbs_g:'#ebaca2', fat_g:'#bed3c3'};
+const _PERSON_CAL_COLOR = {atm:'#212e53', iob:'#9b4a40'};
 
-function onTrendNutrientChange() {
-  if (_trendView === 'week') updateTrendChart();
-  else updateTrendHistChart();
+function setTrendPerson(person, btn) {
+  _trendPerson = person;
+  document.querySelectorAll('#btn-tp-atm,#btn-tp-iob').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (_trendView === 'week') updateTrendChart(); else updateTrendHistChart();
 }
 
 function setTrendView(view, btn) {
@@ -2430,62 +2416,94 @@ function initTrendChart() {
   updateTrendChart();
 }
 
+// Stacked protein/carbs/fat (grams, left axis) + calories line (kcal, right axis)
+// for whichever person is selected — one full macro breakdown per day.
+function _macroDatasets(days) {
+  const key     = 'nutrition_' + _trendPerson;
+  const protein = days.map(d => d[key] ? (d[key].protein_g||0) : null);
+  const carbs   = days.map(d => d[key] ? (d[key].carbs_g||0)   : null);
+  const fat     = days.map(d => d[key] ? (d[key].fat_g||0)     : null);
+  const cal     = days.map(d => d[key] ? (d[key].calories||0)  : null);
+  const calColor = _PERSON_CAL_COLOR[_trendPerson];
+  return [
+    { label:'Proteína (g)', data:protein, backgroundColor:_MACRO_COLORS.protein_g+'c0',
+      stack:'macros', yAxisID:'y', borderRadius:4, borderSkipped:false, order:3 },
+    { label:'Carbohidratos (g)', data:carbs, backgroundColor:_MACRO_COLORS.carbs_g+'c0',
+      stack:'macros', yAxisID:'y', borderRadius:4, borderSkipped:false, order:3 },
+    { label:'Grasa (g)', data:fat, backgroundColor:_MACRO_COLORS.fat_g+'c0',
+      stack:'macros', yAxisID:'y', borderRadius:4, borderSkipped:false, order:3 },
+    { label:'Calorías (kcal)', data:cal, type:'line', yAxisID:'y1',
+      borderColor:calColor, backgroundColor:calColor, borderWidth:2,
+      pointRadius:3, pointHoverRadius:5, tension:0.3, fill:false, order:1 },
+  ];
+}
+
+function _trendScales(xExtra) {
+  return {
+    x:  Object.assign({ stacked:true }, xExtra || {}),
+    y:  { stacked:true, title:{display:true,text:'gramos',color:'#a0aec0',font:{size:10}} },
+    y1: { position:'right', grid:{drawOnChartArea:false},
+          title:{display:true,text:'kcal',color:'#a0aec0',font:{size:10}} },
+  };
+}
+
 function updateTrendChart() {
-  const nutrient = document.getElementById('trend-nutrient').value;
   const tr = TRACKING;
   const dLabels = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-  const label = _NUTRIENT_LABELS[nutrient];
-  const hasLogged = tr.weekly && tr.weekly.some(d => d && d[nutrient]);
-  const datasets = [];
-  if (hasLogged) {
-    const logged = dLabels.map((_, i) => { const d = tr.weekly[i]; return d ? (d[nutrient]||0) : null; });
-    datasets.push({ label:'Registrado', data:logged,
-      backgroundColor:_NUTRIENT_COLORS[nutrient]+'c0', borderRadius:6, borderSkipped:false, order:3 });
+  const personLabel = _trendPerson === 'atm' ? 'ATM' : 'IOB';
+  const datasets = _macroDatasets(DAYS);
+
+  const target = PERSONS[_trendPerson === 'atm' ? 0 : 1];
+  if (target?.calories) datasets.push({ label:'Meta kcal', data:Array(7).fill(target.calories),
+    type:'line', yAxisID:'y1', borderColor:_PERSON_CAL_COLOR[_trendPerson], borderWidth:1.5,
+    borderDash:[5,4], pointRadius:0, fill:false, order:0 });
+
+  if (_trendPerson === 'atm' && tr.weekly && tr.weekly.some(d => d && d.calories)) {
+    const logged = dLabels.map((_, i) => { const d = tr.weekly[i]; return d ? (d.calories||0) : null; });
+    datasets.push({ label:'Registrado (kcal)', data:logged, type:'line', yAxisID:'y1',
+      borderColor:'#4a919e', borderWidth:2, borderDash:[2,2], pointRadius:3, tension:0.3, fill:false, order:1 });
   }
-  const atmData = DAYS.map(d => d.nutrition_atm ? (d.nutrition_atm[nutrient]||0) : null);
-  const iobData = DAYS.map(d => d.nutrition_iob ? (d.nutrition_iob[nutrient]||0) : null);
-  const suffix = hasLogged ? ' (plan)' : '';
-  datasets.push({ label:'ATM'+suffix, data:atmData,
-    backgroundColor:'#212e5390', borderRadius:6, borderSkipped:false, order:hasLogged?4:3 });
-  datasets.push({ label:'IOB'+suffix, data:iobData,
-    backgroundColor:'#9b4a4090', borderRadius:6, borderSkipped:false, order:hasLogged?5:4 });
-  const t_atm = PERSONS[0]?.[nutrient]||null;
-  const t_iob = PERSONS[1]?.[nutrient]||null;
-  if (t_atm) datasets.push({ label:'Meta ATM', data:Array(7).fill(t_atm), type:'line',
-    borderColor:'#212e53', borderWidth:1.5, borderDash:[5,4], pointRadius:0, fill:false, order:1 });
-  if (t_iob) datasets.push({ label:'Meta IOB', data:Array(7).fill(t_iob), type:'line',
-    borderColor:'#9b4a40', borderWidth:1.5, borderDash:[3,3], pointRadius:0, fill:false, order:2 });
-  const title = label + (hasLogged ? ' · Esta semana' : ' · Planificado');
-  if (_trendChart) { _trendChart.data.datasets=datasets; _trendChart.options.plugins.title.text=title; _trendChart.update(); return; }
+
+  const title = personLabel + ' · Esta semana';
+  if (_trendChart) {
+    _trendChart.data.labels = dLabels;
+    _trendChart.data.datasets = datasets;
+    _trendChart.options.plugins.title.text = title;
+    _trendChart.update();
+    return;
+  }
   _trendChart = new Chart(document.getElementById('chart-trend'), {
     type:'bar', data:{labels:dLabels, datasets},
-    options:{responsive:true, plugins:{title:{display:true,text:title,color:'#212e53',font:{weight:'600'}},legend:{position:'bottom'}}}
+    options:{responsive:true, plugins:{title:{display:true,text:title,color:'#212e53',font:{weight:'600'}},legend:{position:'bottom'}},
+      scales:_trendScales()}
   });
 }
 
 function updateTrendHistChart() {
   if (!ALL_WEEKS.length) return;
-  const nutrient = document.getElementById('trend-nutrient').value;
-  const label = _NUTRIENT_LABELS[nutrient];
   const weeksSlice = _trendRange > 0 ? ALL_WEEKS.slice(-_trendRange) : ALL_WEEKS;
-  const allDays = weeksSlice.flatMap(w => w.days);
-  const labels  = allDays.map(d => d.short);
-  const atmData = allDays.map(d => d.nutrition_atm ? (d.nutrition_atm[nutrient]||0) : null);
-  const iobData = allDays.map(d => d.nutrition_iob ? (d.nutrition_iob[nutrient]||0) : null);
-  const t_atm = PERSONS[0]?.[nutrient]||null;
-  const t_iob = PERSONS[1]?.[nutrient]||null;
-  const datasets = [
-    {label:'ATM', data:atmData, borderColor:'#212e53', backgroundColor:'#212e5320', fill:true, tension:0.3, pointRadius:3, pointHoverRadius:5},
-    {label:'IOB', data:iobData, borderColor:'#9b4a40', backgroundColor:'#9b4a4020', fill:true, tension:0.3, pointRadius:3, pointHoverRadius:5},
-  ];
-  if (t_atm) datasets.push({label:'Meta ATM', data:Array(labels.length).fill(t_atm), borderColor:'#212e53', borderWidth:1.5, borderDash:[5,4], pointRadius:0, fill:false});
-  if (t_iob) datasets.push({label:'Meta IOB', data:Array(labels.length).fill(t_iob), borderColor:'#9b4a40', borderWidth:1.5, borderDash:[3,3], pointRadius:0, fill:false});
-  const title = label + ' · Historial';
-  if (_trendHistChart) { _trendHistChart.data.labels=labels; _trendHistChart.data.datasets=datasets; _trendHistChart.options.plugins.title.text=title; _trendHistChart.update(); return; }
+  const allDays  = weeksSlice.flatMap(w => w.days);
+  const labels   = allDays.map(d => d.short);
+  const personLabel = _trendPerson === 'atm' ? 'ATM' : 'IOB';
+  const datasets = _macroDatasets(allDays);
+
+  const target = PERSONS[_trendPerson === 'atm' ? 0 : 1];
+  if (target?.calories) datasets.push({ label:'Meta kcal', data:Array(labels.length).fill(target.calories),
+    type:'line', yAxisID:'y1', borderColor:_PERSON_CAL_COLOR[_trendPerson], borderWidth:1.5,
+    borderDash:[5,4], pointRadius:0, fill:false, order:0 });
+
+  const title = personLabel + ' · Historial';
+  if (_trendHistChart) {
+    _trendHistChart.data.labels = labels;
+    _trendHistChart.data.datasets = datasets;
+    _trendHistChart.options.plugins.title.text = title;
+    _trendHistChart.update();
+    return;
+  }
   _trendHistChart = new Chart(document.getElementById('chart-trend-hist'), {
-    type:'line', data:{labels, datasets},
+    type:'bar', data:{labels, datasets},
     options:{responsive:true, plugins:{title:{display:true,text:title,color:'#212e53',font:{weight:'600'}},legend:{position:'bottom'}},
-      scales:{x:{ticks:{maxTicksLimit:14,maxRotation:45}}}}
+      scales:_trendScales({ticks:{maxTicksLimit:14,maxRotation:45}})}
   });
 }
 

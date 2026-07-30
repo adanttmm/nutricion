@@ -14,6 +14,7 @@ I got a *modified* version adjusted using only well-established, mainstream clin
 | 2026-07-04 | 94.4   | 27   | 26.3%               | 48.6kg          | 24.8kg   | 65.8kg       | 69.7%             | 51.5%      | 17.5%              | 4%                      | 35.4kg               | 14                  | 1873kcal             | 1                            | 69.6kg               | 99bpm      | 187cms |
 | 2026-07-10 | 94.5   | 27   | 26.3%               | 49.2kg          | 24.9kg   | 65.8kg       | 69.6%             | 52.1%      | 16.7%              | 4%                      | 36kg                 | 13                  | 1873kcal             | 0.9                          | 69.6kg                | 95bpm      | 187cms |
 | 2026-07-17 | 94.6   | 27.1   | 26.3%               | 49.3kg          | 24.9kg   | 65.8kg       | 69.7%             | 52.1%      | 16.7%              | 4%                      | 36.1kg                 | 13                  | 1876kcal             | 0.9                          | 69.6kg                | 99bpm      | 187cms |
+| 2026-07-24 | 94   | 26.9   | 26%               | 49.6kg          | 24.4kg   | 65.8kg       | 70%             | 52.8%      | 16.4%              | 4%                      | 36.4kg                 | 12                  | 1873kcal             | 0.8                          | 69.6kg                | 112bpm      | 187cms |
 
 ## Strict Rules
 1. **Interpret the body composition trend before recommending changes.**
