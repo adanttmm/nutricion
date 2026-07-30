@@ -76,8 +76,11 @@ _recoger_de_descargas() {
   local f base clean rank mtime key
   for f in "${candidates[@]}"; do
     base="$(basename "$f")"
-    if [[ "$base" =~ ^(.*)\ ?\(([0-9]+)\)(\.json)$ ]]; then
-      clean="${BASH_REMATCH[1]}${BASH_REMATCH[3]}"
+    if [[ "$base" =~ ^(.*)\ \(([0-9]+)\)\.json$ ]]; then
+      clean="${BASH_REMATCH[1]}.json"
+      rank="${BASH_REMATCH[2]}"
+    elif [[ "$base" =~ ^(.*)\(([0-9]+)\)\.json$ ]]; then
+      clean="${BASH_REMATCH[1]}.json"
       rank="${BASH_REMATCH[2]}"
     else
       clean="$base"
