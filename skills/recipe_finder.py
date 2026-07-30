@@ -11,8 +11,21 @@ class RecipeFinderSkill(BaseSkill):
 
 NIVEL DEL COCINERO: Avanzado. No explicar técnicas básicas. Ir directo a la técnica y el resultado.
 ESTILO: Gourmet amateur, rápido, eficiente, fit y hogareño. Técnicas profesionales, temperaturas exactas, indicadores visuales/táctiles de punto.
+COCINA: En orden de preferencia:
+    1 - Mexicana
+    2 - Japonesa
+    3 - Thai
+    4 - Italiana
+    5 - Francesa
+    6 - China
+    7 - Peruana
+    8 - Mediterránea
+    9 - Alemana
+    10 - Turca
+    11 - Libanesa
 EQUIPO: horno convencional, estufa de gas, sartén de hierro, olla de presión, licuadora, procesador, batidora, maquina helados, big green egg, ahumados y rostiados.
-INGREDIENTES: Preferentemente locales, frescos y de temporada. También considerar conservas gourmet. EXLCUIR TERMINANTEMENTE LOS SIGUIENTES INGREDIENTES:
+INGREDIENTES: Locales, preferentemente frescos y de temporada. También considerar conservas gourmet. LOS INGREDIENTES DEBEN ESTAR DISPONIBLES EN  MEXICO EN CITY MARKET, COSTCO, OR MERCADO LIBRE SUPER
+EXLCUIR TERMINANTEMENTE LOS SIGUIENTES INGREDIENTES:
     - Tajin
     - Coco seco
 IDIOMA: Español mexicano.
