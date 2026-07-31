@@ -116,7 +116,11 @@ Cantidades, tamaños de contenedores, bolsas sous vide necesarias"""
         recipes_excerpt = ""
         if recipes_path and Path(recipes_path).exists():
             full_recipes = Path(recipes_path).read_text(encoding="utf-8")
-            recipes_excerpt = f"\n\nRECETAS COMPLETAS (usa los ingredientes y gramajes exactos para calcular cantidades del prep):\n{full_recipes[:12000]}"
+            # Pass the whole file — truncating here silently starves the back half
+            # of the week of its exact gram quantities, forcing the model to guess
+            # them instead of reading them off the recipes. Recipe files (50-115KB)
+            # are well within context budget alongside the menu and system prompt.
+            recipes_excerpt = f"\n\nRECETAS COMPLETAS (usa los ingredientes y gramajes exactos para calcular cantidades del prep):\n{full_recipes}"
 
         notes_section = f"\nINDICACIONES DEL COCINERO PARA ESTA SEMANA:\n{week_notes}\n" if week_notes else ""
 

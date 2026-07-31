@@ -11,9 +11,20 @@ class MenuGeneratorSkill(BaseSkill):
 PERFIL DEL COCINERO:
 - Nivel avanzado, gourmet amateur cómodo con técnicas profesionales (confitado, reducciones, emulsiones, fermentados, braseado, sellado a fuego alto, cocción al vapor, horneado a baja temperatura, helados, ahumado, rostizado, carbón).
 - Equipamiento completo incluye: horno, 4+ quemadores, procesador, batidora, sartenes de hierro y antiadherente, vaporera, CIRCULADOR SOUS VIDE (disponible para cualquier platillo), MÁQUINA DE PASTA (para pasta fresca artesanal), Maquina de helados.
-- Cualquier gastronomía cuyos ingredientes se encuentren en México.
-- Revisa los menús de las tres semanas anteriores para evitar repetir demasiado.
-- Busca recetas rápidas, eficientes, fit y gourmet amateur en internet para referencia y agrega los links de referencia.
+- Cualquier gastronomía cuyos ingredientes se encuentren en México. En orden de preferencia:
+    1 - Mexicana
+    2 - Japonesa
+    3 - Thai
+    4 - Italiana
+    5 - Francesa
+    6 - China
+    7 - Peruana
+    8 - Mediterránea
+    9 - Alemana
+    10 - Turca
+    11 - Libanesa
+- Revisa los menús de las tres semanas anteriores EVITA REPETIR a menos que explícitamente se ponga en las notas.
+- Busca recetas fit y gourmet amateur en internet para referencia y agrega los links de referencia.
 - Cocina para 2 personas (ATM e IOB) en todos los tiempos; martes, miércoles y viernes hay un 3er comensal a la comida con la misma porción que IOB; evitar ingredientes premium o demasiado exoticos los dias del tercer comensal
 - 1 comida trampa por semana (restaurante o platillo especial sin restricciones)
 - Meal prep con equilibrio inteligente: la mayor parte se cocina el domingo, PERO puedo dedicar algun tiempo para cocinar en la semana. El objetivo es ≤30 min activos de cocción entre semana.
@@ -21,14 +32,14 @@ PERFIL DEL COCINERO:
 REGLAS DEL MENÚ:
 1. Generar los 7 días completos: lunes, martes, miércoles, jueves, viernes, sábado y domingo sin excepción.
 2. No repetir la proteína principal más de 2 veces por semana en comida y cena.
-3. Evitar repetir recetas de hace dos semanas.
+3. Evitar repetir recetas de hace tres semanas.
 4. Las calorías y macros de CADA PERSONA deben coincidir con SUS metas (±5%). Los NÚMEROS son la ley; los alimentos son libres.
 5. Se cocina UN SOLO PLATILLO para ambas personas — las porciones varían por persona.
-6. Ingredientes accesibles en Costco Ciudad de México + City Market Santa Fe.
-7. Los días de gym (+150 kcal ATM) y salsa (+100 kcal ambos) ajustar la colación vespertina.
-8. Nombres de platillos elegantes y descriptivos, al estilo de menú de restaurante.
-9. DISEÑO PARA MEAL PREP INTELIGENTE: proteínas, granos y salsas de TODOS los días deben llevar 🏪 o 🌊 (sous vide entre semana). Los únicos elementos frescos entre semana son aguacate, huevo al momento, hierbas frescas o ensalada cruda.
-10. Consulta el sitio https://smn.conagua.gob.mx/es/ para obtener información sobre el clima en Cuajimalpa de Morelos y ajustar las recetas según la temporada.
+6. Ingredientes accesibles en Costco Ciudad de México + City Market Santa Fe + Mercado Libre.
+7. Nombres de platillos elegantes y descriptivos, al estilo de menú de restaurante.
+8. DISEÑO PARA MEAL PREP INTELIGENTE: proteínas, granos y salsas de TODOS los días deben llevar 🏪 o 🌊 (sous vide entre semana). Los únicos elementos frescos entre semana son aguacate, huevo al momento, hierbas frescas o ensalada cruda.
+9. Consulta el sitio https://smn.conagua.gob.mx/es/ para obtener información sobre el clima en Cuajimalpa de Morelos y ajustar las recetas según la temporada.
+10. ASEGURA QUE CUMPLES CON LAS NOTAS DE LA SEMANA RECIBIDAS EN notas_semana.txt
 
 OPTIMIZACIÓN DE CARGA DE COCINA — REPETICIÓN CONTROLADA:
 Para reducir el número de recetas únicas a preparar, usa este esquema OBLIGATORIO:

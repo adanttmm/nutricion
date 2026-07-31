@@ -140,63 +140,76 @@ else
   echo ""
 fi
 
-# ── 1. Parsear PDFs del nutriólogo ────────────────────────────────────────────
+# ── 1. Traer valoraciones sincronizadas por el Worker de Cloudflare ────────────
+T_STEP=$(_now_s)
+echo "▶ [1/6] Trayendo cambios de GitHub (ratings sincronizados desde el sitio)..."
+if git pull --ff-only origin master 2>/tmp/_git_pull_err; then
+  _record_step "1. Git pull" "$(_elapsed $T_STEP)" "✅"
+else
+  echo "  ⚠  git pull falló (revisa cambios locales sin commitear) — continuando de todas formas:"
+  sed 's/^/    /' /tmp/_git_pull_err
+  _record_step "1. Git pull" "—" "⚠️"
+fi
+rm -f /tmp/_git_pull_err
+echo ""
+
+# ── 2. Parsear PDFs del nutriólogo ────────────────────────────────────────────
 T_STEP=$(_now_s)
 if [ "$SIN_PARSEAR" = false ]; then
   PDF_COUNT=$(find Dietas/ -maxdepth 1 -name "*.pdf" 2>/dev/null | wc -l)
   if [ "$PDF_COUNT" -gt 0 ]; then
-    echo "▶ [1/5] Parseando dietas ($PDF_COUNT PDF encontrados)..."
+    echo "▶ [2/6] Parseando dietas ($PDF_COUNT PDF encontrados)..."
     python main.py parsear-dietas
-    _record_step "1. Parsear dietas" "$(_elapsed $T_STEP)" "✅"
+    _record_step "2. Parsear dietas" "$(_elapsed $T_STEP)" "✅"
   else
-    echo "⚠  [1/5] Sin PDFs en Dietas/ — saltando parseo."
-    _record_step "1. Parsear dietas" "—" "⏭"
+    echo "⚠  [2/6] Sin PDFs en Dietas/ — saltando parseo."
+    _record_step "2. Parsear dietas" "—" "⏭"
   fi
 else
-  echo "⏭  [1/5] Parseo omitido (--sin-parsear)."
-  _record_step "1. Parsear dietas" "—" "⏭"
+  echo "⏭  [2/6] Parseo omitido (--sin-parsear)."
+  _record_step "2. Parsear dietas" "—" "⏭"
 fi
 echo ""
 
-# ── 2. Recoger valoraciones descargadas del navegador ─────────────────────────
+# ── 3. Recoger valoraciones descargadas del navegador ─────────────────────────
 T_STEP=$(_now_s)
-echo "▶ [2/5] Buscando valoraciones en la carpeta de Descargas..."
+echo "▶ [3/6] Buscando valoraciones en la carpeta de Descargas..."
 COLLECTED=$(_recoger_de_descargas)
 if [ "$COLLECTED" -gt 0 ]; then
-  _record_step "2. Recoger de Descargas" "$(_elapsed $T_STEP)" "✅"
+  _record_step "3. Recoger de Descargas" "$(_elapsed $T_STEP)" "✅"
 else
   echo "  ⏭  Nada nuevo en Descargas."
-  _record_step "2. Recoger de Descargas" "—" "⏭"
+  _record_step "3. Recoger de Descargas" "—" "⏭"
 fi
 echo ""
 
-# ── 3. Importar valoraciones de semanas anteriores ────────────────────────────
+# ── 4. Importar valoraciones de semanas anteriores ────────────────────────────
 T_STEP=$(_now_s)
 RATINGS_COUNT=$(find data/ratings/ -maxdepth 1 -name "ratings_*.json" 2>/dev/null | wc -l)
 if [ "$RATINGS_COUNT" -gt 0 ]; then
-  echo "▶ [3/5] Importando valoraciones ($RATINGS_COUNT archivo(s) en data/ratings/)..."
+  echo "▶ [4/6] Importando valoraciones ($RATINGS_COUNT archivo(s) en data/ratings/)..."
   python main.py importar-ratings
-  _record_step "3. Importar ratings" "$(_elapsed $T_STEP)" "✅"
+  _record_step "4. Importar ratings" "$(_elapsed $T_STEP)" "✅"
 else
-  echo "⏭  [3/5] Sin valoraciones en data/ratings/ — omitiendo."
+  echo "⏭  [4/6] Sin valoraciones en data/ratings/ — omitiendo."
   echo "         (Exporta desde el sitio web y coloca el JSON en data/ratings/)"
-  _record_step "3. Importar ratings" "—" "⏭"
+  _record_step "4. Importar ratings" "—" "⏭"
 fi
 echo ""
 
-# ── 4. Menú, recetas, compras y meal prep (sin sitio) ─────────────────────────
+# ── 5. Menú, recetas, compras y meal prep (sin sitio) ─────────────────────────
 T_STEP=$(_now_s)
-echo "▶ [4/5] Generando semana completa (sin sitio)..."
+echo "▶ [5/6] Generando semana completa (sin sitio)..."
 echo "        menú (+ valoraciones + validación calórica) · recetas · meal prep · compras"
 python main.py semana-completa --sin-sitio "${NOTA_ARGS[@]+"${NOTA_ARGS[@]}"}"
-_record_step "4. Semana completa" "$(_elapsed $T_STEP)" "✅"
+_record_step "5. Semana completa" "$(_elapsed $T_STEP)" "✅"
 echo ""
 
-# ── 5. Auditar plan de meal prep ──────────────────────────────────────────────
+# ── 6. Auditar plan de meal prep ──────────────────────────────────────────────
 T_STEP=$(_now_s)
-echo "▶ [5/5] Auditando plan de meal prep..."
+echo "▶ [6/6] Auditando plan de meal prep..."
 python main.py verificar-prep || true
-_record_step "5. Auditar meal prep" "$(_elapsed $T_STEP)" "✅"
+_record_step "6. Auditar meal prep" "$(_elapsed $T_STEP)" "✅"
 echo ""
 
 # ── Archivar nota de semana ────────────────────────────────────────────────────

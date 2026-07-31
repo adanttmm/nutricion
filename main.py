@@ -236,7 +236,9 @@ def planear_prep(menu, recetas, nota):
               help="Ruta al plan nutricional YAML (default: el más reciente en config/parsed_diets/)")
 @click.option("--menu", "-m", default=None,
               help="Ruta al menú (default: el más reciente en outputs/menus/)")
-def validar_menu(plan, menu):
+@click.option("--nota", "-n", default="",
+              help="Nota de la semana usada al generar el menú (viajes, días especiales, etc.) — evita falsos rechazos en esos días.")
+def validar_menu(plan, menu, nota):
     """Audita el menú semanal contra el plan nutricional del nutriólogo. Muestra tabla de cumplimiento."""
     from skills.menu_validator import MenuValidatorSkill
 
@@ -250,7 +252,7 @@ def validar_menu(plan, menu):
     console.print(f"[dim]Menú: {menu}[/dim]")
 
     with console.status("[yellow]Auditando calorías y macronutrientes...", spinner="dots"):
-        result = MenuValidatorSkill().validate(plan, menu)
+        result = MenuValidatorSkill().validate(plan, menu, week_notes=nota)
 
     color = "green" if result.passed else "red"
     icon  = "✅" if result.passed else "❌"
@@ -326,7 +328,7 @@ def semana_completa(plan, semana, sin_sitio, nota):
         console.print(f"  [green]✅[/green] Menú generado (intento {attempt + 1}/{MAX_MENU_RETRIES}): {outputs['menu']}")
 
         with console.status("[yellow]  Validando calorías y macros...", spinner="dots"):
-            val = MenuValidatorSkill().validate(plan, str(outputs["menu"]))
+            val = MenuValidatorSkill().validate(plan, str(outputs["menu"]), week_notes=nota)
 
         if val.passed:
             console.print("  [green]✅[/green] Menú validado — calorías y macros dentro de tolerancia")

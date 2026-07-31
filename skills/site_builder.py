@@ -1671,8 +1671,12 @@ class SiteBuilderSkill(BaseSkill):
     </div>
     <div class="card">
       <div class="card-pad">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between mb-1">
           <span class="sec-label">Guardar automáticamente</span>
+          <span id="cloud-sync-status" style="font-size:.72rem"></span>
+        </div>
+        <div class="flex items-center justify-between mb-3">
+          <span></span>
           <span id="autosave-status" style="font-size:.72rem;color:#9ca3af">
             <button id="autosave-btn" onclick="setupAutoSave()"
               class="badge badge-teal" style="cursor:pointer">
@@ -1681,8 +1685,10 @@ class SiteBuilderSkill(BaseSkill):
           </span>
         </div>
         <p class="text-xs" style="color:#9ca3af">
-          En esta computadora: conecta la carpeta <code>data/ratings/</code> del proyecto
-          para guardar valoraciones automáticamente, sin pasos manuales.
+          Desde cualquier dispositivo: si el sitio tiene sincronización con GitHub
+          configurada, tus valoraciones se guardan solas — sin exportar nada.
+          En esta computadora, también puedes conectar la carpeta <code>data/ratings/</code>
+          del proyecto para guardar sin pasos manuales.
         </p>
         <div class="flex items-center gap-3 mt-3">
           <button onclick="exportRatings()" class="badge badge-terra" style="cursor:pointer">
@@ -1690,7 +1696,7 @@ class SiteBuilderSkill(BaseSkill):
           </button>
         </div>
         <p class="text-xs" style="color:#9ca3af;margin-top:.5rem">
-          Desde el celular: este botón abre el menú para compartir el archivo directo a
+          Respaldo manual: este botón abre el menú para compartir el archivo directo a
           WhatsApp, Notas, Drive, etc. — evita que se pierda en Descargas.
         </p>
       </div>
@@ -1802,6 +1808,10 @@ const ALL_WEEKS          = __ALL_WEEKS__;
 const RATINGS_HISTORY    = __RATINGS_HISTORY__;
 const SHOP_KEY           = 'ns___WEEK_KEY__';
 const RATING_KEY         = 'nr___WEEK_KEY__';
+// Cloudflare Worker endpoint — see cloudflare-worker/README.md to deploy one.
+// Leave as '' to disable auto-sync (falls back to the folder auto-save /
+// manual export-and-share paths only).
+const SYNC_ENDPOINT      = 'https://shy-flower-a27d.adanttmm.workers.dev/';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 function _lsGet(key, fallback) {
@@ -2152,6 +2162,34 @@ function saveRatings() {
   renderFavoritos();
   if (_trackingInited) renderRankings();
   _writeRatingsFile();
+  _syncRatingsToGithub();
+}
+
+// Auto-sync to GitHub via the Cloudflare Worker proxy (works from any device,
+// no folder access or manual export needed). Debounced so a quick run of star
+// clicks sends one request, not one per click. Fails silently — this is a
+// convenience path, not the only way ratings get saved (localStorage + the
+// folder auto-save / manual export always still work).
+let _syncDebounceTimer = null;
+function _syncRatingsToGithub() {
+  if (!SYNC_ENDPOINT) return;
+  const el = document.getElementById('cloud-sync-status');
+  if (el) { el.textContent = '☁️ Sincronizando…'; el.style.color = '#9ca3af'; }
+  clearTimeout(_syncDebounceTimer);
+  _syncDebounceTimer = setTimeout(async () => {
+    try {
+      const resp = await fetch(SYNC_ENDPOINT, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(ratings),
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      if (el) { el.textContent = '☁️ Sincronizado con GitHub'; el.style.color = 'var(--teal)'; }
+    } catch (e) {
+      console.warn('sync to GitHub failed:', e);
+      if (el) { el.textContent = '⚠ Sin conexión — se guardó localmente'; el.style.color = '#ce6a6b'; }
+    }
+  }, 1500);
 }
 
 async function exportRatings() {

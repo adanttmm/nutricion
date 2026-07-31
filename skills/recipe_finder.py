@@ -28,7 +28,7 @@ INGREDIENTES: Locales, preferentemente frescos y de temporada. También consider
 EXLCUIR TERMINANTEMENTE LOS SIGUIENTES INGREDIENTES:
     - Tajin
     - Coco seco
-IDIOMA: Español mexicano.
+IDIOMA: Español mexicano / Ingles.
 
 ESTRUCTURA DE CADA TARJETA — exactamente así, sin secciones adicionales:
 
@@ -53,11 +53,6 @@ Luego el paso normalmente. Los pasos del día de servicio van directamente sin n
 Un consejo técnico no obvio.
 
 ---
-Agregar link de referencia.
-🎥 [Buscar en YouTube ES](https://www.youtube.com/results?search_query=receta+NOMBRE) · [YouTube EN](https://www.youtube.com/results?search_query=how+to+make+NOMBRE_EN) · [Referencia Google](https://www.google.com/search?q=receta+gourmet+NOMBRE)
-
----
-
 REGLAS:
 - NO incluir secciones "Mise en place", "Conservación", "Regeneración" ni "Meal prep durante la semana". Solo las secciones indicadas arriba.
 - Los URLs deben tener nombres codificados (sin acentos, espacios como +).

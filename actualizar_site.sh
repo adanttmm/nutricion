@@ -115,51 +115,64 @@ echo "  $(date '+%A %d/%m/%Y %H:%M')"
 echo "════════════════════════════════════════════════"
 echo ""
 
-# ── 1. Recoger valoraciones descargadas del navegador ──────────────────────────
+# ── 1. Traer valoraciones sincronizadas por el Worker de Cloudflare ────────────
 T_STEP=$(_now_s)
-echo "▶ [1/4] Buscando valoraciones en la carpeta de Descargas..."
+echo "▶ [1/5] Trayendo cambios de GitHub (ratings sincronizados desde el sitio)..."
+if git pull --ff-only origin master 2>/tmp/_git_pull_err; then
+  _record_step "1. Git pull" "$(_elapsed $T_STEP)" "✅"
+else
+  echo "  ⚠  git pull falló (revisa cambios locales sin commitear) — continuando de todas formas:"
+  sed 's/^/    /' /tmp/_git_pull_err
+  _record_step "1. Git pull" "—" "⚠️"
+fi
+rm -f /tmp/_git_pull_err
+echo ""
+
+# ── 2. Recoger valoraciones descargadas del navegador ──────────────────────────
+T_STEP=$(_now_s)
+echo "▶ [2/5] Buscando valoraciones en la carpeta de Descargas..."
 COLLECTED=$(_recoger_de_descargas)
 if [ "$COLLECTED" -gt 0 ]; then
-  _record_step "1. Recoger de Descargas" "$(_elapsed $T_STEP)" "✅"
+  _record_step "2. Recoger de Descargas" "$(_elapsed $T_STEP)" "✅"
 else
   echo "  ⏭  Nada nuevo en Descargas."
-  _record_step "1. Recoger de Descargas" "—" "⏭"
+  _record_step "2. Recoger de Descargas" "—" "⏭"
 fi
 echo ""
 
-# ── 2. Importar valoraciones auto-guardadas ────────────────────────────────────
+# ── 3. Importar valoraciones auto-guardadas ────────────────────────────────────
 T_STEP=$(_now_s)
-echo "▶ [2/4] Importando valoraciones desde data/ratings/..."
+echo "▶ [3/5] Importando valoraciones desde data/ratings/..."
 python main.py importar-ratings
-_record_step "2. Importar ratings" "$(_elapsed $T_STEP)" "✅"
+_record_step "3. Importar ratings" "$(_elapsed $T_STEP)" "✅"
 echo ""
 
-# ── 3. Generar sitio estático ──────────────────────────────────────────────────
+# ── 4. Generar sitio estático ──────────────────────────────────────────────────
 T_STEP=$(_now_s)
-echo "▶ [3/4] Generando sitio estático en docs/..."
+echo "▶ [4/5] Generando sitio estático en docs/..."
 python main.py generar-sitio
-_record_step "3. Generar sitio" "$(_elapsed $T_STEP)" "✅"
+_record_step "4. Generar sitio" "$(_elapsed $T_STEP)" "✅"
 echo ""
 
-# ── 4. Publicar en GitHub Pages ────────────────────────────────────────────────
+# ── 5. Publicar en GitHub Pages ────────────────────────────────────────────────
 T_STEP=$(_now_s)
 if [ "$SIN_PUSH" = false ]; then
-  echo "▶ [4/4] Publicando en GitHub Pages..."
+  echo "▶ [5/5] Publicando en GitHub Pages..."
   git add docs/
   git add outputs/recipes/ outputs/menus/
   if git diff --cached --quiet; then
     echo "  Sin cambios — nada que publicar."
-    _record_step "4. Publicar (git push)" "—" "⏭"
+    _record_step "5. Publicar (git push)" "—" "⏭"
   else
     git commit -m "actualizar semana $(date +%Y-%m-%d)"
     git push origin master
     echo ""
     echo "✅ Publicado — https://adanttmm.github.io/nutricion/"
-    _record_step "4. Publicar (git push)" "$(_elapsed $T_STEP)" "✅"
+    _record_step "5. Publicar (git push)" "$(_elapsed $T_STEP)" "✅"
   fi
 else
-  echo "⏭  [4/4] Push omitido (--sin-push)."
-  _record_step "4. Publicar (git push)" "—" "⏭"
+  echo "⏭  [5/5] Push omitido (--sin-push)."
+  _record_step "5. Publicar (git push)" "—" "⏭"
 fi
 echo ""
 
