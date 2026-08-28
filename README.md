@@ -81,18 +81,6 @@ Use it for: leftover ingredients, schedule changes, missing appliances, dietary 
 
 ---
 
-## Body composition imports (manual)
-
-```bash
-# From a Mi Fitness JSON export file
-python main.py importar-mifitness --archivo export.json --persona ATM
-
-# From a Xiaomi Smart Scale CSV export
-python main.py importar-smartscale --archivo export.csv --persona IOB
-```
-
----
-
 ## Site features
 
 The static site (`docs/`) shows:

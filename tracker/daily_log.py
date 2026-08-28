@@ -68,6 +68,10 @@ class DailyLog:
                 UNIQUE(recipe, week, person)
             );
 
+            -- Read-only history: populated in the past by importers that have
+            -- since been removed. No code writes to this table anymore — only
+            -- get_weight_history() below still reads it, to keep the weight
+            -- trend chart continuous with previously-imported scale data.
             CREATE TABLE IF NOT EXISTS body_composition (
                 id                   INTEGER PRIMARY KEY AUTOINCREMENT,
                 date                 TEXT NOT NULL,
@@ -356,45 +360,9 @@ class DailyLog:
         return [{"recipe": r[0], "week": r[1], "person": r[2], "stars": r[3], "tag": r[4]}
                 for r in rows]
 
-    def log_body_composition(self, data: dict, person: str = 'ATM', source: str = 'manual'):
-        """Upsert a full body composition reading (one per day per person)."""
-        person = person.upper()
-        fields = [
-            'weight_kg', 'bmi', 'body_fat_pct', 'fat_mass_kg', 'muscle_mass_kg',
-            'bone_mass_kg', 'water_pct', 'protein_pct', 'bmr', 'visceral_fat',
-            'metabolic_age', 'lean_mass_kg', 'subcutaneous_fat_pct',
-            'skeletal_muscle_pct', 'impedance',
-        ]
-        cols   = ', '.join(fields)
-        params = ', '.join('?' * len(fields))
-        vals   = [data.get(f) for f in fields]
-        self.conn.execute(
-            f"DELETE FROM body_composition WHERE date = ? AND person = ?",
-            (data['date'], person),
-        )
-        self.conn.execute(
-            f"""INSERT INTO body_composition (date, person, {cols}, source)
-                VALUES (?, ?, {params}, ?)""",
-            [data['date'], person, *vals, source],
-        )
-        self.conn.commit()
-
-    def get_body_composition_history(self, limit: int = 90, person: str = 'ATM') -> list:
-        cols = (
-            'date, weight_kg, bmi, body_fat_pct, fat_mass_kg, muscle_mass_kg, '
-            'bone_mass_kg, water_pct, protein_pct, bmr, visceral_fat, metabolic_age, '
-            'lean_mass_kg, subcutaneous_fat_pct, skeletal_muscle_pct, impedance, source'
-        )
-        rows = self.conn.execute(
-            f"SELECT {cols} FROM body_composition WHERE person = ? "
-            "ORDER BY date DESC LIMIT ?",
-            (person.upper(), limit),
-        ).fetchall()
-        keys = [c.strip() for c in cols.split(',')]
-        return [dict(zip(keys, r)) for r in rows]
-
     def get_weight_history(self, limit: int = 60, person: str = 'ATM') -> list:
-        # Union manual peso logs + body_composition records (Xiaomi/scale imports).
+        # Union manual peso logs + body_composition records (historical scale imports,
+        # table is read-only now — see the comment above its CREATE TABLE).
         # body_metrics wins on duplicate dates (it's a manual override).
         rows = self.conn.execute(
             """

@@ -280,7 +280,7 @@ RESPONDE ÚNICAMENTE con el YAML. Sin texto adicional. Sin markdown fences."""
                     "Sin explicaciones, sin markdown fences, sin texto adicional."
                 )}],
             )
-            fixed = self._clean_yaml_response(fix_response.content[0].text)
+            fixed = self._clean_yaml_response(self._extract_text(fix_response.content))
             parsed = yaml.safe_load(fixed)
             if not isinstance(parsed, dict):
                 raise ValueError(f"El parser no devolvió YAML válido para {source_name}")
@@ -313,7 +313,7 @@ RESPONDE ÚNICAMENTE con el YAML. Sin texto adicional. Sin markdown fences."""
             messages=[{"role": "user", "content": content}],
         )
 
-        yaml_text = self._clean_yaml_response(response.content[0].text)
+        yaml_text = self._clean_yaml_response(self._extract_text(response.content))
         _, clean_yaml = self._safe_load_with_retry(yaml_text, pdf_path.name)
 
         output_dir = Path("config/parsed_diets")
@@ -354,7 +354,7 @@ RESPONDE ÚNICAMENTE con el YAML. Sin texto adicional. Sin markdown fences."""
             messages=[{"role": "user", "content": plans_yaml}],
         )
 
-        combined_yaml = self._clean_yaml_response(response.content[0].text)
+        combined_yaml = self._clean_yaml_response(self._extract_text(response.content))
         _, combined_yaml = self._safe_load_with_retry(combined_yaml, "combined plan")
         output_path.write_text(combined_yaml, encoding="utf-8")
         self._apply_profile_overrides(output_path)

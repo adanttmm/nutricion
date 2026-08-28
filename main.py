@@ -120,13 +120,16 @@ def _find_latest_output(subdir: str, pattern: str) -> str | None:
               help="Lunes de la semana a generar (YYYY-MM-DD). Default: próximo lunes.")
 @click.option("--nota", "-n", default="",
               help="Indicaciones especiales para esta semana (sobras, tiempo disponible, equipos, etc.)")
-def generar_menu(plan, semana, nota):
+@click.option("--sin-historial", is_flag=True, default=False,
+              help="Omite el historial de menús anteriores (data/menu_history.txt). "
+                   "Por default SÍ se usa — es lo que evita repetir los mismos platillos semana tras semana.")
+def generar_menu(plan, semana, nota, sin_historial):
     """Genera el menú de la semana a partir del plan nutricional."""
     from skills.menu_generator import MenuGeneratorSkill
 
     week_start = date.fromisoformat(semana) if semana else None
     with console.status("[bold green]Generando menú con IA...", spinner="dots"):
-        output = MenuGeneratorSkill().generate(plan, week_start, week_notes=nota)
+        output = MenuGeneratorSkill().generate(plan, week_start, week_notes=nota, use_history=not sin_historial)
     console.print(Panel(
         f"[green]✅ Menú generado[/green]\n\n"
         f"📄 [bold]{output}[/bold]\n\n"
@@ -185,7 +188,9 @@ def verificar_compras(compras):
 
 @cli.command("generar-recetas")
 @click.option("--menu", "-m", default=None, help="Ruta al menú (default: el más reciente en outputs/menus/)")
-def generar_recetas(menu):
+@click.option("--nota", "-n", default="",
+              help="Indicaciones especiales para esta semana (sobras, tiempo disponible, equipos, etc.)")
+def generar_recetas(menu, nota):
     """Genera el recetario completo con instrucciones y links de video."""
     from skills.recipe_finder import RecipeFinderSkill
 
@@ -195,8 +200,13 @@ def generar_recetas(menu):
         raise SystemExit(1)
     console.print(f"[dim]Usando menú: {menu}[/dim]")
 
-    with console.status("[bold yellow]Generando recetas...", spinner="dots"):
-        output = RecipeFinderSkill().generate_for_menu(menu)
+    with console.status("[bold yellow]Generando recetas...", spinner="dots") as status:
+        def _progress(i, total, elapsed=None):
+            if elapsed is None:
+                status.update(f"[bold yellow]Generando recetas (parte {i}/{total})...[/bold yellow]")
+            else:
+                console.print(f"  [dim]· parte {i}/{total} lista ({elapsed:.0f}s)[/dim]")
+        output = RecipeFinderSkill().generate_for_menu(menu, week_notes=nota, on_progress=_progress)
     console.print(Panel(
         f"[green]✅ Recetario generado[/green]\n\n"
         f"📄 [bold]{output}[/bold]\n\n"
@@ -276,7 +286,10 @@ def validar_menu(plan, menu, nota):
 @click.option("--sin-sitio", is_flag=True, default=False, help="Omite la generación del sitio web.")
 @click.option("--nota", "-n", default="",
               help="Indicaciones especiales para esta semana (sobras, tiempo disponible, ingredientes extra, etc.)")
-def semana_completa(plan, semana, sin_sitio, nota):
+@click.option("--sin-historial", is_flag=True, default=False,
+              help="Omite el historial de menús anteriores (data/menu_history.txt). "
+                   "Por default SÍ se usa — es lo que evita repetir los mismos platillos semana tras semana.")
+def semana_completa(plan, semana, sin_sitio, nota, sin_historial):
     """Genera TODO de una vez: menú · compras · recetas · plan de prep.
 
     Si no se especifica --plan, busca automáticamente el último plan parseado en
@@ -323,7 +336,8 @@ def semana_completa(plan, semana, sin_sitio, nota):
         attempt_label = "1/5 · Menú semanal" if attempt == 0 else f"  ↺ Corrección #{attempt} · Menú"
         with console.status(f"[green]{attempt_label}...", spinner="dots"):
             outputs["menu"] = MenuGeneratorSkill().generate(
-                plan, week_start, feedback=feedback, ratings_context=ratings_context, week_notes=nota
+                plan, week_start, feedback=feedback, ratings_context=ratings_context, week_notes=nota,
+                use_history=not sin_historial,
             )
         console.print(f"  [green]✅[/green] Menú generado (intento {attempt + 1}/{MAX_MENU_RETRIES}): {outputs['menu']}")
 
@@ -344,8 +358,15 @@ def semana_completa(plan, semana, sin_sitio, nota):
                 "Se usará el último generado — revisa manualmente.[/red]"
             )
 
-    with console.status("[yellow]2/5 · Recetario...", spinner="dots"):
-        outputs["recetas"] = RecipeFinderSkill().generate_for_menu(str(outputs["menu"]), week_start)
+    with console.status("[yellow]2/5 · Recetario...", spinner="dots") as status:
+        def _recetas_progress(i, total, elapsed=None):
+            if elapsed is None:
+                status.update(f"[yellow]2/5 · Recetario (parte {i}/{total})...[/yellow]")
+            else:
+                console.print(f"  [dim]· parte {i}/{total} lista ({elapsed:.0f}s)[/dim]")
+        outputs["recetas"] = RecipeFinderSkill().generate_for_menu(
+            str(outputs["menu"]), week_start, week_notes=nota, on_progress=_recetas_progress
+        )
     console.print(f"  [green]✅[/green] Recetas: {outputs['recetas']}")
 
     # Meal prep before shopping so all sauce/marinade ingredients are captured
@@ -450,204 +471,6 @@ def importar_ratings(archivo):
             title="[cyan]⭐ Valoraciones importadas[/cyan]",
             border_style="cyan",
         ))
-
-
-@cli.command("importar-mifitness")
-@click.argument("archivo", type=click.Path(exists=True))
-@click.option("--persona", "-p", default="ATM",
-              type=click.Choice(["ATM", "IOB"], case_sensitive=False),
-              help="Persona a quien pertenecen los datos (default: ATM)")
-@click.option("--dry-run", is_flag=True, default=False,
-              help="Muestra qué se importaría sin escribir a la base de datos")
-def importar_mifitness(archivo, persona, dry_run):
-    """Importa composición corporal desde un export de Mi Fitness / Zepp Life.
-
-    ARCHIVO puede ser un .zip (export completo) o un .json suelto.
-
-    Cómo exportar desde la app:
-      Mi Fitness  → Perfil → Ajustes → Cuenta → Exportar datos de salud
-      Zepp Life   → Perfil → Mi cuenta → Privacidad → Exportar datos
-      Mi Home     → account.xiaomi.com → Privacidad → Gestionar datos
-    """
-    from skills.mifitness_importer import MiFitnessImporter
-    from pathlib import Path
-
-    importer = MiFitnessImporter()
-    path = Path(archivo)
-    action = "[yellow]SIMULACIÓN[/yellow] —" if dry_run else ""
-
-    try:
-        with console.status(f"[cyan]{action} Leyendo {path.name}...", spinner="dots"):
-            if path.suffix.lower() == '.zip':
-                result = importer.import_zip(path, person=persona, dry_run=dry_run)
-            else:
-                result = importer.import_json(path, person=persona, dry_run=dry_run)
-    except (FileNotFoundError, ValueError) as e:
-        console.print(f"[red]❌ {e}[/red]")
-        raise SystemExit(1)
-    finally:
-        importer.close()
-
-    total    = result['total']
-    imported = result['imported']
-    skipped  = result['skipped']
-    errors   = result['errors']
-
-    if dry_run and result.get('records'):
-        console.print(f"\n[yellow]Vista previa — {total} registros encontrados:[/yellow]\n")
-        for rec in result['records'][:10]:
-            console.print(MiFitnessImporter.format_record(rec))
-            console.print()
-        if total > 10:
-            console.print(f"  [dim]... y {total - 10} más[/dim]\n")
-        console.print(f"[dim]Ejecuta sin --dry-run para importar a la base de datos.[/dim]")
-        return
-
-    if errors:
-        console.print(f"[yellow]⚠ {len(errors)} error(es):[/yellow]")
-        for e in errors[:5]:
-            console.print(f"  [dim]{e}[/dim]")
-
-    if imported == 0:
-        console.print("[yellow]Sin registros nuevos para importar.[/yellow]")
-        return
-
-    console.print(Panel(
-        f"[green]✅ {imported} medición(es) importadas para [bold]{persona}[/bold][/green]\n\n"
-        f"Total encontrados : [bold]{total}[/bold]\n"
-        f"Importados        : [bold]{imported}[/bold]\n"
-        f"Errores/omitidos  : [bold]{skipped}[/bold]\n\n"
-        "Reconstruye el sitio para ver las métricas en Seguimiento:\n"
-        "  [yellow]bash actualizar_site.sh[/yellow]",
-        title="[cyan]⚖️  Composición Corporal importada[/cyan]",
-        border_style="cyan",
-    ))
-
-
-
-
-@cli.command("importar-smartscale")
-@click.argument("archivo", default="-")
-@click.option("--persona", "-p", default="ATM",
-              type=click.Choice(["ATM", "IOB"], case_sensitive=False),
-              help="Persona a quien pertenecen los datos (default: ATM)")
-@click.option("--dry-run", is_flag=True, default=False,
-              help="Muestra qué se importaría sin guardar en la base de datos")
-def importar_smartscale(archivo, persona, dry_run):
-    """Importa composición corporal desde SmartScaleConnect (Xiaomi Home).
-
-    ARCHIVO es la ruta al JSON exportado, o '-' para leer desde stdin.
-    """
-    import sys
-    from skills.smartscale_importer import SmartScaleImporter
-
-    importer = SmartScaleImporter()
-    action = "[yellow]SIMULACIÓN[/yellow] —" if dry_run else ""
-
-    try:
-        with console.status(f"[cyan]{action} Leyendo datos Xiaomi...", spinner="dots"):
-            data = sys.stdin.read() if archivo == "-" else Path(archivo).read_text()
-            result = importer.import_json_str(data, person=persona, dry_run=dry_run)
-    except Exception as e:
-        console.print(f"[red]❌ {e}[/red]")
-        raise SystemExit(1)
-    finally:
-        importer.close()
-
-    if dry_run and result.get('records'):
-        console.print(f"\n[yellow]Vista previa — {result['normalized']} registros normalizados:[/yellow]\n")
-        for rec in result['records'][:10]:
-            console.print(SmartScaleImporter.format_record(rec))
-            console.print()
-        if result['total'] > 10:
-            console.print(f"  [dim]... y {result['total'] - 10} más[/dim]\n")
-        console.print("[dim]Ejecuta sin --dry-run para importar.[/dim]")
-        return
-
-    if result.get('errors'):
-        console.print(f"[yellow]⚠ {len(result['errors'])} error(es):[/yellow]")
-        for e in result['errors'][:5]:
-            console.print(f"  [dim]{e}[/dim]")
-
-    if result['imported'] == 0:
-        console.print("[yellow]Sin registros nuevos para importar.[/yellow]")
-        return
-
-    console.print(Panel(
-        f"[green]✅ {result['imported']} medición(es) importadas para [bold]{persona}[/bold][/green]\n\n"
-        f"Recibidos     : [bold]{result['total']}[/bold]\n"
-        f"Normalizados  : [bold]{result['normalized']}[/bold]\n"
-        f"Importados    : [bold]{result['imported']}[/bold]\n"
-        f"Errores       : [bold]{result['skipped']}[/bold]\n\n"
-        "Reconstruye el sitio para ver las métricas:\n"
-        "  [yellow]bash actualizar_site.sh[/yellow]",
-        title="[cyan]⚖️  Xiaomi Home importado[/cyan]",
-        border_style="cyan",
-    ))
-
-
-@cli.command("importar-xiaomi-zip")
-@click.argument("archivo")
-@click.option("--persona", "-p", default="ATM",
-              type=click.Choice(["ATM", "IOB"], case_sensitive=False),
-              help="Persona a quien pertenecen los datos (default: ATM)")
-@click.option("--dry-run", is_flag=True, default=False,
-              help="Muestra qué se importaría sin guardar en la base de datos")
-def importar_xiaomi_zip(archivo, persona, dry_run):
-    """Importa composición corporal desde el ZIP de exportación de Xiaomi.
-
-    ARCHIVO es la ruta al ZIP descargado desde Mi Fitness o la cuenta Xiaomi.
-
-    Cómo obtener el ZIP:
-      1. Abre Mi Fitness → Yo → Configuración → Privacidad → Exportar datos
-      2. Descarga el ZIP y pásalo como argumento.
-    """
-    from skills.xiaomi_importer import parse_zip, import_to_db
-
-    zip_path = Path(archivo)
-    if not zip_path.exists():
-        console.print(f"[red]❌ Archivo no encontrado: {archivo}[/red]")
-        raise SystemExit(1)
-
-    with console.status("[cyan]Leyendo ZIP...", spinner="dots"):
-        records = parse_zip(str(zip_path))
-
-    if not records:
-        console.print("[yellow]No se encontraron registros de composición corporal en el ZIP.[/yellow]")
-        console.print("[dim]El ZIP debe contener archivos como BODY_WEIGHT.json, body_record.csv, etc.[/dim]")
-        return
-
-    # Deduplicate by date (keep latest reading per date)
-    by_date = {}
-    for r in records:
-        if r.get("date"):
-            by_date[r["date"]] = r
-    unique = sorted(by_date.values(), key=lambda r: r["date"])
-
-    if dry_run:
-        console.print(f"\n[yellow]Vista previa — {len(unique)} registros únicos para [bold]{persona}[/bold]:[/yellow]\n")
-        for r in unique[-10:]:
-            parts = [f"[bold]{r['date']}[/bold]", f"{r['weight_kg']} kg"]
-            if r.get("body_fat_pct"): parts.append(f"grasa {r['body_fat_pct']}%")
-            if r.get("muscle_mass_kg"): parts.append(f"músculo {r['muscle_mass_kg']} kg")
-            console.print("  " + "  ·  ".join(parts))
-        if len(unique) > 10:
-            console.print(f"  [dim]... ({len(unique)} total, mostrando últimos 10)[/dim]")
-        console.print("\n[dim]Ejecuta sin --dry-run para importar.[/dim]")
-        return
-
-    saved = import_to_db(unique, person=persona)
-
-    console.print(Panel(
-        f"[green]✅ {saved} medición(es) importadas para [bold]{persona}[/bold][/green]\n\n"
-        f"Archivo       : [bold]{zip_path.name}[/bold]\n"
-        f"Registros     : [bold]{len(records)}[/bold] raw → [bold]{len(unique)}[/bold] únicos\n"
-        f"Guardados     : [bold]{saved}[/bold]\n\n"
-        "Reconstruye el sitio para ver las métricas:\n"
-        "  [yellow]bash actualizar_site.sh[/yellow]",
-        title="[cyan]⚖️  ZIP Xiaomi importado[/cyan]",
-        border_style="cyan",
-    ))
 
 
 @cli.command("generar-sitio")

@@ -8,11 +8,11 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import List
 
-# claude-sonnet-4-6 pricing (USD per token)
-_PRICE_INPUT        = 3.00   / 1_000_000
-_PRICE_OUTPUT       = 15.00  / 1_000_000
-_PRICE_CACHE_WRITE  = 3.75   / 1_000_000
-_PRICE_CACHE_READ   = 0.30   / 1_000_000
+# claude-opus-5 pricing (USD per token)
+_PRICE_INPUT        = 5.00   / 1_000_000
+_PRICE_OUTPUT       = 25.00  / 1_000_000
+_PRICE_CACHE_WRITE  = 6.25   / 1_000_000
+_PRICE_CACHE_READ   = 0.50   / 1_000_000
 
 LOG_PATH = Path("data/token_usage_latest.jsonl")
 

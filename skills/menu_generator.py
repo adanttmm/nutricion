@@ -1,6 +1,7 @@
 from .base_skill import BaseSkill
 from pathlib import Path
 from datetime import date, timedelta
+import re
 import yaml
 
 
@@ -23,8 +24,7 @@ PERFIL DEL COCINERO:
     9 - Alemana
     10 - Turca
     11 - Libanesa
-- Revisa los menús de las tres semanas anteriores EVITA REPETIR a menos que explícitamente se ponga en las notas.
-- Busca recetas fit y gourmet amateur en internet para referencia y agrega los links de referencia.
+- El mensaje SIEMPRE incluye una sección "PLATILLOS DE SEMANAS ANTERIORES" con lo cocinado recientemente — REGLA DURA, no opcional: NINGÚN platillo del menú nuevo puede coincidir, ni exacta ni aproximadamente, con algo de esa lista. "Aproximadamente" significa: misma proteína principal + misma técnica + salsa/sabor equivalente aunque el nombre cambie (ej. "Salmón en Miso Sous Vide" y "Salmón en Miso Glaseado" cuentan como EL MISMO platillo — prohibido repetir). Si notas que sigues regresando a los mismos platillos favoritos semana tras semana (salmón en miso, tacos de camarón/chuleta ahumada, bowls de atún, batidos de mango/kiwi, parfait de skyr), estás fallando esta regla — elige activamente otra proteína, técnica o gastronomía distinta esta semana.
 - Cocina para 2 personas (ATM e IOB) en todos los tiempos; martes, miércoles y viernes hay un 3er comensal a la comida con la misma porción que IOB; evitar ingredientes premium o demasiado exoticos los dias del tercer comensal
 - 1 comida trampa por semana (restaurante o platillo especial sin restricciones)
 - Meal prep con equilibrio inteligente: la mayor parte se cocina el domingo, PERO puedo dedicar algun tiempo para cocinar en la semana. El objetivo es ≤30 min activos de cocción entre semana.
@@ -32,20 +32,20 @@ PERFIL DEL COCINERO:
 REGLAS DEL MENÚ:
 1. Generar los 7 días completos: lunes, martes, miércoles, jueves, viernes, sábado y domingo sin excepción.
 2. No repetir la proteína principal más de 2 veces por semana en comida y cena.
-3. Evitar repetir recetas de hace tres semanas.
+3. CERO repetición contra "PLATILLOS DE SEMANAS ANTERIORES" (ver regla dura arriba) — varía activamente proteína, técnica y gastronomía respecto a esa lista.
 4. Las calorías y macros de CADA PERSONA deben coincidir con SUS metas (±5%). Los NÚMEROS son la ley; los alimentos son libres.
 5. Se cocina UN SOLO PLATILLO para ambas personas — las porciones varían por persona.
 6. Ingredientes accesibles en Costco Ciudad de México + City Market Santa Fe + Mercado Libre.
 7. Nombres de platillos elegantes y descriptivos, al estilo de menú de restaurante.
 8. DISEÑO PARA MEAL PREP INTELIGENTE: proteínas, granos y salsas de TODOS los días deben llevar 🏪 o 🌊 (sous vide entre semana). Los únicos elementos frescos entre semana son aguacate, huevo al momento, hierbas frescas o ensalada cruda.
-9. Consulta el sitio https://smn.conagua.gob.mx/es/ para obtener información sobre el clima en Cuajimalpa de Morelos y ajustar las recetas según la temporada.
+9. Ajusta ingredientes y platillos a la temporada del mes indicado en el mensaje (frutas/verduras de temporada en México).
 10. ASEGURA QUE CUMPLES CON LAS NOTAS DE LA SEMANA RECIBIDAS EN notas_semana.txt
 
 OPTIMIZACIÓN DE CARGA DE COCINA — REPETICIÓN CONTROLADA:
 Para reducir el número de recetas únicas a preparar, usa este esquema OBLIGATORIO:
 - DESAYUNO: exactamente 2 variantes. Variante A: lunes+martes+miércoles. Variante B: jueves+viernes+sábado+domingo. Nombrarlos idéntico en todos los días que los usan.
 - COLACIÓN AM: exactamente 2 variantes. Variante A: lunes+martes+miércoles+jueves. Variante B: viernes+sábado+domingo.
-- COLACIÓN PM: exactamente 2 variantes. Variante A: lunes+miércoles+viernes (días de gym, +150 kcal ATM). Variante B: martes+jueves+sábado+domingo (días de salsa o descanso).
+- COLACIÓN PM: exactamente 2 variantes de PLATILLO. Variante A: lunes+miércoles+viernes (días de gym). Variante B: martes+jueves+sábado+domingo (días de salsa o descanso). El PLATILLO es el mismo dentro de cada variante, pero la PORCIÓN no: martes/jueves (salsa, IOB) llevan más cantidad que sábado/domingo (descanso) del mismo platillo. La sección "ACTIVIDAD DE LA SEMANA" del mensaje te da, para cada día, el objetivo EXACTO en kcal de Colación PM por persona (base + bono ya sumado) — usa ese número directamente, no vuelvas a sumar el bono tú mismo.
 - COMIDA: exactamente 3 platillos únicos de comida rotando toda la semana: Variante A: lunes+jueves (mismo platillo exacto); Variante B: martes+viernes (mismo platillo exacto); Variante C: miércoles+sábado+domingo (mismo platillo exacto). Total: solo 3 recetas únicas de comida. El sábado y domingo reutilizan el prep del miércoles — cero cocción adicional el fin de semana.
 - CENA: exactamente 2 variantes. Variante A: lunes+martes+miércoles. Variante B: jueves+viernes+domingo. Sábado: comida trampa 🎉 (no requiere cena de prep).
 Esta optimización significa solo ~11 recetas únicas. El fin de semana se libera significativamente al tener solo 3 comidas únicas en lugar de 4.
@@ -108,7 +108,10 @@ Al final: tabla resumen con totales diarios por persona y promedios semanales.
 
 NO incluyas una lista de compras ni resumen de ingredientes a comprar en este documento — eso lo genera un skill aparte con cálculo exacto de cantidades. Termina el documento en la tabla resumen semanal."""
 
-    def generate(self, diet_plan_path: str, week_start: date = None, feedback: str = "", ratings_context: str = "", week_notes: str = "") -> Path:
+    def generate(
+        self, diet_plan_path: str, week_start: date = None, feedback: str = "",
+        ratings_context: str = "", week_notes: str = "", use_history: bool = True,
+    ) -> Path:
         if week_start is None:
             today = date.today()
             days_until_monday = (7 - today.weekday()) % 7 or 7
@@ -117,27 +120,56 @@ NO incluyas una lista de compras ni resumen de ingredientes a comprar en este do
         with open(diet_plan_path, encoding="utf-8") as f:
             diet_plan = yaml.safe_load(f)
 
+        # menu_history.txt is written every run (see bottom of this method) and,
+        # by default, always read back — this is the anti-repetition mechanism
+        # (the model drifts back to the same handful of favorite dishes without
+        # an explicit "don't repeat this" list). use_history=False exists only
+        # for one-off testing/exploration, never for real weekly runs.
         history = ""
         history_path = Path("data/menu_history.txt")
-        if history_path.exists():
+        if use_history and history_path.exists():
             text = history_path.read_text(encoding="utf-8").strip()
             if text:
-                history = f"\n\nPLATILLOS DE SEMANAS ANTERIORES (no repetir los mismos):\n{text[-3000:]}"
+                history = (
+                    "\n\nPLATILLOS DE SEMANAS ANTERIORES (REGLA DURA — ver arriba, "
+                    f"prohibido repetir exacta o aproximadamente):\n{self._recent_history_weeks(text, weeks=4)}"
+                )
 
         gym_days = self.user_profile.get("activity", {}).get("gym", {}).get("days", [])
         salsa_days = self.user_profile.get("activity", {}).get("salsa_dancing", {}).get("days", [])
+        gym_bonus = diet_plan.get("context", {}).get("gym_calorie_bonus", 150)
+        salsa_bonus = diet_plan.get("context", {}).get("salsa_calorie_bonus", 100)
+        # Convention already fixed by the system prompt: the gym bonus applies to
+        # ATM (who does gym), the salsa bonus to IOB (who does salsa dancing).
+        colacion_pm_base = self._colacion_pm_base(diet_plan)
         day_names = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
         days_info = []
         for i, day_name in enumerate(day_names):
             d = week_start + timedelta(days=i)
             notes = []
             if day_name in gym_days:
-                notes.append(f"+{diet_plan.get('context', {}).get('gym_calorie_bonus', 150)} kcal (gym)")
+                notes.append(f"+{gym_bonus} kcal (gym, ATM)")
             if day_name in salsa_days:
-                notes.append(f"+{diet_plan.get('context', {}).get('salsa_calorie_bonus', 100)} kcal (salsa)")
-            days_info.append(
-                f"- {day_name.capitalize()} {d.strftime('%d/%m')}: {', '.join(notes) if notes else 'día normal'}"
-            )
+                notes.append(f"+{salsa_bonus} kcal (salsa, IOB)")
+            line = f"- {day_name.capitalize()} {d.strftime('%d/%m')}: {', '.join(notes) if notes else 'día normal'}"
+
+            # Compute the EXACT Colación PM target per person for this day —
+            # don't leave the addition to the model, that's exactly what was
+            # landing wrong (validator kept rejecting gym/salsa days for under-
+            # shooting calories because the bonus wasn't reliably applied).
+            if colacion_pm_base:
+                exact = []
+                for person, base in colacion_pm_base.items():
+                    bonus = 0
+                    if person == "ATM" and day_name in gym_days:
+                        bonus = gym_bonus
+                    elif person == "IOB" and day_name in salsa_days:
+                        bonus = salsa_bonus
+                    total = base + bonus
+                    detail = f"{base:.0f}+{bonus} bono" if bonus else f"{base:.0f}, sin bono"
+                    exact.append(f"{person}={total:.0f} kcal ({detail})")
+                line += f"\n    → Colación PM OBJETIVO EXACTO (usa este número, no recalcules): {' · '.join(exact)}"
+            days_info.append(line)
 
         is_parsed = self._is_parsed_diet(diet_plan)
         plan_context = self._build_plan_context(diet_plan, is_parsed)
@@ -188,16 +220,81 @@ NO incluyas una lista de compras ni resumen de ingredientes a comprar en este do
         output_path = self._save_output(header + content, "outputs/menus", filename)
 
         history_path.parent.mkdir(parents=True, exist_ok=True)
+        # Only genuine dish-title lines: exactly one bold span covering the whole
+        # line, AND not a nutrition-summary line. The bold-span check alone isn't
+        # enough — some generations wrap an entire "Totales ... kcal" line in a
+        # single bold span too, which would otherwise pass and crowd out real
+        # dish names in the history the next generation sees.
+        # `:` at the end (outside the bold markers) means it's a section label like
+        # "**Proteínas:**" or "**Preparar el domingo:**", not a dish title — those
+        # slipped into menu_history.txt and polluted the "don't repeat" list with
+        # junk that isn't a repeatable dish.
+        _SUMMARY_RE = re.compile(r'(?i)totales?\b|\bkcal\b')
         dish_lines = [
             line.strip()
             for line in content.split("\n")
-            if "**" in line and line.strip().startswith("**")
+            if (s := line.strip()).startswith("**") and s.endswith("**") and s.count("**") == 2
+            and not s[2:-2].strip().endswith(":")
+            and not _SUMMARY_RE.search(s)
         ]
+        # De-dupe: the same dish legitimately appears on 2-4 days within one week
+        # by design (meal-prep variant reuse) — write each unique dish once, not
+        # once per day, so a week's own repeats don't crowd out older weeks.
+        unique_dishes = list(dict.fromkeys(dish_lines))
         with open(history_path, "a", encoding="utf-8") as f:
             f.write(f"\n=== Semana {week_start.strftime('%Y-%m-%d')} ===\n")
-            f.write("\n".join(dish_lines[:60]) + "\n")
+            f.write("\n".join(unique_dishes) + "\n")
 
         return output_path
+
+    @staticmethod
+    def _recent_history_weeks(history_text: str, weeks: int = 3) -> str:
+        """Return the last N *distinct* week-blocks (marked by '=== Semana
+        YYYY-MM-DD ==='), not a raw character-count tail.
+
+        A fixed character tail silently starves this once the file grows: one
+        week's own intentionally-repeated dishes (same recipe reused 2-4x across
+        days, by design, for meal-prep efficiency) alone can fill a few thousand
+        characters, pushing genuinely older weeks out of view — which is exactly
+        why specific dishes kept recurring for months (some appeared 15-20+
+        times across the accumulated history without ever being visible to the
+        model as "already used").
+
+        Also collapses repeated blocks for the *same* week (retries within one
+        run, or re-running the script for a week already generated, each append
+        another block) down to the latest one, so "last 3 weeks" means 3
+        distinct calendar weeks — not 3 duplicate attempts at the same week.
+        """
+        import re
+        matches = list(re.finditer(r'^=== Semana (\S+) ===\s*\n', history_text, re.MULTILINE))
+        if not matches:
+            return history_text
+        blocks: dict[str, str] = {}
+        for i, m in enumerate(matches):
+            start = m.start()
+            end = matches[i + 1].start() if i + 1 < len(matches) else len(history_text)
+            blocks.pop(m.group(1), None)  # drop earlier attempt's position, if any
+            blocks[m.group(1)] = history_text[start:end].strip()
+        return "\n\n".join(list(blocks.values())[-weeks:])
+
+    @staticmethod
+    def _colacion_pm_base(diet_plan: dict) -> dict:
+        """Return {person: base_colacion_pm_kcal} straight from the parsed diet
+        plan, for both combined (two-person) and single-person plan formats.
+        Empty dict if the plan doesn't carry a parsed meal_structure (e.g. the
+        template plan) — callers must treat that as "can't compute, skip"."""
+        out = {}
+        if diet_plan.get("document_type") == "combined_diet_plan" and "persons" in diet_plan:
+            for person, data in diet_plan.get("persons", {}).items():
+                cal = data.get("meal_structure", {}).get("colacion_pm", {}).get("calories")
+                if cal:
+                    out[person] = cal
+        else:
+            person = diet_plan.get("person", "")
+            cal = diet_plan.get("meal_structure", {}).get("colacion_pm", {}).get("calories")
+            if person and cal:
+                out[person] = cal
+        return out
 
     @staticmethod
     def _is_parsed_diet(diet_plan: dict) -> bool:

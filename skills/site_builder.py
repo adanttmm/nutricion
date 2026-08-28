@@ -15,8 +15,29 @@ _DAY_SHORT = {
     'JUEVES': 'Jue', 'VIERNES': 'Vie', 'SÁBADO': 'Sáb', 'SABADO': 'Sáb', 'DOMINGO': 'Dom',
 }
 _MEAL_EMOJIS = ['🌅', '🍎', '🍽', '🌿', '🌙', '🎉']
+# Recipe cards use a free-choice dish emoji (e.g. 🥩 for beef), not the fixed
+# meal-time emoji the menu uses — matching recipes to menu slots by emoji only
+# works by coincidence. The meal-time name itself ("Desayuno", "Comida", ...)
+# is the one thing both files reliably share, so match on that instead.
+_MEAL_LABEL_RE = re.compile(r'(?i)(desayuno|colaci[oó]n\s*am|comida|colaci[oó]n\s*pm|cena)')
+
+
+def _meal_label_key(hdr: str) -> str | None:
+    # Match only when the label is the header's own subject (right after the
+    # hashes and a leading emoji) — not merely mentioned somewhere in the line.
+    # Without the anchor, a day-summary subtitle like a travel day's "(sólo
+    # cena)" note gets misidentified as a meal-section header of its own.
+    s = re.sub(r'^#{1,3}\s*', '', hdr)
+    s = re.sub(r'^[^\w]+', '', s, flags=re.UNICODE)
+    m = _MEAL_LABEL_RE.match(s)
+    if not m:
+        return None
+    return re.sub(r'\s+', ' ', m.group(1).lower().replace('ó', 'o')).strip()
+
+
 _MACRO_RE = re.compile(
-    r'\| \*\*kcal · P · C · G\*\* \| \*\*(\d+) · (\d+)g · (\d+)g · (\d+)g\*\*.*?\| \*\*(\d+) · (\d+)g · (\d+)g · (\d+)g\*\*'
+    r'\|\s*\*{0,2}kcal · P · C · G\*{0,2}\s*\|\s*\*{0,2}([\d.]+) · ([\d.]+)g · ([\d.]+)g · ([\d.]+)g\*{0,2}'
+    r'.*?\|\s*\*{0,2}([\d.]+) · ([\d.]+)g · ([\d.]+)g · ([\d.]+)g\*{0,2}'
 )
 # Maps each meal-slot emoji to the snake_case meal_type vocabulary used by
 # `python main.py registrar` / the tracker DB, so menu-derived and manually
@@ -293,14 +314,16 @@ class SiteBuilderSkill(BaseSkill):
         atm = {'calories': 0, 'protein_g': 0, 'carbs_g': 0, 'fat_g': 0}
         iob = {'calories': 0, 'protein_g': 0, 'carbs_g': 0, 'fat_g': 0}
         for m in _MACRO_RE.finditer(menu_content):
-            atm['calories']  += int(m.group(1))
-            atm['protein_g'] += int(m.group(2))
-            atm['carbs_g']   += int(m.group(3))
-            atm['fat_g']     += int(m.group(4))
-            iob['calories']  += int(m.group(5))
-            iob['protein_g'] += int(m.group(6))
-            iob['carbs_g']   += int(m.group(7))
-            iob['fat_g']     += int(m.group(8))
+            atm['calories']  += float(m.group(1))
+            atm['protein_g'] += float(m.group(2))
+            atm['carbs_g']   += float(m.group(3))
+            atm['fat_g']     += float(m.group(4))
+            iob['calories']  += float(m.group(5))
+            iob['protein_g'] += float(m.group(6))
+            iob['carbs_g']   += float(m.group(7))
+            iob['fat_g']     += float(m.group(8))
+        atm = {k: round(v, 1) for k, v in atm.items()}
+        iob = {k: round(v, 1) for k, v in iob.items()}
         return atm, iob
 
     @staticmethod
@@ -449,12 +472,20 @@ class SiteBuilderSkill(BaseSkill):
 
     @staticmethod
     def _split_meal_sections(text: str) -> list:
-        """Split text by ### meal-time emoji headers. Returns list of (header, body)."""
+        """Split text by ##/### meal-time headers. Returns list of (header, body).
+
+        Accepts either heading level — the menu generator's prompt doesn't pin
+        one down, so it varies run to run; requiring exactly "### " silently
+        dropped every meal section on weeks that came back with "## ". Also
+        accepts the meal-time label text ("Desayuno", "Comida", ...) as an
+        alternative to the emoji check — recipe cards use a free-choice dish
+        emoji (e.g. 🥩), not the fixed meal-time emoji the menu uses, so emoji
+        alone never matched a recipe-card header."""
         sections = []
         cur_header = None
         cur_body: list = []
         for line in text.split('\n'):
-            if line.startswith('### ') and any(e in line for e in _MEAL_EMOJIS):
+            if re.match(r'^#{2,3} ', line) and (any(e in line for e in _MEAL_EMOJIS) or _meal_label_key(line)):
                 if cur_header is not None:
                     sections.append((cur_header, '\n'.join(cur_body).strip()))
                 cur_header = line
@@ -523,17 +554,17 @@ class SiteBuilderSkill(BaseSkill):
 
     @staticmethod
     def _build_meals(menu_secs: list, rec_secs: list) -> list:
-        """Match menu and recipe sections by emoji, pre-render both to HTML."""
-        rec_by_emoji: dict = {}
+        """Match menu and recipe sections by meal-time label, pre-render both to HTML."""
+        rec_by_label: dict = {}
         for hdr, body in rec_secs:
-            for e in _MEAL_EMOJIS:
-                if e in hdr:
-                    rec_by_emoji[e] = (hdr, body)
-                    break
+            key = _meal_label_key(hdr)
+            if key:
+                rec_by_label[key] = (hdr, body)
 
         meals = []
         for hdr, body in menu_secs:
             emoji = next((e for e in _MEAL_EMOJIS if e in hdr), None)
+            menu_key = _meal_label_key(hdr)
             label = hdr.lstrip('#').strip()
             # Strip the kcal/macro totals table from the menu description
             clean_body = SiteBuilderSkill._strip_kcal_table(body)
@@ -544,7 +575,7 @@ class SiteBuilderSkill(BaseSkill):
             serving_table_md = SiteBuilderSkill._extract_menu_serving_table_md(body)
             ingr_table_html = SiteBuilderSkill._md_to_html(serving_table_md) if serving_table_md else ''
 
-            rec = rec_by_emoji.get(emoji) if emoji else None
+            rec = rec_by_label.get(menu_key) if menu_key else None
             recipe_html = ''
             recipe_title = ''
             rkey_val = ''
@@ -588,7 +619,7 @@ class SiteBuilderSkill(BaseSkill):
         dishes: dict = {}
         cur_slot: str | None = None
         for line in day_md.split('\n'):
-            if line.startswith('### '):
+            if re.match(r'^#{2,3} ', line):
                 cur_slot = None
                 for slot, emoji in SLOT_EMOJIS:
                     if emoji in line:

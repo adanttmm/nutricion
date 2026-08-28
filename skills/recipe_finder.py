@@ -2,12 +2,12 @@ from .base_skill import BaseSkill
 from pathlib import Path
 from datetime import date
 import re
-import urllib.parse
+import time
 
 
 class RecipeFinderSkill(BaseSkill):
 
-    SYSTEM_PROMPT = """Eres un chef instructor que crea tarjetas de receta profesionales y concisas para cocineros avanzados. Busca recetas rapidas, eficientes, fit, gourmet amateur y comida hogareña como referencia y conserva los links para usar en las tarjetas.
+    SYSTEM_PROMPT = """Eres un chef instructor que crea tarjetas de receta profesionales y concisas para cocineros avanzados. Escribe recetas rápidas, eficientes, fit, gourmet amateur y de comida hogareña.
 
 NIVEL DEL COCINERO: Avanzado. No explicar técnicas básicas. Ir directo a la técnica y el resultado.
 ESTILO: Gourmet amateur, rápido, eficiente, fit y hogareño. Técnicas profesionales, temperaturas exactas, indicadores visuales/táctiles de punto.
@@ -52,6 +52,8 @@ Luego el paso normalmente. Los pasos del día de servicio van directamente sin n
 **Tip del chef**
 Un consejo técnico no obvio.
 
+🎥 [Buscar en YouTube ES](https://www.youtube.com/results?search_query=receta+NOMBRE) · [YouTube EN](https://www.youtube.com/results?search_query=how+to+make+NOMBRE_EN) · [Referencia Google](https://www.google.com/search?q=receta+gourmet+NOMBRE)
+
 ---
 REGLAS:
 - NO incluir secciones "Mise en place", "Conservación", "Regeneración" ni "Meal prep durante la semana". Solo las secciones indicadas arriba.
@@ -59,7 +61,12 @@ REGLAS:
 - Si el mismo platillo aparece varios días, genera la tarjeta completa IDÉNTICA cada vez (mismos ingredientes, mismas cantidades, mismo nombre de cada ingrediente, mismos pasos) — nunca referencies otro día ni cambies los nombres de ingredientes entre días.
 - CONSISTENCIA DE NOMBRES: usa exactamente el mismo nombre para cada ingrediente en todas las tarjetas de la semana. No escribas "plátano dominico" un día y "plátano maduro" otro — elige un nombre y úsalo siempre. Lo mismo para proteína en polvo, tortilla integral, champiñones, etc."""
 
-    def generate_for_menu(self, menu_path: str, week_date: date = None) -> Path:
+    def generate_for_menu(
+        self, menu_path: str, week_date: date = None, week_notes: str = "", on_progress=None,
+    ) -> Path:
+        """on_progress(i, total, elapsed=None), called once before each chunk starts
+        (elapsed=None) and once after it finishes (elapsed=seconds) — used to show
+        progress instead of a single silent spinner across all chunks."""
         if week_date is None:
             week_date = date.today()
 
@@ -77,18 +84,32 @@ REGLAS:
             "IMPORTANTE: Si el mismo platillo aparece en múltiples días, genera la receta COMPLETA en cada día. "
             "Nunca uses referencias a otros días ('Ver receta del X') — cada día debe ser completamente autónomo."
         )
+        notes_block = ""
+        if week_notes:
+            notes_block = (
+                f"\n\n📋 INDICACIONES DEL COCINERO PARA ESTA SEMANA:\n{week_notes}\n"
+                "Ten esto en cuenta al escribir cada tarjeta (ej: si pide técnicas rápidas, prioriza pasos "
+                "cortos; si pide evitar un ingrediente, verifica que ninguna tarjeta lo use; si menciona "
+                "sobras o equipo disponible, ajusta la técnica de las tarjetas afectadas)."
+            )
 
         parts = []
         for i, chunk in enumerate(chunks):
+            if on_progress:
+                on_progress(i + 1, len(chunks))
+            t0 = time.monotonic()
             extra = (
                 "\nAl final incluye '## Preparaciones Base Compartidas' si alguna base del domingo se reutiliza."
                 if i == len(chunks) - 1 else ""
             )
-            parts.append(self._call_claude(
+            raw = self._call_claude(
                 self.SYSTEM_PROMPT,
-                f"{base} {day_hdr}\n\n{chunk}{extra}",
+                f"{base} {day_hdr}{notes_block}\n\n{chunk}{extra}",
                 max_tokens=16000,
-            ))
+            )
+            if on_progress:
+                on_progress(i + 1, len(chunks), time.monotonic() - t0)
+            parts.append(raw)
 
         content = "\n\n---\n\n".join(parts)
         content = self._dedupe_repeated_recipes(content)
